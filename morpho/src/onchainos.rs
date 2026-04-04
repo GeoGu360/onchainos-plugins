@@ -41,6 +41,9 @@ pub async fn wallet_contract_call(
         }));
     }
 
+    // --force is required for all on-chain write operations to broadcast the tx
+    args.push("--force");
+
     let output = tokio::process::Command::new("onchainos")
         .args(&args)
         .output()

@@ -17,6 +17,42 @@ struct RpcResponse {
     error: Option<Value>,
 }
 
+/// Poll eth_getTransactionReceipt until the tx is mined (or timeout).
+/// Returns true if the tx succeeded (status=0x1), false if reverted, error if timed out.
+pub async fn wait_for_tx(rpc_url: &str, tx_hash: &str) -> anyhow::Result<bool> {
+    use std::time::{Duration, Instant};
+    let client = reqwest::Client::new();
+    let deadline = Instant::now() + Duration::from_secs(60);
+
+    loop {
+        if Instant::now() > deadline {
+            anyhow::bail!("Timeout waiting for tx {} to be mined", tx_hash);
+        }
+
+        let req = json!({
+            "jsonrpc": "2.0",
+            "method": "eth_getTransactionReceipt",
+            "params": [tx_hash],
+            "id": 1
+        });
+
+        match client.post(rpc_url).json(&req).send().await {
+            Ok(resp) => {
+                if let Ok(body) = resp.json::<Value>().await {
+                    let receipt = &body["result"];
+                    if !receipt.is_null() {
+                        let status = receipt["status"].as_str().unwrap_or("0x1");
+                        return Ok(status == "0x1");
+                    }
+                }
+            }
+            Err(_) => {}
+        }
+
+        tokio::time::sleep(Duration::from_secs(3)).await;
+    }
+}
+
 /// Perform a raw eth_call against the given RPC endpoint.
 /// `to` and `data` are hex strings (0x-prefixed).
 pub async fn eth_call(rpc_url: &str, to: &str, data: &str) -> anyhow::Result<String> {

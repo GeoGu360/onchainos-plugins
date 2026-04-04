@@ -91,6 +91,18 @@ pub async fn run(
         );
         let approve_res = onchainos::dex_approve(chain_id, asset, &pool_addr, dry_run)
             .context("onchainos dex approve failed")?;
+        // Wait for approve tx to be mined before submitting repay
+        if !dry_run {
+            let approve_tx = approve_res["data"]["txHash"]
+                .as_str()
+                .or_else(|| approve_res["txHash"].as_str())
+                .unwrap_or("");
+            if !approve_tx.is_empty() && approve_tx.starts_with("0x") {
+                rpc::wait_for_tx(cfg.rpc_url, approve_tx)
+                    .await
+                    .context("Approve tx did not confirm in time")?;
+            }
+        }
         approval_result = Some(approve_res);
     }
 

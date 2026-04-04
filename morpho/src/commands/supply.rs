@@ -36,6 +36,11 @@ pub async fn run(
     let approve_result = onchainos::wallet_contract_call(chain_id, &asset_addr, &approve_calldata, from, None, dry_run).await?;
     let approve_tx = onchainos::extract_tx_hash(&approve_result);
 
+    // Wait for approve tx to be picked up before sending deposit, to avoid nonce conflicts.
+    if !dry_run {
+        tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+    }
+
     // Step 2: Deposit to vault (ask user to confirm before executing)
     let deposit_calldata = calldata::encode_vault_deposit(raw_amount, &wallet_addr);
     eprintln!("[morpho] Step 2/2: Depositing {} {} into vault {}...", amount, symbol, vault);

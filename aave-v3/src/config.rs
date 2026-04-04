@@ -44,7 +44,7 @@ pub static CHAINS: &[ChainConfig] = &[
     ChainConfig {
         chain_id: 8453,
         pool_addresses_provider: "0xe20fCBdBfFC4Dd138cE8b2E6FBb6CB49777ad64D",
-        rpc_url: "https://mainnet.base.org",
+        rpc_url: "https://base-rpc.publicnode.com",
         name: "Base",
     },
 ];

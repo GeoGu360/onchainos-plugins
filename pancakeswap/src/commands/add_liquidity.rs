@@ -18,9 +18,13 @@ pub struct AddLiquidityArgs {
 pub async fn run(args: AddLiquidityArgs) -> Result<()> {
     let cfg = crate::config::get_chain_config(args.chain)?;
 
+    // Resolve token symbols to addresses first
+    let addr_a = crate::config::resolve_token_address(&args.token_a, args.chain)?;
+    let addr_b = crate::config::resolve_token_address(&args.token_b, args.chain)?;
+
     // Sort tokens: token0 < token1 numerically (required by NonfungiblePositionManager)
-    let (token0, token1) = crate::calldata::sort_tokens(&args.token_a, &args.token_b)?;
-    let (amount_a_str, amount_b_str) = if token0 == args.token_a {
+    let (token0, token1) = crate::calldata::sort_tokens(&addr_a, &addr_b)?;
+    let (amount_a_str, amount_b_str) = if token0 == addr_a.as_str() {
         (args.amount_a.as_str(), args.amount_b.as_str())
     } else {
         (args.amount_b.as_str(), args.amount_a.as_str())
@@ -77,6 +81,8 @@ pub async fn run(args: AddLiquidityArgs) -> Result<()> {
     } else {
         let r = crate::onchainos::wallet_contract_call(args.chain, token0, &approve0_calldata, None, None, false).await?;
         println!("  Approve tx: {}", crate::onchainos::extract_tx_hash(&r));
+        // Wait for nonce to settle before next sequential transaction
+        tokio::time::sleep(std::time::Duration::from_secs(5)).await;
     }
 
     // Step 2: Approve token1 for NPM
@@ -88,6 +94,8 @@ pub async fn run(args: AddLiquidityArgs) -> Result<()> {
     } else {
         let r = crate::onchainos::wallet_contract_call(args.chain, token1, &approve1_calldata, None, None, false).await?;
         println!("  Approve tx: {}", crate::onchainos::extract_tx_hash(&r));
+        // Wait for nonce to settle before mint
+        tokio::time::sleep(std::time::Duration::from_secs(5)).await;
     }
 
     // Step 3: Mint position

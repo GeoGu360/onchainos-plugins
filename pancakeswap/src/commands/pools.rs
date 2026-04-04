@@ -11,8 +11,11 @@ pub struct PoolsArgs {
 pub async fn run(args: PoolsArgs) -> Result<()> {
     let cfg = crate::config::get_chain_config(args.chain)?;
 
-    let sym0 = crate::rpc::get_symbol(&args.token0, cfg.rpc_url).await.unwrap_or_else(|_| args.token0.clone());
-    let sym1 = crate::rpc::get_symbol(&args.token1, cfg.rpc_url).await.unwrap_or_else(|_| args.token1.clone());
+    let addr0 = crate::config::resolve_token_address(&args.token0, args.chain)?;
+    let addr1 = crate::config::resolve_token_address(&args.token1, args.chain)?;
+
+    let sym0 = crate::rpc::get_symbol(&addr0, cfg.rpc_url).await.unwrap_or_else(|_| args.token0.clone());
+    let sym1 = crate::rpc::get_symbol(&addr1, cfg.rpc_url).await.unwrap_or_else(|_| args.token1.clone());
 
     println!("Pools for {}/{} on chain {} (factory: {})", sym0, sym1, args.chain, cfg.factory);
     println!("{:<8} {:<44} {:>14} {:>12}", "Fee", "Pool Address", "Liquidity", "sqrtPrice");
@@ -22,7 +25,7 @@ pub async fn run(args: PoolsArgs) -> Result<()> {
     let mut found = 0;
 
     for fee in fee_tiers {
-        match crate::rpc::get_pool_address(cfg.factory, &args.token0, &args.token1, fee, cfg.rpc_url).await {
+        match crate::rpc::get_pool_address(cfg.factory, &addr0, &addr1, fee, cfg.rpc_url).await {
             Ok(pool_addr) => {
                 found += 1;
                 // Query slot0 and liquidity

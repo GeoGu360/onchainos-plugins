@@ -80,7 +80,15 @@ pub async fn run(
         .as_str()
         .or_else(|| approve_result["txHash"].as_str())
         .or_else(|| approve_result["hash"].as_str())
-        .unwrap_or("pending");
+        .unwrap_or("pending")
+        .to_string();
+
+    // Wait for approve tx to be mined before submitting supply
+    if approve_tx != "pending" && approve_tx.starts_with("0x") {
+        rpc::wait_for_tx(cfg.rpc_url, &approve_tx)
+            .await
+            .context("Approve tx did not confirm in time")?;
+    }
 
     // Step 2: supply
     let supply_calldata = calldata::encode_supply(&token_addr, amount_minimal, &from_addr)
@@ -107,7 +115,7 @@ pub async fn run(
         "amountMinimal": amount_minimal.to_string(),
         "poolAddress": pool_addr,
         "approveTxHash": approve_tx,
-        "supplyTxHash": supply_tx,
+        "supplyTxHash": supply_tx.to_string(),
         "dryRun": false
     }))
 }

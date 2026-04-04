@@ -94,10 +94,10 @@ enum Commands {
         #[arg(long)]
         amount_b: String,
         /// Lower tick boundary (must be multiple of tickSpacing)
-        #[arg(long)]
+        #[arg(long, allow_hyphen_values = true)]
         tick_lower: i32,
         /// Upper tick boundary (must be multiple of tickSpacing)
-        #[arg(long)]
+        #[arg(long, allow_hyphen_values = true)]
         tick_upper: i32,
         /// Slippage tolerance in percent (e.g. 1.0 = 1%)
         #[arg(long, default_value = "1.0")]

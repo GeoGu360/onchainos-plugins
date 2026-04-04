@@ -16,19 +16,21 @@ pub async fn run(args: RemoveLiquidityArgs) -> Result<()> {
     println!("Fetching position #{} on chain {}...", args.token_id, args.chain);
     let pos = crate::rpc::get_position(cfg.npm, args.token_id, cfg.rpc_url).await?;
 
-    if pos.liquidity == 0 {
+    if pos.liquidity == 0 && !args.dry_run {
         anyhow::bail!("Position #{} has zero liquidity. Nothing to remove.", args.token_id);
     }
+    // In dry-run mode with zero liquidity, use a synthetic value to preview calldata
+    let effective_liquidity = if pos.liquidity == 0 && args.dry_run { 1_000_000u128 } else { pos.liquidity };
 
     let sym0 = crate::rpc::get_symbol(&pos.token0, cfg.rpc_url).await.unwrap_or_else(|_| pos.token0.clone());
     let sym1 = crate::rpc::get_symbol(&pos.token1, cfg.rpc_url).await.unwrap_or_else(|_| pos.token1.clone());
 
-    let liquidity_to_remove = (pos.liquidity as f64 * args.liquidity_pct / 100.0) as u128;
+    let liquidity_to_remove = (effective_liquidity as f64 * args.liquidity_pct / 100.0) as u128;
 
     println!("Remove Liquidity (chain {}):", args.chain);
     println!("  Position:     #{}", args.token_id);
     println!("  Pair:         {}/{}", sym0, sym1);
-    println!("  Total liq:    {}", pos.liquidity);
+    println!("  Total liq:    {}{}", effective_liquidity, if pos.liquidity == 0 && args.dry_run { " [synthetic for dry-run]" } else { "" });
     println!("  Remove:       {}% = {}", args.liquidity_pct, liquidity_to_remove);
     println!("  Tick range:   {} to {}", pos.tick_lower, pos.tick_upper);
     println!("  Owed fees:    {} {} / {} {}", pos.tokens_owed0, sym0, pos.tokens_owed1, sym1);
@@ -42,7 +44,7 @@ pub async fn run(args: RemoveLiquidityArgs) -> Result<()> {
 
     // Fetch wallet address for use as collect recipient
     let wallet_address = if args.dry_run {
-        "0xDRYRUN_WALLET_ADDRESS".to_string()
+        "0x0000000000000000000000000000000000000001".to_string()
     } else {
         crate::onchainos::get_wallet_address().await?
     };
@@ -62,6 +64,8 @@ pub async fn run(args: RemoveLiquidityArgs) -> Result<()> {
     } else {
         let r = crate::onchainos::wallet_contract_call(args.chain, cfg.npm, &decrease_calldata, None, None, false).await?;
         println!("  decreaseLiquidity tx: {}", crate::onchainos::extract_tx_hash(&r));
+        // Wait for nonce to settle before collect
+        tokio::time::sleep(std::time::Duration::from_secs(5)).await;
     }
 
     // Step 2: collect — MUST always follow decreaseLiquidity

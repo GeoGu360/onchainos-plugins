@@ -123,8 +123,7 @@ pub async fn run(args: SwapArgs) -> Result<()> {
     )?;
 
     if args.dry_run {
-        println!("  [dry-run] approve: onchainos wallet contract-call --chain {} --to {} --input-data {}", args.chain, from_addr, approve_calldata);
-        println!("  [dry-run] swap:    onchainos wallet contract-call --chain {} --to {} --input-data {}", args.chain, cfg.smart_router, swap_calldata);
+        println!("  [dry-run] onchainos wallet contract-call --chain {} --to {} --input-data {}", args.chain, cfg.smart_router, swap_calldata);
         println!("\nDry-run complete. No transactions submitted.");
         return Ok(());
     }
