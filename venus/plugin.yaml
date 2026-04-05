@@ -22,7 +22,7 @@ build:
   lang: rust
   binary_name: venus
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "0000000000000000000000000000000000000000"
+  source_commit: "31f8854d137b3a0de1b50429c7cae75942d9db94"
   source_dir: venus
 
 api_calls:
