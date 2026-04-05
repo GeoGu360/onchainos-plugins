@@ -1,0 +1,32 @@
+schema_version: 1
+name: kelp
+version: "0.1.0"
+description: "Kelp DAO rsETH liquid restaking — stake ETH/LSTs to receive rsETH on EigenLayer"
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: defi-protocol
+tags:
+  - restaking
+  - liquid-restaking
+  - eigenlayer
+  - rseth
+  - lrt
+  - kelpdao
+license: MIT
+
+components:
+  skill:
+    dir: skills/kelp
+
+build:
+  lang: rust
+  binary_name: kelp
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: ""
+  source_dir: kelp
+
+api_calls:
+  - "https://ethereum.publicnode.com"
+  - "https://api.coingecko.com"
+  - "https://kerneldao.com"
