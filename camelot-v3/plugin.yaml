@@ -21,8 +21,8 @@ components:
 build:
   lang: rust
   binary_name: camelot-v3
-  source_repo: skylavis-sky/onchainos-plugins
-  source_commit: "0000000000000000000000000000000000000000"
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: "0fb6380ba00176b25868133e3872bcb1a3925f4d"
   source_dir: camelot-v3
 
 api_calls:
