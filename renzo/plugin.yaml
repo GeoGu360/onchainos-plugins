@@ -1,0 +1,30 @@
+schema_version: 1
+name: renzo
+version: "0.1.0"
+description: "Renzo EigenLayer liquid restaking — deposit ETH or stETH to receive ezETH and earn restaking rewards"
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: defi-protocol
+tags:
+  - restaking
+  - eigenlayer
+  - liquid-restaking
+  - ezeth
+  - ethereum
+license: MIT
+
+components:
+  skill:
+    dir: skills/renzo
+
+build:
+  lang: rust
+  binary_name: renzo
+  source_repo: skylavis-sky/onchainos-plugins
+  source_commit: "0000000000000000000000000000000000000000"
+  source_dir: renzo
+
+api_calls:
+  - "https://app.renzoprotocol.com"
+  - "https://ethereum.publicnode.com"
