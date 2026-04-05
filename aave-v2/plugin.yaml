@@ -1,0 +1,31 @@
+schema_version: 1
+name: aave-v2
+version: "0.1.0"
+description: "Lend and borrow on Aave V2 classic LendingPool — the original Aave protocol on Ethereum"
+author:
+  name: GeoGu360
+  github: GeoGu360
+category: defi-protocol
+tags:
+  - lending
+  - borrowing
+  - defi
+  - earn
+  - aave
+  - collateral
+  - ethereum
+license: MIT
+
+components:
+  skill:
+    dir: skills/aave-v2
+
+build:
+  lang: rust
+  binary_name: aave-v2
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: ""
+  source_dir: aave-v2
+
+api_calls:
+  - "https://ethereum.publicnode.com"
