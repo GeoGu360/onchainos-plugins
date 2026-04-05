@@ -25,7 +25,7 @@ build:
   lang: rust
   binary_name: fluid
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "0000000000000000000000000000000000000000"
+  source_commit: "44d16319e88c3f155e36d021b5bdf1cd936929e5"
 
 api_calls:
   - "https://base-rpc.publicnode.com"
