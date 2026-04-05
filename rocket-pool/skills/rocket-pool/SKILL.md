@@ -129,7 +129,7 @@ rocket-pool stake [--chain 1] --amount <ETH> [--from <ADDR>] [--dry-run]
 3. Fetch current exchange rate to display expected rETH output
 4. Show transaction details: amount, expected rETH, contract, calldata
 5. **Ask user to confirm** the transaction before submitting
-6. Call `RocketDepositPool.deposit()` payable with `--amt <wei>`
+6. Execute: `onchainos wallet contract-call --chain 1 --to <RocketDepositPool> --amt <WEI> --input-data 0xd0e30db0 --force`
 
 **Minimum deposit:** 0.01 ETH (enforced by the protocol contract)
 
@@ -163,7 +163,7 @@ rocket-pool unstake [--chain 1] --amount <rETH> [--from <ADDR>] [--dry-run]
 3. Fetch exchange rate to display expected ETH output
 4. Show transaction details: rETH amount, expected ETH, contract, calldata
 5. **Ask user to confirm** the transaction before submitting
-6. Call `RocketTokenRETH.burn(rethAmount)`
+6. Execute: `onchainos wallet contract-call --chain 1 --to <RocketTokenRETH> --input-data 0x42966c68<RETH_AMOUNT_32_BYTES> --force`
 
 **Note:** If the deposit pool has insufficient ETH, the burn will fail. Consider trading rETH on a DEX (e.g. Uniswap, Curve) instead.
 
