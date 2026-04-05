@@ -1,0 +1,31 @@
+schema_version: 1
+name: init-capital
+version: "0.1.0"
+description: "INIT Capital lending protocol plugin: supply, withdraw, borrow, repay assets on Blast. View pools and isolated positions with health factor."
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: defi-protocol
+tags:
+  - lending
+  - borrowing
+  - defi
+  - init-capital
+  - blast
+  - isolated-positions
+license: MIT
+
+components:
+  skill:
+    dir: skills/init-capital
+
+build:
+  lang: rust
+  binary_name: init-capital
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: "placeholder"
+  source_dir: init-capital
+
+api_calls:
+  - "https://rpc.blast.io"
+  - "https://blast-rpc.publicnode.com"
