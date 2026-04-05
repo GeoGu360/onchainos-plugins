@@ -23,7 +23,7 @@ build:
   lang: rust
   binary_name: init-capital
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "placeholder"
+  source_commit: "71b7fd24a1d3500858b7fa93e478e21b45f2d701"
   source_dir: init-capital
 
 api_calls:
