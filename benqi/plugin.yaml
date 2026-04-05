@@ -1,0 +1,30 @@
+schema_version: 1
+name: benqi
+version: "0.1.0"
+description: "Benqi Lending on Avalanche C-Chain: supply, redeem, borrow (dry-run), repay (dry-run), claim QI and AVAX rewards. Compound V2 fork supporting AVAX, USDC, USDT, ETH, BTC, LINK, DAI."
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: defi-protocol
+tags:
+  - lending
+  - borrowing
+  - defi
+  - benqi
+  - avalanche
+  - qitoken
+license: MIT
+
+components:
+  skill:
+    dir: skills/benqi
+
+build:
+  lang: rust
+  binary_name: benqi
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: "placeholder"
+  source_dir: benqi
+
+api_calls:
+  - "https://avalanche-c-chain-rpc.publicnode.com"
