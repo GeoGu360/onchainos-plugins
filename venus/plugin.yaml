@@ -1,0 +1,29 @@
+schema_version: 1
+name: venus
+version: "0.1.0"
+description: "Venus Core Pool lending and borrowing on BSC (BNB Chain). Compound V2 fork."
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: defi-protocol
+tags:
+  - lending
+  - borrowing
+  - bsc
+  - compound-v2
+  - venus
+license: MIT
+
+components:
+  skill:
+    dir: skills/venus
+
+build:
+  lang: rust
+  binary_name: venus
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: "0000000000000000000000000000000000000000"
+  source_dir: venus
+
+api_calls:
+  - "https://bsc-rpc.publicnode.com"
