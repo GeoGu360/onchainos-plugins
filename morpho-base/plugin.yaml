@@ -1,7 +1,7 @@
 schema_version: 1
 name: morpho-base
 version: "0.1.0"
-description: "Supply, borrow and earn yield on Morpho V1 on Base — permissionless lending on the Base network"
+description: "Supply, borrow and earn yield on Morpho V1 on Base - permissionless lending on the Base network"
 author:
   name: skylavis-sky
   github: skylavis-sky
@@ -23,8 +23,8 @@ components:
 build:
   lang: rust
   binary_name: morpho-base
-  source_repo: skylavis-sky/onchainos-plugins
-  source_commit: "0000000000000000000000000000000000000000"
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: "78920219237b6c532fd4f0bdbbbc8e5c1a3cd528"
   source_dir: morpho-base
 
 api_calls:
