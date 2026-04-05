@@ -1,3 +1,12 @@
+---
+name: aave-v2
+description: "Aave V2 classic lending pool on Ethereum. Trigger phrases: deposit to aave v2, aave v2 reserves, my aave v2 positions, aave v2 interest rates, withdraw from aave v2, borrow aave v2, repay aave v2. Chinese: Aave V2存款, Aave V2借款, Aave V2还款, 我的Aave V2仓位, Aave V2利率, Aave经典池"
+license: MIT
+metadata:
+  author: GeoGu360
+  version: "0.1.0"
+---
+
 # Aave V2 Skill
 
 Interact with the Aave V2 classic LendingPool on Ethereum mainnet.
