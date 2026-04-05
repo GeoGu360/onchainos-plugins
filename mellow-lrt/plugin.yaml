@@ -24,7 +24,7 @@ build:
   lang: rust
   binary_name: mellow-lrt
   source_repo: skylavis-sky/onchainos-plugins
-  source_commit: "0000000000000000000000000000000000000000"
+  source_commit: "2996a11b66f91be70ca5b9406161ad1db82c4518"
   source_dir: mellow-lrt
 
 api_calls:
