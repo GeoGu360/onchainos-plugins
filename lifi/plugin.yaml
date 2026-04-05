@@ -22,7 +22,7 @@ build:
   lang: rust
   binary_name: lifi
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "PLACEHOLDER_SHA"
+  source_commit: "29ed6912b434f89da9266ecad3e46adc6a958a64"
   source_dir: lifi
 
 api_calls:
