@@ -1,0 +1,29 @@
+schema_version: 1
+name: trader-joe
+version: "0.1.0"
+description: "Trader Joe Liquidity Book DEX on Arbitrum — swap tokens, get quotes, and explore pools using the bin-based LB protocol"
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: dex
+tags:
+  - dex
+  - swap
+  - liquidity-book
+  - arbitrum
+  - concentrated-liquidity
+license: MIT
+
+components:
+  skill:
+    dir: skills/trader-joe
+
+build:
+  lang: rust
+  binary_name: trader-joe
+  source_repo: skylavis-sky/onchainos-plugins
+  source_commit: "0000000000000000000000000000000000000000"
+  source_dir: trader-joe
+
+api_calls:
+  - "https://arb1.arbitrum.io/rpc"
