@@ -23,7 +23,7 @@ build:
   lang: rust
   binary_name: benqi
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "placeholder"
+  source_commit: "5e32ab6db42925a2aa1a18cd4411bd61b2fa3146"
   source_dir: benqi
 
 api_calls:
