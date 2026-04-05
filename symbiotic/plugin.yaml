@@ -21,8 +21,8 @@ components:
 build:
   lang: rust
   binary_name: symbiotic
-  source_repo: skylavis-sky/onchainos-plugins
-  source_commit: "0000000000000000000000000000000000000000"
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: "ba88c2b207aa5b0f61d2cee65b307db63939fb6d"
   source_dir: symbiotic
 
 api_calls:
