@@ -1,0 +1,33 @@
+schema_version: 1
+name: morpho-base
+version: "0.1.0"
+description: "Supply, borrow and earn yield on Morpho V1 on Base — permissionless lending on the Base network"
+author:
+  name: skylavis-sky
+  github: skylavis-sky
+category: defi-protocol
+tags:
+  - lending
+  - borrowing
+  - defi
+  - earn
+  - morpho
+  - base
+  - collateral
+license: MIT
+
+components:
+  skill:
+    dir: skills/morpho-base
+
+build:
+  lang: rust
+  binary_name: morpho-base
+  source_repo: skylavis-sky/onchainos-plugins
+  source_commit: "0000000000000000000000000000000000000000"
+  source_dir: morpho-base
+
+api_calls:
+  - "https://blue-api.morpho.org/graphql"
+  - "https://base-rpc.publicnode.com"
+  - "https://api.merkl.xyz"
