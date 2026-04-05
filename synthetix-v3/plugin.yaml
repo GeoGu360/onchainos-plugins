@@ -22,7 +22,7 @@ build:
   lang: rust
   binary_name: synthetix-v3
   source_repo: skylavis-sky/onchainos-plugins
-  source_commit: "placeholder_replace_after_push"
+  source_commit: "9fc32ba926fc7a453b38e86356bc1bb75eea6cc1"
   source_dir: synthetix-v3
 
 api_calls:
