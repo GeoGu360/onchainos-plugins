@@ -1,0 +1,28 @@
+schema_version: 1
+name: allbridge-classic
+version: "0.1.0"
+description: "Bridge stablecoins cross-chain with Allbridge Classic. Supports USDT/USDC/BUSD transfers between Ethereum, BSC, Polygon, Avalanche, and Solana."
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: defi-protocol
+tags:
+  - bridge
+  - cross-chain
+  - stablecoin
+  - allbridge
+license: MIT
+
+components:
+  skill:
+    dir: skills/allbridge-classic
+
+build:
+  lang: rust
+  binary_name: allbridge-classic
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: "0000000000000000000000000000000000000000"
+  source_dir: allbridge-classic
+
+api_calls:
+  - "https://allbridgeapi.net"
