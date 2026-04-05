@@ -22,7 +22,7 @@ build:
   lang: rust
   binary_name: stader
   source_repo: skylavis-sky/onchainos-plugins
-  source_commit: "PLACEHOLDER_FILL_AFTER_MONOREPO_PUSH"
+  source_commit: "c751d88cd8d263af5d0fd89997e77315b33f6492"
   source_dir: stader
 
 api_calls:
