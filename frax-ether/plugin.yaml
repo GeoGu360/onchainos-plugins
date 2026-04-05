@@ -1,0 +1,30 @@
+schema_version: 1
+name: frax-ether
+version: "0.1.0"
+description: "Frax Ether liquid staking — stake ETH to frxETH and frxETH to yield-bearing sfrxETH"
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: defi-protocol
+tags:
+  - liquid-staking
+  - frxETH
+  - sfrxETH
+  - ERC-4626
+  - frax
+license: MIT
+
+components:
+  skill:
+    dir: skills/frax-ether
+
+build:
+  lang: rust
+  binary_name: frax-ether
+  source_repo: skylavis-sky/onchainos-plugins
+  source_commit: "0000000000000000000000000000000000000000"
+  source_dir: frax-ether
+
+api_calls:
+  - "https://api.frax.finance"
+  - "https://ethereum.publicnode.com"
