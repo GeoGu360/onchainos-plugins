@@ -5,7 +5,7 @@ description: "Cross-chain bridge and swap via Relay protocol — supports 74+ EV
 author:
   name: "GeoGu360"
   github: "GeoGu360"
-category: bridge
+category: defi-protocol
 tags:
   - bridge
   - cross-chain
@@ -22,7 +22,7 @@ build:
   lang: rust
   binary_name: relay
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: ""
+  source_commit: "53c16d5abcd6b329136aa2826e9dd5c917567003"
   source_dir: relay
 
 api_calls:
