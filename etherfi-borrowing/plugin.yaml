@@ -1,0 +1,32 @@
+schema_version: 1
+name: etherfi-borrowing
+version: "0.1.0"
+description: "EtherFi Cash borrowing protocol on Scroll - supply USDC liquidity, view rates and positions, repay debt"
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: defi-protocol
+tags:
+  - borrowing
+  - lending
+  - collateral
+  - weeth
+  - usdc
+  - etherfi
+  - scroll
+license: MIT
+
+components:
+  skill:
+    dir: skills/etherfi-borrowing
+
+build:
+  lang: rust
+  binary_name: etherfi-borrowing
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: "0000000000000000000000000000000000000000"
+  source_dir: etherfi-borrowing
+
+api_calls:
+  - "https://rpc.scroll.io"
+  - "https://scroll-rpc.publicnode.com"
