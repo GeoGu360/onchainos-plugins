@@ -1,0 +1,30 @@
+schema_version: 1
+name: layer-bank
+version: "0.1.0"
+description: "LayerBank omni-chain lending protocol plugin: supply, withdraw, borrow, repay assets on Scroll. View markets and positions with health factor."
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: defi-protocol
+tags:
+  - lending
+  - borrowing
+  - defi
+  - layerbank
+  - scroll
+  - ltoken
+license: MIT
+
+components:
+  skill:
+    dir: skills/layer-bank
+
+build:
+  lang: rust
+  binary_name: layer-bank
+  source_repo: skylavis-sky/onchainos-plugins
+  source_commit: "0000000000000000000000000000000000000000"
+  source_dir: layer-bank
+
+api_calls:
+  - "https://rpc.scroll.io"
