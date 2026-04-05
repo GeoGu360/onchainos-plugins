@@ -22,7 +22,7 @@ build:
   lang: rust
   binary_name: stakestone
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "placeholder"
+  source_commit: "06dc8de29b3d4ddf608beea7a745d328aeed4ae5"
   source_dir: stakestone
 
 api_calls:
