@@ -1,0 +1,32 @@
+schema_version: 1
+name: mellow-lrt
+version: "0.1.0"
+description: "Mellow LRT — deposit ETH/wstETH into liquid restaking vaults, manage positions and withdrawals on Ethereum"
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: defi-protocol
+tags:
+  - lrt
+  - restaking
+  - liquid-restaking
+  - yield
+  - erc4626
+  - symbiotic
+  - eigenlayer
+license: MIT
+
+components:
+  skill:
+    dir: skills/mellow-lrt
+
+build:
+  lang: rust
+  binary_name: mellow-lrt
+  source_repo: skylavis-sky/onchainos-plugins
+  source_commit: "0000000000000000000000000000000000000000"
+  source_dir: mellow-lrt
+
+api_calls:
+  - "https://api.mellow.finance/v1/vaults"
+  - "https://ethereum.publicnode.com"
