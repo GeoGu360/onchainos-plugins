@@ -1,0 +1,31 @@
+schema_version: 1
+name: convex
+version: "0.1.0"
+description: "Convex Finance integration: stake cvxCRV, lock CVX as vlCVX, and claim boosted Curve rewards on Ethereum"
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: defi-protocol
+tags:
+  - convex
+  - curve
+  - staking
+  - yield
+  - cvx
+  - crv
+license: MIT
+
+components:
+  skill:
+    dir: skills/convex
+
+build:
+  lang: rust
+  binary_name: convex
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: "placeholder"
+  source_dir: convex
+
+api_calls:
+  - "https://api.curve.fi"
+  - "https://ethereum.publicnode.com"
