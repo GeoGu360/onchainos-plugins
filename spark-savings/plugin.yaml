@@ -1,0 +1,38 @@
+schema_version: 1
+name: spark-savings
+version: "0.1.0"
+description: "Earn the Sky Savings Rate (SSR) on USDS/DAI via Spark sUSDS/sDAI savings vaults — ERC-4626 on Ethereum, PSM3-powered on Base/Arbitrum/Optimism"
+author:
+  name: GeoGu360
+  github: GeoGu360
+category: defi-protocol
+tags:
+  - savings
+  - yield
+  - stablecoin
+  - defi
+  - maker
+  - sky
+  - dai
+  - usds
+  - sdai
+  - susds
+  - erc4626
+license: MIT
+
+components:
+  skill:
+    dir: skills/spark-savings
+
+build:
+  lang: rust
+  binary_name: spark-savings
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: ""
+  source_dir: spark-savings
+
+api_calls:
+  - "https://ethereum.publicnode.com"
+  - "https://base-rpc.publicnode.com"
+  - "https://arbitrum-one-rpc.publicnode.com"
+  - "https://optimism.publicnode.com"
