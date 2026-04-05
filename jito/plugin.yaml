@@ -1,0 +1,30 @@
+schema_version: 1
+name: jito
+version: "0.1.0"
+description: "Jito MEV-enhanced liquid staking on Solana — stake SOL to receive JitoSOL"
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: defi-protocol
+tags:
+  - staking
+  - liquid-staking
+  - solana
+  - jitosol
+  - mev
+license: MIT
+
+components:
+  skill:
+    dir: skills/jito
+
+build:
+  lang: rust
+  binary_name: jito
+  source_repo: skylavis-sky/onchainos-plugins
+  source_commit: "0000000000000000000000000000000000000000"
+  source_dir: jito
+
+api_calls:
+  - "https://api.mainnet-beta.solana.com"
+  - "https://yields.llama.fi/pools"
