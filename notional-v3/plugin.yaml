@@ -25,7 +25,7 @@ build:
   lang: rust
   binary_name: notional-v3
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "32c5315a3c9c5456c78de213850bf35b42ff191c"
+  source_commit: "3b7ef2df8086b0843cfdd8f75ac91fc20efd1b9f"
   source_dir: notional-v3
 
 api_calls:
