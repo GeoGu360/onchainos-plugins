@@ -23,8 +23,8 @@ components:
 build:
   lang: rust
   binary_name: etherfi-liquid
-  source_repo: skylavis-sky/onchainos-plugins
-  source_commit: "0000000000000000000000000000000000000000"
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: "715435d3b6708a77e7959419bf6af1a75f14c8a2"
   source_dir: etherfi-liquid
 
 api_calls:
