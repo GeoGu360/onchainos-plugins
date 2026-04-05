@@ -1,0 +1,31 @@
+schema_version: 1
+name: instadapp
+version: "0.1.0"
+description: "Instadapp Lite Vaults — deposit ETH, withdraw, and track yield on Ethereum via iETH and iETHv2 vaults"
+author:
+  name: GeoGu360
+  github: GeoGu360
+category: defi-protocol
+tags:
+  - yield
+  - vault
+  - eth
+  - steth
+  - ethereum
+  - instadapp
+  - lite
+license: MIT
+
+components:
+  skill:
+    dir: skills/instadapp
+
+build:
+  lang: rust
+  binary_name: instadapp
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: "placeholder"
+  source_dir: instadapp
+
+api_calls:
+  - "https://ethereum.publicnode.com"
