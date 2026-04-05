@@ -1,0 +1,37 @@
+schema_version: 1
+name: gmx-v2
+version: "0.1.0"
+description: "Trade perpetuals and spot on GMX V2 — open/close leveraged positions, place limit/stop orders, add/remove GM pool liquidity, query markets and positions"
+author:
+  name: "skylavis-sky"
+  github: "skylavis-sky"
+category: defi-protocol
+tags:
+  - perpetuals
+  - spot
+  - trading
+  - arbitrum
+  - avalanche
+  - leverage
+license: MIT
+
+components:
+  skill:
+    dir: skills/gmx-v2
+
+build:
+  lang: rust
+  binary_name: gmx-v2
+  source_repo: skylavis-sky/onchainos-plugins
+  source_commit: "0000000000000000000000000000000000000000"
+  source_dir: gmx-v2
+
+api_calls:
+  - "https://arbitrum-api.gmxinfra.io"
+  - "https://avalanche-api.gmxinfra.io"
+  - "https://arbitrum-api.gmxinfra2.io"
+  - "https://avalanche-api.gmxinfra2.io"
+  - "https://gmx.squids.live/gmx-synthetics-arbitrum:prod/api/graphql"
+  - "https://gmx.squids.live/gmx-synthetics-avalanche:prod/api/graphql"
+  - "https://arbitrum.publicnode.com"
+  - "https://avalanche-c-chain-rpc.publicnode.com"
