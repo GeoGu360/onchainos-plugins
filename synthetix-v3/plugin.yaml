@@ -1,0 +1,31 @@
+schema_version: 1
+name: synthetix-v3
+version: "0.1.0"
+description: "Synthetix V3 on Base — query perps markets, manage collateral (deposit/withdraw sUSDC), and view positions"
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+license: MIT
+category: defi-protocol
+tags:
+  - synthetix
+  - perps
+  - collateral
+  - base
+  - defi
+
+components:
+  skill:
+    dir: skills/synthetix-v3
+
+build:
+  lang: rust
+  binary_name: synthetix-v3
+  source_repo: skylavis-sky/onchainos-plugins
+  source_commit: "placeholder_replace_after_push"
+  source_dir: synthetix-v3
+
+api_calls:
+  - "https://base-rpc.publicnode.com"
+  - "https://0x32C222A9A159782aFD7529c87FA34b96CA72C696.to.eth_call"
+  - "https://0x0A2AF931eFFd34b81ebcc57E3d3c9B1E1dE1C9Ce.to.eth_call"
