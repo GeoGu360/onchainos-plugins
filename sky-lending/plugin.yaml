@@ -1,0 +1,31 @@
+schema_version: 1
+name: sky-lending
+version: "0.1.0"
+description: "Sky Lending (MakerDAO CDP) — deposit collateral, borrow DAI/USDS stablecoins on Ethereum"
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: defi-protocol
+tags:
+  - lending
+  - cdp
+  - dai
+  - makerdao
+  - sky
+  - stablecoin
+  - collateral
+license: MIT
+
+components:
+  skill:
+    dir: skills/sky-lending
+
+build:
+  lang: rust
+  binary_name: sky-lending
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: "placeholder"
+  source_dir: sky-lending
+
+api_calls:
+  - "https://ethereum.publicnode.com"
