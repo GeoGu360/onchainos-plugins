@@ -21,8 +21,8 @@ components:
 build:
   lang: rust
   binary_name: frax-ether
-  source_repo: skylavis-sky/onchainos-plugins
-  source_commit: "0000000000000000000000000000000000000000"
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: "9ba57ef738e7271ad6c1d0eb38ffe78e8ec506e2"
   source_dir: frax-ether
 
 api_calls:
