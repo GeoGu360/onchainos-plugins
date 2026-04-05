@@ -1,0 +1,32 @@
+schema_version: 1
+name: etherfi-liquid
+version: "0.1.0"
+description: "ether.fi Liquid multi-strategy yield vaults on Ethereum — deposit weETH/stablecoins/WBTC for auto-compounding DeFi yields (LIQUIDETH, LIQUIDUSD, LIQUIDBTC)"
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: defi-protocol
+tags:
+  - yield
+  - vault
+  - liquid-staking
+  - restaking
+  - eth
+  - weeth
+  - etherfi
+license: MIT
+
+components:
+  skill:
+    dir: skills/etherfi-liquid
+
+build:
+  lang: rust
+  binary_name: etherfi-liquid
+  source_repo: skylavis-sky/onchainos-plugins
+  source_commit: "0000000000000000000000000000000000000000"
+  source_dir: etherfi-liquid
+
+api_calls:
+  - "https://yields.llama.fi"
+  - "https://ethereum.publicnode.com"
