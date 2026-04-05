@@ -1,0 +1,33 @@
+schema_version: 1
+name: kamino-liquidity
+version: "0.1.0"
+description: "Kamino Liquidity KVault earn vaults on Solana. Deposit tokens to earn yield, withdraw shares, and track positions."
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: defi-protocol
+tags:
+  - solana
+  - yield
+  - liquidity
+  - kamino
+license: MIT
+
+components:
+  skill:
+    dir: skills/kamino-liquidity
+
+build:
+  lang: rust
+  binary_name: kamino-liquidity
+  source_repo: skylavis-sky/onchainos-plugins
+  source_commit: "0000000000000000000000000000000000000000"
+  source_dir: kamino-liquidity
+
+api_calls:
+  - "https://api.kamino.finance/kvaults/vaults"
+  - "https://api.kamino.finance/kvaults/users"
+  - "https://api.kamino.finance/ktx/kvault/deposit"
+  - "https://api.kamino.finance/ktx/kvault/withdraw"
+  - "https://api.kamino.finance"
+  - "https://solscan.io/tx"
