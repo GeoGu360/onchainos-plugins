@@ -1,0 +1,34 @@
+schema_version: 1
+name: moonwell
+version: "0.1.0"
+description: "Moonwell Flagship (Compound V2 fork) — supply, borrow, redeem, and claim WELL rewards on Base, Optimism, and Moonbeam"
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: defi-protocol
+tags:
+  - lending
+  - borrowing
+  - compound-v2
+  - mtoken
+  - base
+  - optimism
+  - moonbeam
+  - well-token
+license: MIT
+
+components:
+  skill:
+    dir: skills/moonwell
+
+build:
+  lang: rust
+  binary_name: moonwell
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: "placeholder"
+  source_dir: moonwell
+
+api_calls:
+  - "https://base.publicnode.com"
+  - "https://optimism.publicnode.com"
+  - "https://moonbeam.publicnode.com"
