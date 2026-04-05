@@ -1,0 +1,31 @@
+schema_version: 1
+name: curve-lending
+version: "0.1.0"
+description: "Curve Lending (LlamaLend) — isolated markets to borrow crvUSD against ETH/wstETH/tBTC collateral on Ethereum"
+author:
+  name: "GeoGu360"
+  github: "GeoGu360"
+category: defi-protocol
+tags:
+  - lending
+  - borrowing
+  - crvusd
+  - curve
+  - llamma
+  - llamalend
+  - ethereum
+license: MIT
+
+components:
+  skill:
+    dir: skills/curve-lending
+
+build:
+  lang: rust
+  binary_name: curve-lending
+  source_repo: skylavis-sky/onchainos-plugins
+  source_commit: "0000000000000000000000000000000000000000"
+  source_dir: curve-lending
+
+api_calls:
+  - "https://ethereum.publicnode.com"
