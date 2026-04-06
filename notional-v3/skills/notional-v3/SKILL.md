@@ -5,6 +5,8 @@ license: MIT
 metadata:
   author: GeoGu360
   version: "0.1.0"
+do_not_use_for: "general DeFi queries, Notional V1/V2 legacy, non-Ethereum chains, token swaps, liquidity provision, staking on Aave/Compound/Morpho directly"
+
 ---
 
 # Notional V3 Skill (Notional Exponent)
@@ -99,14 +101,16 @@ Always confirm with the user before executing.
 
 ## Known Vault Addresses (Ethereum mainnet)
 
-| Vault | Address |
-|---|---|
-| PT-sUSDE-Sep25 USDC | `0x49e04B1D34cf87938bB6C9B0f0Bd0C87e737a84e` |
-| PT-sUSDE-Sep25 DAI | `0x5d4Dbb7b5be1Dbd08e9A3A8E0fC2b9D86eCf3C4` |
-| PT-eUSDE-Sep25 USDC | `0xCa7c8E4Ca9E1e6EdA80c99d4c6A1c81E47b2b5E0` |
-| PT-USDe-Sep25 USDC | `0xB1aFcF04B9f1cB59bFf028E79E7D665EBF71Df6A` |
-| PT-rsEth-Sep25 WETH | `0xA285D6EcA0c6aFdA08f4c2d1A71e60e42Bb48bF1` |
-| sUSDe Direct Staking | `0x6E70Cd8eAE75Aa8f10eC3bd5e8b3e36e8B2B8D9E` |
+| Vault | Address | Asset |
+|---|---|---|
+| sUSDe Staking | `0xaf14d06a65c91541a5b2db627ecd1c92d7d9c48b` | USDC |
+| mAPOLLO Leveraged | `0x091356e6793a0d960174eaab4d470e39a99dd673` | USDC |
+| mHYPER Leveraged | `0x2a5c94fe8fa6c0c8d2a87e5c71ad628caa092ce4` | USDC |
+| weETH Leveraged | `0x7f723fee1e65a7d26be51a05af0b5efee4a7d5ae` | WETH |
+| Pendle PT-sUSDE | `0x0e61e810f0918081cbfd2ac8c97e5866daf3f622` | USDC |
+| liUSD-4w Leveraged | `0x9fb57943926749b49a644f237a28b491c9b465e0` | USDC |
+| Convex OETH/WETH | `0x2716561755154eef59bc48eb13712510b27f167f` | WETH |
+| mHYPER Leveraged 2 | `0x94f6cb4fae0eb3fa74e9847dff2ff52fd5ec7e6e` | USDC |
 
 ---
 

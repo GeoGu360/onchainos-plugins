@@ -185,7 +185,11 @@ pub async fn get_health_factor(user: &str, vault: &str) -> anyhow::Result<u128> 
         return Ok(0);
     }
     let hex = result.trim_start_matches("0x");
-    let val = u128::from_str_radix(&hex[..32.min(hex.len())], 16).unwrap_or(0);
+    // healthFactor returns multiple uint256 values; the first (health factor) is at hex[0..64].
+    // Take its lower 128 bits (chars 32..64) to fit into u128.
+    let slot = if hex.len() >= 64 { &hex[..64] } else { hex };
+    let start = slot.len().saturating_sub(32);
+    let val = u128::from_str_radix(&slot[start..], 16).unwrap_or(0);
     Ok(val)
 }
 

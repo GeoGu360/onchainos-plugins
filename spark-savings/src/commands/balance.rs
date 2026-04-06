@@ -39,10 +39,13 @@ pub async fn run(chain_id: u64, from: Option<&str>, dry_run: bool) -> anyhow::Re
                     let chi = rpc::decode_u256(&rate_hex).unwrap_or(1_000_000_000_000_000_000_000_000_000);
                     // chi is in 1e27, shares in 1e18
                     // usds_amount = shares * chi / 1e27 (in 1e18 units)
-                    let usds_minimal = (susds_shares as u128)
-                        .checked_mul(chi)
-                        .map(|v| v / 1_000_000_000_000_000_000_000_000_000u128)
-                        .unwrap_or(susds_shares);
+                    // Use f64 to avoid u128 overflow (shares * chi can exceed u128 max for any
+                    // realistic balance, since chi ~1.1e27 and shares can be >1e18).
+                    let shares_f = susds_shares as f64;
+                    let chi_f = chi as f64;
+                    let usds_f = shares_f * chi_f / 1e27;
+                    // Convert back to minimal units for from_minimal()
+                    let usds_minimal = usds_f as u128;
                     rpc::from_minimal(usds_minimal, 18)
                 }
                 Err(_) => susds_human,

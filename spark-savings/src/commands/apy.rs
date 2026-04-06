@@ -95,7 +95,7 @@ pub async fn run(chain_id: u64) -> anyhow::Result<Value> {
         },
         "conversionRate": {
             "usdsSPerSUSDS": conversion_rate_str,
-            "sudsPerUSDS": format!("{:.6}", usds_per_susds)
+            "susdsPerUSDS": format!("{:.6}", usds_per_susds)
         },
         "description": format!(
             "sUSDS earns {:.2}% APY (Sky Savings Rate). 1 sUSDS = {:.4} USDS.",

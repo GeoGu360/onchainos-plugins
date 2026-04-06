@@ -27,6 +27,15 @@ On **Base, Arbitrum, Optimism**: sUSDS is a bridged token; deposits/withdrawals 
 
 ---
 
+## Do NOT Use For
+
+- Swapping tokens between different assets (use a DEX skill instead)
+- Borrowing or lending (use Aave/Morpho skill instead)
+- Bridging USDS cross-chain (use a bridge skill instead)
+- Any chain not in the supported list (1, 8453, 42161, 10)
+
+---
+
 ## Pre-flight Checks
 
 Before any command:

@@ -158,10 +158,12 @@ fn resolve_asset(asset: &str) -> anyhow::Result<(&'static str, u8)> {
         "USDC" => Ok((config::USDC_ETH, 6)),
         "WETH" | "ETH" => Ok((config::WETH_ETH, 18)),
         other => {
-            // Treat as address
             if other.starts_with("0X") || other.starts_with("0x") {
-                // Return as-is with 18 decimals (unknown)
-                Ok((config::USDC_ETH, 18)) // fallback
+                // Raw token address passed — cannot resolve decimals without on-chain call.
+                // Reject with a clear message to avoid silent precision errors.
+                anyhow::bail!(
+                    "Raw token addresses are not supported for --asset. Use USDC or WETH."
+                )
             } else {
                 anyhow::bail!("Unknown asset: {}. Use USDC or WETH.", asset)
             }
