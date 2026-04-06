@@ -90,7 +90,7 @@ pub async fn run(args: AddLiquidityArgs) -> anyhow::Result<()> {
             println!("Approving tokenA ({}) for Router...", token_a);
             let approve_data = build_approve_calldata(router, u128::MAX);
             let res = wallet_contract_call(CHAIN_ID, &token_a, &approve_data, true, false).await?;
-            println!("Approve tokenA tx: {}", extract_tx_hash(&res));
+            println!("Approve tokenA tx: {}", extract_tx_hash(&res)?);
             sleep(Duration::from_secs(5)).await;
         }
 
@@ -100,7 +100,7 @@ pub async fn run(args: AddLiquidityArgs) -> anyhow::Result<()> {
             println!("Approving tokenB ({}) for Router...", token_b);
             let approve_data = build_approve_calldata(router, u128::MAX);
             let res = wallet_contract_call(CHAIN_ID, &token_b, &approve_data, true, false).await?;
-            println!("Approve tokenB tx: {}", extract_tx_hash(&res));
+            println!("Approve tokenB tx: {}", extract_tx_hash(&res)?);
             sleep(Duration::from_secs(5)).await;
         }
     }
@@ -121,7 +121,7 @@ pub async fn run(args: AddLiquidityArgs) -> anyhow::Result<()> {
 
     let result = wallet_contract_call(CHAIN_ID, router, &calldata, true, args.dry_run).await?;
 
-    let tx_hash = extract_tx_hash(&result);
+    let tx_hash = extract_tx_hash(&result)?;
     println!(
         "{{\"ok\":true,\"txHash\":\"{}\",\"tokenA\":\"{}\",\"tokenB\":\"{}\",\"stable\":{},\"amountADesired\":{},\"amountBDesired\":{}}}",
         tx_hash, token_a, token_b, args.stable, args.amount_a_desired, amount_b_desired

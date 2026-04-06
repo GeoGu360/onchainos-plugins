@@ -87,7 +87,7 @@ pub async fn run(args: RemoveLiquidityArgs) -> anyhow::Result<()> {
             println!("Approving LP token ({}) for Router...", pool_addr);
             let approve_data = build_approve_calldata(router, u128::MAX);
             let res = wallet_contract_call(CHAIN_ID, &pool_addr, &approve_data, true, false).await?;
-            println!("Approve LP tx: {}", extract_tx_hash(&res));
+            println!("Approve LP tx: {}", extract_tx_hash(&res)?);
             sleep(Duration::from_secs(3)).await;
         }
     }
@@ -107,7 +107,7 @@ pub async fn run(args: RemoveLiquidityArgs) -> anyhow::Result<()> {
 
     let result = wallet_contract_call(CHAIN_ID, router, &calldata, true, args.dry_run).await?;
 
-    let tx_hash = extract_tx_hash(&result);
+    let tx_hash = extract_tx_hash(&result)?;
     println!(
         "{{\"ok\":true,\"txHash\":\"{}\",\"pool\":\"{}\",\"tokenA\":\"{}\",\"tokenB\":\"{}\",\"stable\":{},\"liquidityRemoved\":{}}}",
         tx_hash, pool_addr, token_a, token_b, args.stable, liquidity_to_remove
