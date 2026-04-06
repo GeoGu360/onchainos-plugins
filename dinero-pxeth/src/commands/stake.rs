@@ -78,7 +78,7 @@ pub async fn run(args: StakeArgs) -> anyhow::Result<()> {
     )
     .await?;
 
-    let approve_hash = onchainos::extract_tx_hash(&approve_result);
+    let approve_hash = onchainos::extract_tx_hash(&approve_result)?;
     eprintln!("Approve tx: {}", approve_hash);
 
     // Wait for the approval to be mined
@@ -100,7 +100,7 @@ pub async fn run(args: StakeArgs) -> anyhow::Result<()> {
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
 
     println!(
         "{}",

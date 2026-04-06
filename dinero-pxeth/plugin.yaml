@@ -23,7 +23,7 @@ build:
   lang: rust
   binary_name: dinero-pxeth
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "142184f229b8b54ac75b7c2735ccfbe6913e35c9"
+  source_commit: "e6b05ca23667c2409cf1e598a4121ec8a4e71c00"
   source_dir: dinero-pxeth
 
 api_calls:

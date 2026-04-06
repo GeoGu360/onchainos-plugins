@@ -109,13 +109,28 @@ pub async fn erc20_approve(
 }
 
 /// Extract txHash from onchainos response.
-/// Checks data.txHash first, then root txHash.
-pub fn extract_tx_hash(result: &Value) -> String {
-    result["data"]["txHash"]
+/// Returns Err if ok=false or if no valid tx hash is present.
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    let ok = result["ok"].as_bool().unwrap_or(false);
+    if !ok {
+        let err_msg = result["error"]
+            .as_str()
+            .or_else(|| result["message"].as_str())
+            .unwrap_or("contract-call returned ok=false");
+        anyhow::bail!("contract-call failed: {}", err_msg);
+    }
+    let hash = result["data"]["txHash"]
         .as_str()
         .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-        .to_string()
+        .unwrap_or("");
+    if hash.is_empty() || hash == "pending" {
+        anyhow::bail!(
+            "contract-call did not return a valid tx hash (got: {:?}). \
+             Check onchainos connection and retry.",
+            hash
+        );
+    }
+    Ok(hash.to_string())
 }
 
 /// Direct eth_call via public JSON-RPC (for read-only queries).
