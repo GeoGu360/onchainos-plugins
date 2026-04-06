@@ -39,8 +39,17 @@ pub const RPC_URL: &str = "https://rpc.blast.io";
 /// Fallback RPC
 pub const RPC_URL_FALLBACK: &str = "https://blast-rpc.publicnode.com";
 
-/// Scale a human-readable amount to raw integer units
+/// Scale a human-readable amount to raw integer units.
+///
+/// Uses f64 arithmetic which is accurate to ~15 significant digits.
+/// For amounts requiring higher precision (>15 significant digits), use
+/// string-based decimal parsing. Practical token amounts (e.g. 0.001 WETH,
+/// 100 USDB) are well within f64 accuracy limits.
 pub fn to_raw(amount: f64, decimals: u8) -> u128 {
+    // Guard: reject negative or infinite values
+    if !amount.is_finite() || amount < 0.0 {
+        return 0;
+    }
     let factor = 10f64.powi(decimals as i32);
     (amount * factor).round() as u128
 }

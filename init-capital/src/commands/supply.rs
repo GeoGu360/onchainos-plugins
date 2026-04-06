@@ -100,7 +100,7 @@ pub async fn run(
     let approve_result = erc20_approve(
         chain_id, pool.underlying, MONEY_MARKET_HOOK, raw_amount, Some(&wallet), false
     ).await?;
-    let approve_hash = extract_tx_hash(&approve_result);
+    let approve_hash = extract_tx_hash(&approve_result)?;
     eprintln!("[supply] approve txHash: {}", approve_hash);
 
     // Wait for nonce safety before submitting execute
@@ -110,7 +110,7 @@ pub async fn run(
     let execute_result = wallet_contract_call(
         chain_id, MONEY_MARKET_HOOK, &execute_calldata, Some(&wallet), None, false,
     ).await?;
-    let execute_hash = extract_tx_hash(&execute_result);
+    let execute_hash = extract_tx_hash(&execute_result)?;
 
     Ok(json!({
         "ok": true,

@@ -18,6 +18,24 @@ tags:
 
 INIT Capital is a non-custodial decentralized lending protocol with multi-silo isolated positions. Each position is independently risk-managed. Users supply assets to earn yield and borrow against collateral. This plugin targets the **Blast** deployment (chain 81457).
 
+> **WARNING: On-chain transactions are irreversible. Always dry-run first and ask the user to confirm before broadcasting any write operation.**
+
+## Do NOT use for
+
+- Swapping tokens (use `onchainos swap` instead)
+- Any chain other than Blast (chain ID 81457)
+- Bridging assets between chains
+
+## CLI Flag Note
+
+`--chain` and `--dry-run` are **global flags** and must appear **before** the subcommand:
+
+```bash
+init-capital --chain 81457 --dry-run supply --asset WETH --amount 0.01
+#            ^^^^^^^^^^^^^ ^^^^^^^^^^        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+#            global flags                   subcommand + its flags
+```
+
 ## Supported Commands
 
 ### `pools` - View lending pools
@@ -32,7 +50,7 @@ Lists all INIT Capital lending pools on Blast with supply/borrow rates and total
 
 **Example:**
 ```bash
-init-capital pools --chain 81457
+init-capital --chain 81457 pools
 ```
 
 **Output:** JSON array of pools with symbol, total supplied, supply APY%, borrow APY%.
@@ -52,8 +70,8 @@ Shows all your INIT Capital positions with collateral, debt, and health factor.
 
 **Example:**
 ```bash
-init-capital positions --chain 81457
-init-capital positions --chain 81457 --wallet 0xYourAddress
+init-capital --chain 81457 positions
+init-capital --chain 81457 positions --wallet 0xYourAddress
 ```
 
 **Output:** JSON with all positions, collateral amounts, debt amounts, and health factors.
@@ -74,7 +92,7 @@ Gets the health factor for a specific INIT Capital position.
 
 **Example:**
 ```bash
-init-capital health-factor --pos-id 1 --chain 81457
+init-capital --chain 81457 health-factor --pos-id 1
 ```
 
 **Output:** Health factor value (>1.0 = healthy, <1.0 = liquidatable).
@@ -99,11 +117,11 @@ Supplies tokens to INIT Capital. Creates a new position (pos-id=0) or adds to an
 
 **Example:**
 ```bash
-# Dry-run (no on-chain tx)
-init-capital supply --asset WETH --amount 0.01 --chain 81457 --dry-run
+# Dry-run (no on-chain tx) — always run this first
+init-capital --chain 81457 --dry-run supply --asset WETH --amount 0.01
 
 # Live supply - ask user to confirm before running
-init-capital supply --asset WETH --amount 0.01 --chain 81457
+init-capital --chain 81457 supply --asset WETH --amount 0.01
 ```
 
 **Flow:**
@@ -132,8 +150,8 @@ Withdraws supplied assets from an INIT Capital position.
 
 **Example:**
 ```bash
-init-capital withdraw --asset WETH --amount 0.01 --pos-id 1 --chain 81457 --dry-run
-init-capital withdraw --asset WETH --amount 0.01 --pos-id 1 --chain 81457
+init-capital --chain 81457 --dry-run withdraw --asset WETH --amount 0.01 --pos-id 1
+init-capital --chain 81457 withdraw --asset WETH --amount 0.01 --pos-id 1
 ```
 
 **Important:** Ask user to confirm before broadcasting on-chain withdraw transaction via `wallet contract-call`. Ensure health factor remains above 1.0 after withdrawal.
@@ -159,10 +177,10 @@ Borrows assets from an INIT Capital position. DRY-RUN strongly recommended.
 **Example:**
 ```bash
 # Always dry-run first
-init-capital borrow --asset USDB --amount 1.0 --pos-id 1 --chain 81457 --dry-run
+init-capital --chain 81457 --dry-run borrow --asset USDB --amount 1.0 --pos-id 1
 
 # Live borrow - ask user to confirm before running
-init-capital borrow --asset USDB --amount 1.0 --pos-id 1 --chain 81457
+init-capital --chain 81457 borrow --asset USDB --amount 1.0 --pos-id 1
 ```
 
 **Important:** Ask user to confirm before broadcasting on-chain borrow transaction via `wallet contract-call`. Borrowing creates liquidation risk - always verify health factor first.
@@ -187,8 +205,8 @@ Repays outstanding debt in an INIT Capital position. DRY-RUN recommended.
 
 **Example:**
 ```bash
-init-capital repay --asset USDB --amount 1.0 --pos-id 1 --chain 81457 --dry-run
-init-capital repay --asset USDB --amount 1.0 --pos-id 1 --chain 81457
+init-capital --chain 81457 --dry-run repay --asset USDB --amount 1.0 --pos-id 1
+init-capital --chain 81457 repay --asset USDB --amount 1.0 --pos-id 1
 ```
 
 **Important:** Ask user to confirm before broadcasting on-chain repay transaction via `wallet contract-call`.
