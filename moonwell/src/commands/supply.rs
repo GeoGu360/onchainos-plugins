@@ -36,7 +36,7 @@ pub async fn run(
         Some(&from_addr),
         dry_run,
     ).await?;
-    let approve_hash = extract_tx_hash(&approve_result);
+    let approve_hash = extract_tx_hash(&approve_result)?;
     eprintln!("[moonwell] approve txHash: {}", approve_hash);
 
     // Step 2: Wait for nonce safety (skip in dry-run)
@@ -56,7 +56,7 @@ pub async fn run(
         None,
         dry_run,
     ).await?;
-    let mint_hash = extract_tx_hash(&mint_result);
+    let mint_hash = extract_tx_hash(&mint_result)?;
 
     Ok(json!({
         "ok": true,

@@ -33,7 +33,7 @@ pub async fn run(
         None,
         dry_run,
     ).await?;
-    let tx_hash = extract_tx_hash(&result);
+    let tx_hash = extract_tx_hash(&result)?;
 
     Ok(json!({
         "ok": true,

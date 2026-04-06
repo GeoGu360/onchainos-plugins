@@ -43,7 +43,7 @@ pub async fn run(
         None,
         true, // always dry_run for borrow
     ).await?;
-    let tx_hash = extract_tx_hash(&result);
+    let tx_hash = extract_tx_hash(&result)?;
 
     Ok(json!({
         "ok": true,

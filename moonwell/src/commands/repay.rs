@@ -41,7 +41,7 @@ pub async fn run(
         Some(&from_addr),
         true, // always dry_run for repay
     ).await?;
-    let approve_hash = extract_tx_hash(&approve_result);
+    let approve_hash = extract_tx_hash(&approve_result)?;
 
     // Step 2: repayBorrow(uint256) — selector 0x0e752702
     let amount_hex = format!("{:064x}", amount_raw);
@@ -54,7 +54,7 @@ pub async fn run(
         None,
         true, // always dry_run for repay
     ).await?;
-    let tx_hash = extract_tx_hash(&result);
+    let tx_hash = extract_tx_hash(&result)?;
 
     Ok(json!({
         "ok": true,

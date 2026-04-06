@@ -1,6 +1,6 @@
 ---
 name: moonwell
-description: Moonwell Flagship lending/borrowing protocol (Compound V2 fork) — supply assets to earn interest, borrow against collateral, redeem mTokens, and claim WELL rewards. Supports Base, Optimism, and Moonbeam chains. Ask user to confirm before any write operation.
+description: Moonwell Flagship lending/borrowing protocol (Compound V2 fork) - supply assets to earn interest, borrow against collateral, redeem mTokens, and claim WELL rewards on Base. Do NOT use for token swaps, Aave, Compound V3, or non-lending DeFi.
 ---
 
 # Moonwell Flagship Plugin
@@ -15,6 +15,15 @@ Moonwell is an open, non-custodial lending and borrowing protocol built on Base,
 - Earn WELL token rewards — claim via `claim-rewards`
 - Borrow and repay are **dry-run only** for safety (liquidation risk)
 - Primary chain: Base (8453)
+
+## Do NOT Use For
+
+- Token swaps or DEX trading (use `swap` or `lifi` skill)
+- Aave V3 positions (use `aave-v3` skill)
+- Compound V3 (use `compound-v3` skill)
+- Wallet balance queries (use `onchainos wallet balance`)
+- ETH liquid staking (use `lido`, `etherfi-stake`, or `renzo` skill)
+- Any chain other than Base (8453) — Optimism and Moonbeam not yet supported by this plugin
 
 ## Pre-flight Checks
 
