@@ -76,7 +76,7 @@ pub async fn run(
     }
 
     let result = wallet_contract_call(chain_id, market.ctoken, &calldata, Some(&wallet), None, false).await?;
-    let tx_hash = extract_tx_hash(&result);
+    let tx_hash = extract_tx_hash(&result)?;
 
     // Read updated balance
     let new_ctoken_bal = balance_of(market.ctoken, &wallet, rpc).await.unwrap_or(0);

@@ -1,6 +1,6 @@
 ---
 name: compound-v2
-description: "Compound V2 classic cToken lending: supply assets to earn interest, redeem cTokens, view positions, borrow (dry-run), repay (dry-run), claim COMP rewards. Trigger phrases: compound supply, compound lend, compound redeem, compound borrow, compound repay, compound positions, compound markets, claim COMP, cToken, 在Compound供应, Compound存款, Compound借款, Compound仓位, 领取COMP"
+description: "Compound V2 classic cToken lending: supply assets to earn interest, redeem cTokens, view positions, borrow (dry-run), repay (dry-run), claim COMP rewards. Trigger phrases: compound supply, compound lend, compound redeem, compound borrow, compound repay, compound positions, compound markets, claim COMP, cToken, compound v2 supply, compound v2 borrow, compound v2 positions, compound v2 claim. Do NOT use for Compound V3 (use compound-v3 skill instead). Do NOT use for token swaps or other DeFi protocols."
 license: MIT
 metadata:
   author: GeoGu360

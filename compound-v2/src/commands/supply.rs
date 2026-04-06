@@ -61,7 +61,7 @@ pub async fn run(
         }
 
         let result = wallet_contract_call(chain_id, market.ctoken, &calldata, Some(&wallet), Some(raw_amount), false).await?;
-        let tx_hash = extract_tx_hash(&result);
+        let tx_hash = extract_tx_hash(&result)?;
 
         // Read updated cToken balance
         let new_ctoken_bal = balance_of(market.ctoken, &wallet, rpc).await.unwrap_or(0);
@@ -111,7 +111,7 @@ pub async fn run(
 
     // Step 1: ERC20 approve
     let approve_result = erc20_approve(chain_id, underlying, market.ctoken, raw_amount, Some(&wallet), false).await?;
-    let approve_hash = extract_tx_hash(&approve_result);
+    let approve_hash = extract_tx_hash(&approve_result)?;
     eprintln!("[supply] approve txHash: {}", approve_hash);
 
     // Wait for nonce safety
@@ -120,7 +120,7 @@ pub async fn run(
     // Step 2: mint(uint256) — selector: 0xa0712d68
     let mint_calldata = format!("0xa0712d68{:064x}", raw_amount);
     let mint_result = wallet_contract_call(chain_id, market.ctoken, &mint_calldata, Some(&wallet), None, false).await?;
-    let mint_hash = extract_tx_hash(&mint_result);
+    let mint_hash = extract_tx_hash(&mint_result)?;
 
     // Read updated cToken balance
     let new_ctoken_bal = balance_of(market.ctoken, &wallet, rpc).await.unwrap_or(0);

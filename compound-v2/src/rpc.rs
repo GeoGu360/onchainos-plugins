@@ -50,11 +50,6 @@ pub fn pad_address(addr: &str) -> String {
     format!("{:0>64}", clean)
 }
 
-/// Pad a u128 to 32 bytes
-pub fn pad_u128(val: u128) -> String {
-    format!("{:064x}", val)
-}
-
 // ── Compound V2 read calls ────────────────────────────────────────────────────
 
 /// cToken.supplyRatePerBlock() → u128 (scaled by 1e18)
@@ -91,14 +86,6 @@ pub async fn borrow_balance_current(ctoken: &str, wallet: &str, rpc_url: &str) -
     // selector: 0x17bfdfbc
     let data = format!("0x17bfdfbc{}", pad_address(wallet));
     let result = eth_call(ctoken, &data, rpc_url).await?;
-    parse_u128(&result)
-}
-
-/// ERC-20 balanceOf(address) → u128
-pub async fn erc20_balance_of(token: &str, wallet: &str, rpc_url: &str) -> anyhow::Result<u128> {
-    // selector: 0x70a08231 (same as cToken.balanceOf)
-    let data = format!("0x70a08231{}", pad_address(wallet));
-    let result = eth_call(token, &data, rpc_url).await?;
     parse_u128(&result)
 }
 

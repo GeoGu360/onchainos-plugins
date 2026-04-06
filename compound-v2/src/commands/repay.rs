@@ -21,10 +21,7 @@ pub async fn run(
 
     // Safety: repay is dry-run only
     if !dry_run {
-        return Ok(json!({
-            "ok": false,
-            "error": "repay is only available in dry-run mode (--dry-run) for safety. Run with --dry-run to preview the transaction."
-        }));
+        anyhow::bail!("repay is only available in dry-run mode (--dry-run) for safety. Run with --dry-run to preview the transaction.");
     }
 
     let wallet = match from {

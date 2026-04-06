@@ -45,7 +45,7 @@ pub async fn run(chain_id: u64, from: Option<String>, dry_run: bool) -> Result<V
     }
 
     let result = wallet_contract_call(chain_id, COMPTROLLER, &calldata, Some(&wallet), None, false).await?;
-    let tx_hash = extract_tx_hash(&result);
+    let tx_hash = extract_tx_hash(&result)?;
 
     Ok(json!({
         "ok": true,

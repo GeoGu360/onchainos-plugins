@@ -75,13 +75,30 @@ pub async fn wallet_contract_call(
     Ok(json)
 }
 
-/// Extract txHash from wallet contract-call response
-pub fn extract_tx_hash(result: &Value) -> String {
-    result["data"]["txHash"]
+/// Extract txHash from wallet contract-call response.
+/// Returns Err if the response indicates failure (ok=false) or no hash is present.
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    // Check ok field first
+    if result["ok"].as_bool() == Some(false) {
+        let err_msg = result["error"]
+            .as_str()
+            .unwrap_or("wallet_contract_call returned ok=false");
+        anyhow::bail!("{}", err_msg);
+    }
+    let hash = result["data"]["txHash"]
         .as_str()
-        .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-        .to_string()
+        .or_else(|| result["txHash"].as_str());
+    match hash {
+        Some(h) if !h.is_empty() && h != "0x0000000000000000000000000000000000000000000000000000000000000000" => {
+            Ok(h.to_string())
+        }
+        _ => {
+            anyhow::bail!(
+                "No txHash in response: {}",
+                serde_json::to_string(result).unwrap_or_default()
+            )
+        }
+    }
 }
 
 /// ERC-20 approve via wallet contract-call
