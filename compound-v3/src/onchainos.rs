@@ -2,14 +2,31 @@
 use std::process::Command;
 use serde_json::Value;
 
-/// Query the currently logged-in wallet address
+/// Query the currently logged-in wallet address for the given chain.
+///
+/// Calls `onchainos wallet addresses --output json` which returns:
+/// { "data": { "evm": [ { "chainIndex": "8453", "address": "0x..." }, ... ] } }
+/// Returns the EVM address whose chainIndex matches chain_id.
 pub fn resolve_wallet(chain_id: u64) -> anyhow::Result<String> {
-    let chain_str = chain_id.to_string();
     let output = Command::new("onchainos")
-        .args(["wallet", "balance", "--chain", &chain_str, "--output", "json"])
+        .args(["wallet", "addresses", "--output", "json"])
         .output()?;
     let json: Value = serde_json::from_str(&String::from_utf8_lossy(&output.stdout))?;
-    Ok(json["data"]["address"].as_str().unwrap_or("").to_string())
+    let chain_index = chain_id.to_string();
+    let evm_entries = json["data"]["evm"]
+        .as_array()
+        .ok_or_else(|| anyhow::anyhow!("onchainos wallet addresses: missing data.evm array"))?;
+    for entry in evm_entries {
+        if entry["chainIndex"].as_str() == Some(&chain_index) {
+            if let Some(addr) = entry["address"].as_str() {
+                return Ok(addr.to_string());
+            }
+        }
+    }
+    anyhow::bail!(
+        "No EVM address found for chainIndex={} in onchainos wallet addresses output",
+        chain_id
+    )
 }
 
 /// Submit a contract call via onchainos wallet contract-call.
@@ -81,11 +98,3 @@ pub async fn erc20_approve(
     wallet_contract_call(chain_id, token_addr, &calldata, from, None, dry_run).await
 }
 
-/// wallet balance (supports --output json)
-pub fn wallet_balance(chain_id: u64) -> anyhow::Result<Value> {
-    let chain_str = chain_id.to_string();
-    let output = Command::new("onchainos")
-        .args(["wallet", "balance", "--chain", &chain_str, "--output", "json"])
-        .output()?;
-    Ok(serde_json::from_str(&String::from_utf8_lossy(&output.stdout))?)
-}

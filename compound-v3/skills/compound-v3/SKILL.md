@@ -7,6 +7,12 @@ metadata:
   version: "0.1.0"
 ---
 
+## Do NOT use for
+
+Do NOT use for Aave, Morpho, Euler, Spark, or other lending protocols.
+Do NOT use for token swaps — use a DEX plugin instead.
+Do NOT use for Compound V2 — use compound-v2 plugin instead.
+
 ## Architecture
 
 - Read ops (`get-markets`, `get-position`) → direct `eth_call` via public RPC; no confirmation needed
