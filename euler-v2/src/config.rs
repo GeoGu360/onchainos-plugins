@@ -15,7 +15,7 @@ pub struct ChainConfig {
 pub const CHAIN_ETHEREUM: ChainConfig = ChainConfig {
     chain_id: 1,
     name: "Ethereum",
-    rpc_url: "https://eth.llamarpc.com",
+    rpc_url: "https://ethereum-rpc.publicnode.com",
     evc: "0x0C9a3dd6b8F28529d72d7f9cE918D493519EE383",
     evault_factory: "0x29a56a1b8214D9Cf7c5561811750D5cBDb45CC8e",
     account_lens: "0xA60c4257c809353039A71527dfe701B577e34bc7",
@@ -97,7 +97,7 @@ pub fn get_known_vault(symbol: &str, chain_id: u64) -> Option<(&'static str, &'s
             18,
         )),
         (8453, "CBBTC") | (8453, "BTC") => Some((
-            "0x7b181d6509deabfbd1a23af1e65fd46e89572609",
+            "0x882018411bc4a020a879cee183441fc9fa5d7f8b",
             "0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf",
             8,
         )),

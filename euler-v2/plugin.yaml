@@ -1,7 +1,7 @@
 schema_version: 1
 name: euler-v2
 version: "0.1.0"
-description: "Euler V2 — Modular ERC-4626 lending vaults (EVaults). Supply/withdraw assets, view positions, simulate borrow/repay. Chains: Base, Ethereum, Arbitrum, Avalanche, BSC."
+description: "Euler V2 - Modular ERC-4626 lending vaults (EVaults). Supply/withdraw assets, view positions, simulate borrow/repay. Chains: Base, Ethereum, Arbitrum, Avalanche, BSC."
 author:
   name: GeoGu360
   github: GeoGu360

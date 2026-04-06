@@ -48,18 +48,19 @@ pub async fn run(
         raw_amount, wallet_clean
     );
 
-    // evc.enableCollateral(account, collateral) selector: 0xb9b2aa44
+    // evc.enableCollateral(address account, address collateral) selector: 0xd44fee5a
+    let vault_clean = vault_addr.trim_start_matches("0x").to_lowercase();
     let evc_enable_collateral = format!(
-        "0xb9b2aa44{:0>64}{}",
+        "0xd44fee5a{:0>64}{:0>64}",
         wallet_clean,
-        vault_addr.trim_start_matches("0x").to_lowercase()
+        vault_clean
     );
 
-    // evc.enableController(account, controller) selector: 0x04e5d38d
+    // evc.enableController(address account, address controller) selector: 0xc368516c
     let evc_enable_controller = format!(
-        "0x04e5d38d{:0>64}{}",
+        "0xc368516c{:0>64}{:0>64}",
         wallet_clean,
-        vault_addr.trim_start_matches("0x").to_lowercase()
+        vault_clean
     );
 
     let output = serde_json::json!({

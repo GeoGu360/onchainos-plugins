@@ -1,6 +1,17 @@
+---
+name: euler-v2
+description: "Euler V2 modular lending vaults (EVaults). Trigger phrases: supply to euler, deposit to euler, euler supply, euler deposit, euler withdraw, euler borrow, euler repay, euler positions, euler markets, euler lending, earn yield on euler, lend on euler, borrow from euler, euler v2, evault. Chinese: 在Euler存款, Euler借款, 还款, 我的Euler仓位, Euler利率, Euler市场"
+license: MIT
+metadata:
+  author: GeoGu360
+  version: "0.1.0"
+---
+
 # euler-v2 Skill
 
-Interact with **Euler V2** modular lending vaults (EVaults) — ERC-4626-compatible vaults with borrowing functionality, connected via the Ethereum Vault Connector (EVC).
+Interact with **Euler V2** modular lending vaults (EVaults) -- ERC-4626-compatible vaults with borrowing functionality, connected via the Ethereum Vault Connector (EVC).
+
+> **Do NOT use for** Aave, Compound, or other lending protocols. For Euler V1 positions, this skill does not apply.
 
 ## Available Commands
 
@@ -12,9 +23,9 @@ euler-v2 [--chain <id>] markets [--asset <SYMBOL>]
 ```
 
 **Examples:**
-- `euler-v2 --chain 8453 markets` — list all Base markets
-- `euler-v2 --chain 8453 markets --asset USDC` — filter for USDC vaults
-- `euler-v2 --chain 1 markets` — list Ethereum mainnet markets
+- `euler-v2 --chain 8453 markets` -- list all Base markets
+- `euler-v2 --chain 8453 markets --asset USDC` -- filter for USDC vaults
+- `euler-v2 --chain 1 markets` -- list Ethereum mainnet markets
 
 ---
 
@@ -40,7 +51,7 @@ euler-v2 [--chain <id>] [--dry-run] supply --vault <VAULT> --amount <N>
 **`--amount`**: human-readable amount (e.g. `10` or `0.001`)
 
 **Examples:**
-- `euler-v2 --chain 8453 supply --vault USDC --amount 10` — supply 10 USDC on Base
+- `euler-v2 --chain 8453 supply --vault USDC --amount 10` -- supply 10 USDC on Base
 - `euler-v2 --chain 8453 --dry-run supply --vault 0x0a1a3b5f2041f33522c4efc754a7d096f880ee16 --amount 5`
 
 ---
@@ -63,7 +74,7 @@ euler-v2 [--chain <id>] [--dry-run] withdraw --vault <VAULT> [--amount <N>] [--a
 ### borrow
 Simulate borrowing from an Euler V2 EVault (**dry-run only**).
 
-> Borrowing is **dry-run only** — liquidation risk requires careful collateral management via EVC.
+> Borrowing is **dry-run only** -- liquidation risk requires careful collateral management via EVC.
 
 ```
 euler-v2 --dry-run [--chain <id>] borrow --vault <VAULT> --amount <N>
@@ -96,7 +107,7 @@ euler-v2 --dry-run [--chain <id>] repay --vault <VAULT> [--amount <N>] [--all]
 |--------|---------------------------------------------|------------|
 | USDC   | 0x0a1a3b5f2041f33522c4efc754a7d096f880ee16  | USDC       |
 | WETH   | 0x859160db5841e5cfb8d3f144c6b3381a85a4b410  | WETH       |
-| CBBTC  | 0x7b181d6509deabfbd1a23af1e65fd46e89572609  | cbBTC      |
+| CBBTC  | 0x882018411bc4a020a879cee183441fc9fa5d7f8b  | cbBTC      |
 
 ## Notes
 
