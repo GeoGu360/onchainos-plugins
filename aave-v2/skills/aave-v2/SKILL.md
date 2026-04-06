@@ -1,6 +1,6 @@
 ---
 name: aave-v2
-description: "Aave V2 classic lending pool on Ethereum. Trigger phrases: deposit to aave v2, aave v2 reserves, my aave v2 positions, aave v2 interest rates, withdraw from aave v2, borrow aave v2, repay aave v2. Chinese: Aave V2存款, Aave V2借款, Aave V2还款, 我的Aave V2仓位, Aave V2利率, Aave经典池"
+description: "Aave V2 classic lending pool on Ethereum. Trigger phrases: deposit to aave v2, aave v2 reserves, my aave v2 positions, aave v2 interest rates, withdraw from aave v2, borrow aave v2, repay aave v2. Chinese: Aave V2 cun kuan, Aave V2 jie kuan, Aave V2 huan kuan, wo de Aave V2 positions, Aave V2 li lv, Aave jing dian chi. Do NOT use for Aave V3 operations (supply, e-mode, multi-chain) -- use aave-v3 instead. Do NOT use for any chain other than Ethereum mainnet (chain 1). Do NOT use for swap, bridge, or token price queries."
 license: MIT
 metadata:
   author: GeoGu360

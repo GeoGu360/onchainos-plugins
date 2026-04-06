@@ -13,7 +13,8 @@ fn base_cmd() -> Command {
 }
 
 /// Run a Command and return its stdout as a parsed JSON Value.
-/// Handles exit code 2 (onchainos confirming response): retries with --force.
+/// If the wallet returns exit code 2 (confirming prompt), propagate it as an error
+/// so the calling agent can surface the message to the user before retrying with --force.
 fn run_cmd(cmd: Command) -> anyhow::Result<Value> {
     let mut cmd = cmd;
     let output = cmd.output().context("Failed to spawn onchainos process")?;
@@ -21,16 +22,14 @@ fn run_cmd(cmd: Command) -> anyhow::Result<Value> {
     let exit_code = output.status.code().unwrap_or(-1);
 
     if exit_code == 2 {
+        // Propagate the confirming response so the agent can ask the user.
+        // Do NOT auto-retry with --force — that would bypass user confirmation.
         let confirming: Value = serde_json::from_str(stdout.trim())
-            .unwrap_or(serde_json::json!({"confirming": true}));
-        if confirming.get("confirming").and_then(|v| v.as_bool()).unwrap_or(false) {
-            let mut force_cmd = cmd;
-            force_cmd.arg("--force");
-            let force_output = force_cmd.output().context("Failed to spawn onchainos --force process")?;
-            let force_stdout = String::from_utf8_lossy(&force_output.stdout);
-            return serde_json::from_str(force_stdout.trim())
-                .with_context(|| format!("Failed to parse onchainos --force JSON output: {}", force_stdout.trim()));
-        }
+            .unwrap_or(serde_json::json!({"confirming": true, "message": "Transaction requires confirmation."}));
+        anyhow::bail!(
+            "onchainos requires confirmation: {}",
+            serde_json::to_string(&confirming).unwrap_or_default()
+        );
     }
 
     if !output.status.success() {
