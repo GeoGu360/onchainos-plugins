@@ -1,6 +1,6 @@
 use clap::Args;
 use serde_json::json;
-use crate::config::{LENDING_FACTORY, CRVUSD, get_rpc};
+use crate::config::{LENDING_FACTORY, get_rpc};
 use crate::onchainos::{resolve_wallet_from_addresses, wallet_contract_call, extract_tx_hash};
 use crate::rpc::*;
 
@@ -121,12 +121,11 @@ pub async fn run(args: DepositCollateralArgs) -> anyhow::Result<()> {
         false,
     )
     .await?;
-    let approve_hash = extract_tx_hash(&approve_result);
-    eprintln!("Approve txHash: {}", approve_hash);
-
     if !approve_result["ok"].as_bool().unwrap_or(false) {
         anyhow::bail!("Approve failed: {}", approve_result);
     }
+    let approve_hash = extract_tx_hash(&approve_result)?;
+    eprintln!("Approve txHash: {}", approve_hash);
 
     // Step 2: deposit collateral
     eprintln!("Step 2: Depositing collateral...");
@@ -149,7 +148,7 @@ pub async fn run(args: DepositCollateralArgs) -> anyhow::Result<()> {
         false,
     )
     .await?;
-    let deposit_hash = extract_tx_hash(&deposit_result);
+    let deposit_hash = extract_tx_hash(&deposit_result)?;
 
     let output = json!({
         "ok": deposit_result["ok"].as_bool().unwrap_or(false),

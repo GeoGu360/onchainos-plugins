@@ -141,7 +141,7 @@ pub async fn run(args: BorrowArgs) -> anyhow::Result<()> {
             false,
         )
         .await?;
-        let approve_hash = extract_tx_hash(&approve_result);
+        let approve_hash = extract_tx_hash(&approve_result)?;
         eprintln!("Approve txHash: {}", approve_hash);
         results["approve_txHash"] = json!(approve_hash);
     }
@@ -157,7 +157,7 @@ pub async fn run(args: BorrowArgs) -> anyhow::Result<()> {
         false,
     )
     .await?;
-    let borrow_hash = extract_tx_hash(&borrow_result);
+    let borrow_hash = extract_tx_hash(&borrow_result)?;
 
     results["ok"] = json!(borrow_result["ok"].as_bool().unwrap_or(false));
     results["txHash"] = json!(borrow_hash);

@@ -91,12 +91,11 @@ pub async fn run(args: RepayArgs) -> anyhow::Result<()> {
         false,
     )
     .await?;
-    let approve_hash = extract_tx_hash(&approve_result);
-    eprintln!("Approve txHash: {}", approve_hash);
-
     if !approve_result["ok"].as_bool().unwrap_or(false) {
         anyhow::bail!("crvUSD approve failed: {}", approve_result);
     }
+    let approve_hash = extract_tx_hash(&approve_result)?;
+    eprintln!("Approve txHash: {}", approve_hash);
 
     // Step 2: repay
     eprintln!("Step 2: Repaying crvUSD...");
@@ -109,7 +108,7 @@ pub async fn run(args: RepayArgs) -> anyhow::Result<()> {
         false,
     )
     .await?;
-    let repay_hash = extract_tx_hash(&repay_result);
+    let repay_hash = extract_tx_hash(&repay_result)?;
 
     let output = json!({
         "ok": repay_result["ok"].as_bool().unwrap_or(false),

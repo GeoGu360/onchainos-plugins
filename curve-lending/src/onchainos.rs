@@ -97,10 +97,16 @@ pub async fn wallet_contract_call(
 
 /// Extract txHash from onchainos response.
 /// Checks data.txHash first, then root txHash.
-pub fn extract_tx_hash(result: &Value) -> String {
-    result["data"]["txHash"]
+/// Returns Err if txHash is missing or "pending" (indicates the tx was not confirmed).
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    let hash = result["data"]["txHash"]
         .as_str()
-        .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-        .to_string()
+        .or_else(|| result["txHash"].as_str());
+    match hash {
+        Some(h) if !h.is_empty() && h != "pending" => Ok(h.to_string()),
+        _ => anyhow::bail!(
+            "txHash not found or still pending in onchainos response; raw: {}",
+            result
+        ),
+    }
 }
