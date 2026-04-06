@@ -148,3 +148,60 @@ No live write transactions were executed (wallet had no USDC/WETH balance suitab
 - `dolomite/skills/dolomite/SKILL.md` -- BUG-3 fix
 
 **Commit:** `63c0720` pushed to `GeoGu360/onchainos-plugins` main branch.
+
+---
+
+## Re-audit — 2026-04-06 (Live Write Verified)
+
+**Trigger:** Wallet now has USDC on Arbitrum (0.214 USDC at `0xaf88d065e77c8cc2239327c5edb3a432268e5831`).  
+**Goal:** Execute live `deposit` with 0.1 USDC to confirm end-to-end on-chain correctness.
+
+### Pre-deposit Baseline
+
+```json
+{
+  "positionCount": 1,
+  "positions": [
+    { "symbol": "USD\u20ae0", "marketId": 5, "amount": "0.010001", "type": "supply" }
+  ]
+}
+```
+
+### Live Deposit — 0.1 USDC (marketId=17, native USDC)
+
+```
+Command: dolomite --chain 42161 deposit --asset USDC --amount 0.1
+```
+
+| Step | Description | Tx Hash | On-chain Status |
+|------|-------------|---------|-----------------|
+| 1/2 | ERC-20 approve DolomiteMargin | `0x12d379c0775fa4165cda08f017a90a5170e809119725b643bfc65ffaf5cc3d94` | status=1, block 449620682 |
+| 2/2 | DolomiteMargin.operate() deposit | `0xbbcf45b6613d7a8aae3a10912b590db2ce6740c87cfdfd13528afc736e854a03` | status=1, block 449620708 |
+
+Both verified via `eth_getTransactionReceipt` on Arbitrum RPC (`https://arb1.arbitrum.io/rpc`).
+
+### Post-deposit State Verification
+
+```json
+{
+  "positionCount": 2,
+  "positions": [
+    { "symbol": "USD\u20ae0", "marketId": 5, "amount": "0.010001", "type": "supply" },
+    { "symbol": "USDC",    "marketId": 17, "amount": "0.1",       "type": "supply" }
+  ]
+}
+```
+
+State change confirmed: USDC supply position (marketId=17) appeared with amount=0.1.
+
+### Re-audit Result
+
+| Item | Result |
+|------|--------|
+| deposit --asset USDC --amount 0.1 | PASS |
+| approve tx on-chain | status=1, block 449620682 |
+| operate() tx on-chain | status=1, block 449620708 |
+| positions reflects new supply | PASS (positionCount 1 -> 2) |
+| New bugs found | None |
+
+**Conclusion:** The dolomite plugin executes a correct two-step deposit (ERC-20 approve + DolomiteMargin.operate) for native USDC on Arbitrum. Both transactions land on-chain with status=1 and the positions query reflects the updated supply balance. All bugs from the initial audit remain fixed; no new issues identified.
