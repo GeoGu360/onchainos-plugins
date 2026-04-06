@@ -64,7 +64,18 @@ pub async fn wallet_contract_call(
 
     let output = Command::new("onchainos").args(&args).output()?;
     let stdout = String::from_utf8_lossy(&output.stdout);
-    Ok(serde_json::from_str(&stdout)?)
+    let value: Value = serde_json::from_str(&stdout)
+        .map_err(|e| anyhow::anyhow!("Failed to parse onchainos output: {}", e))?;
+
+    // Propagate errors returned by onchainos (ok=false) instead of silently swallowing them
+    if value.get("ok").and_then(|v| v.as_bool()) == Some(false) {
+        let err_msg = value["error"]
+            .as_str()
+            .unwrap_or("onchainos contract-call failed (unknown error)");
+        anyhow::bail!("{}", err_msg);
+    }
+
+    Ok(value)
 }
 
 /// Extract txHash from onchainos wallet contract-call response

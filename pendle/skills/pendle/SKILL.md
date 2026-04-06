@@ -85,11 +85,11 @@ pendle --chain <CHAIN_ID> get-market --market <MARKET_ADDRESS> [--time-frame <1D
 
 **Parameters:**
 - `--market` — market contract address (required)
-- `--time-frame` — historical data window: `1D`, `1W`, or `1M`
+- `--time-frame` — historical data window: `hour`, `day`, or `week`
 
 **Example:**
 ```bash
-pendle --chain 42161 get-market --market 0xd1D7D99764f8a52Aff0BC88ab0b1B4B9c9A18Ef4 --time-frame 1W
+pendle --chain 42161 get-market --market 0xd1D7D99764f8a52Aff0BC88ab0b1B4B9c9A18Ef4 --time-frame week
 ```
 
 ---
@@ -123,8 +123,10 @@ pendle get-asset-price [--ids <ADDR1,ADDR2>] [--asset-type <PT|YT|LP|SY>] [--cha
 
 **Example:**
 ```bash
-pendle get-asset-price --ids 0xPT_ADDRESS --chain-id 42161
+pendle get-asset-price --ids 42161-0xPT_ADDRESS --chain-id 42161
 ```
+
+**Note:** The `--ids` parameter requires chain-prefixed addresses in the format `<chainId>-<address>` (e.g. `42161-0x97c1a4ae3e0da8009aff13e3e3ee7ea5ee4afe84`). Use `list-markets` to get the correct prefixed IDs from the `pt`, `yt`, or `sy` fields.
 
 ---
 

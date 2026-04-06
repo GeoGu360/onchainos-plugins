@@ -21,8 +21,8 @@ components:
 build:
   lang: rust
   binary_name: pendle
-  source_repo: skylavis-sky/onchainos-plugins
-  source_commit: "0000000000000000000000000000000000000000"
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: "1ebc30c93897b462eb5deaed869b26d07bfcddd5"
   source_dir: pendle
 
 api_calls:
