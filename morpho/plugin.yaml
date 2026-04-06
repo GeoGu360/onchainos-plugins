@@ -22,7 +22,7 @@ components:
 build:
   lang: rust
   binary_name: morpho
-  source_repo: skylavis-sky/morpho
+  source_repo: GeoGu360/onchainos-plugins
   source_commit: "0000000000000000000000000000000000000000"
 
 api_calls:

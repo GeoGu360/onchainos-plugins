@@ -21,7 +21,7 @@ components:
 build:
   lang: rust
   binary_name: compound-v3
-  source_repo: skylavis-sky/onchainos-plugins
+  source_repo: GeoGu360/onchainos-plugins
   source_commit: "20e55b656c7614191e412582d4709f6a16068f4f"
   source_dir: compound-v3
 

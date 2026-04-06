@@ -21,7 +21,7 @@ components:
 build:
   lang: rust
   binary_name: pancakeswap
-  source_repo: skylavis-sky/pancakeswap
+  source_repo: GeoGu360/onchainos-plugins
   source_commit: "20556dff45fbd52a09c6aac12ce0613c57c2c7e8"
 
 api_calls:

@@ -23,7 +23,7 @@ components:
 build:
   lang: rust
   binary_name: aave-v3
-  source_repo: skylavis-sky/onchainos-plugins
+  source_repo: GeoGu360/onchainos-plugins
   source_commit: "0a5eb1835e442d3306573fd55fd4db00b577e5f3"
   source_dir: aave-v3
 

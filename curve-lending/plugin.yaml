@@ -23,7 +23,7 @@ components:
 build:
   lang: rust
   binary_name: curve-lending
-  source_repo: skylavis-sky/onchainos-plugins
+  source_repo: GeoGu360/onchainos-plugins
   source_commit: "9b0740befc13d701ee51641d07ac7e697377fc24"
   source_dir: curve-lending
 

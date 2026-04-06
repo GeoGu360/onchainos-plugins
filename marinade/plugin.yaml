@@ -20,7 +20,7 @@ components:
 build:
   lang: rust
   binary_name: marinade
-  source_repo: skylavis-sky/onchainos-plugins
+  source_repo: GeoGu360/onchainos-plugins
   source_commit: "e42891f77aeb185fa6af1a65b24ff80e3b78fb9f"
   source_dir: marinade
 

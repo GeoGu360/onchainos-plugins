@@ -21,7 +21,7 @@ components:
 build:
   lang: rust
   binary_name: jito
-  source_repo: skylavis-sky/onchainos-plugins
+  source_repo: GeoGu360/onchainos-plugins
   source_commit: "05b1baad38e895f2908de014281fd69578a09eef"
   source_dir: jito
 
