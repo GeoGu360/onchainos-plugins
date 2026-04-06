@@ -1,7 +1,7 @@
 ---
 name: lifi
 version: "0.1.0"
-description: "LI.FI/Jumper cross-chain bridge and swap aggregator for EVM chains"
+description: "LI.FI/Jumper cross-chain bridge and swap aggregator for EVM chains. Trigger phrases: bridge tokens, cross-chain swap, lifi bridge, jumper bridge, bridge USDC to Arbitrum, bridge ETH to Base, cross-chain transfer, lifi quote, lifi status. Chinese: 跨链桥接, 跨链兑换, 桥接代币, LiFi跨链, 跨链转移USDC, 查看桥接报价, 桥接状态. Do NOT use for: same-chain DEX swaps without bridging, Solana/non-EVM chains, staking, lending, or generic wallet transfers."
 ---
 
 # LI.FI / Jumper Skill

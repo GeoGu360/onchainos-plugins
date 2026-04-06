@@ -98,10 +98,10 @@ pub async fn execute(
     let to_addr = tx_req["to"].as_str()
         .unwrap_or(LIFI_DIAMOND);
 
-    // Parse native ETH value from hex
+    // Parse native ETH value from hex (u128 to avoid truncation on large bridges)
     let value_hex = tx_req["value"].as_str().unwrap_or("0x0");
     let value_clean = value_hex.trim_start_matches("0x");
-    let value_wei = u64::from_str_radix(value_clean, 16).unwrap_or(0);
+    let value_wei = u128::from_str_radix(value_clean, 16).unwrap_or(0);
 
     // Approval address from estimate (may differ from LiFiDiamond on some routes)
     let approval_address = quote["estimate"]["approvalAddress"]
@@ -138,7 +138,14 @@ pub async fn execute(
                 false,
             ).await?;
 
-            let approve_hash = onchainos::extract_tx_hash(&approve_result);
+            // Check approve succeeded before proceeding
+            if approve_result["ok"].as_bool() != Some(true) {
+                anyhow::bail!(
+                    "ERC-20 approve failed: {}",
+                    approve_result
+                );
+            }
+            let approve_hash = onchainos::extract_tx_hash(&approve_result)?;
             eprintln!("Approve tx: {}", approve_hash);
 
             // Wait for approve to confirm before submitting main tx
@@ -160,7 +167,11 @@ pub async fn execute(
         true, // --force required for all LI.FI bridge/swap txs
     ).await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    // Check swap succeeded before extracting hash
+    if result["ok"].as_bool() != Some(true) {
+        anyhow::bail!("Swap contract-call failed: {}", result);
+    }
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
 
     Ok(serde_json::json!({
         "ok": true,

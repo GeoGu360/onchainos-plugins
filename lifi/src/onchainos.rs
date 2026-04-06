@@ -39,7 +39,7 @@ pub async fn wallet_contract_call(
     to: &str,
     input_data: &str,
     from: Option<&str>,
-    amt: Option<u64>, // wei value (for native ETH sends)
+    amt: Option<u128>, // wei value (for native ETH sends; u128 prevents truncation)
     dry_run: bool,
     force: bool,
 ) -> Result<Value> {
@@ -91,13 +91,20 @@ pub async fn wallet_contract_call(
 
 /// Extract txHash from onchainos response.
 /// Checks data.txHash -> data.swapTxHash -> root txHash in order.
-pub fn extract_tx_hash(result: &Value) -> String {
-    result["data"]["txHash"]
+/// Returns Err if no hash is found or the value is empty/pending.
+pub fn extract_tx_hash(result: &Value) -> Result<String> {
+    let hash = result["data"]["txHash"]
         .as_str()
         .or_else(|| result["data"]["swapTxHash"].as_str())
         .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-        .to_string()
+        .unwrap_or("");
+    if hash.is_empty() || hash == "pending" {
+        anyhow::bail!(
+            "Transaction hash missing or pending in response: {}",
+            result
+        );
+    }
+    Ok(hash.to_string())
 }
 
 /// ERC-20 approve via wallet contract-call.
