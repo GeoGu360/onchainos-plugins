@@ -99,12 +99,13 @@ pub async fn execute(
     if !approve_ok {
         anyhow::bail!("Approve failed: {}", approve_result);
     }
-    let approve_tx = onchainos::extract_tx_hash(&approve_result);
+    let approve_tx = onchainos::extract_tx_hash(&approve_result)?;
     eprintln!("Approve tx: {}", approve_tx);
 
-    // Wait 3 seconds for approve to confirm
-    eprintln!("Waiting 3s for approve to confirm...");
-    tokio::time::sleep(Duration::from_secs(3)).await;
+    // Wait for approve to confirm on-chain.
+    // Ethereum mainnet block time is ~12s; 15s gives a safe single-block buffer.
+    eprintln!("Waiting 15s for approve to confirm on-chain...");
+    tokio::time::sleep(Duration::from_secs(15)).await;
 
     // Step 2: ERC-4626 deposit
     eprintln!("Step 2/2: Depositing into vault...");
@@ -120,7 +121,7 @@ pub async fn execute(
     if !deposit_ok {
         anyhow::bail!("Deposit failed: {}", deposit_result);
     }
-    let deposit_tx = onchainos::extract_tx_hash(&deposit_result);
+    let deposit_tx = onchainos::extract_tx_hash(&deposit_result)?;
 
     println!(
         "{}",

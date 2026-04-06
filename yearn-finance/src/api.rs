@@ -129,30 +129,6 @@ pub async fn fetch_vaults(chain_id: u64) -> Result<Vec<Vault>> {
     Ok(vaults)
 }
 
-/// Fetch a single vault by address from yDaemon API
-pub async fn fetch_vault(chain_id: u64, vault_address: &str) -> Result<Vault> {
-    let client = reqwest::Client::new();
-    let url = format!(
-        "https://ydaemon.yearn.fi/{}/vaults/{}",
-        chain_id, vault_address
-    );
-    let resp = client
-        .get(&url)
-        .header("Accept", "application/json")
-        .send()
-        .await?;
-
-    if !resp.status().is_success() {
-        anyhow::bail!("yDaemon API error fetching vault {}: {}", vault_address, resp.status());
-    }
-
-    let vault: Vault = resp.json().await.map_err(|e| {
-        anyhow::anyhow!("Failed to parse vault from yDaemon: {}", e)
-    })?;
-
-    Ok(vault)
-}
-
 /// Resolve vault address by symbol or partial name (case-insensitive)
 pub fn find_vault_by_token<'a>(vaults: &'a [Vault], query: &str) -> Option<&'a Vault> {
     let q = query.to_lowercase();

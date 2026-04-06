@@ -63,8 +63,3 @@ pub async fn get_price_per_share(vault: &str, rpc_url: &str) -> Result<u128> {
     Ok(decode_u128(&result))
 }
 
-/// Query totalAssets() for a vault
-pub async fn get_total_assets(vault: &str, rpc_url: &str) -> Result<u128> {
-    let result = eth_call(vault, "0x01e1d114", rpc_url).await?;
-    Ok(decode_u128(&result))
-}

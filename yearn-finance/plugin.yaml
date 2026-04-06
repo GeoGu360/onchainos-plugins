@@ -21,7 +21,7 @@ components:
 build:
   lang: rust
   binary_name: yearn-finance
-  source_repo: GeoGu360/onchainos-plugins
+  source_repo: https://github.com/GeoGu360/onchainos-plugins
   source_commit: "dfccb93ce6b09b8a7a65d08a95916900bb7688af"
   source_dir: yearn-finance
 

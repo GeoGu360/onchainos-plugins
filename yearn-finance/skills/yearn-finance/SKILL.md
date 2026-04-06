@@ -1,6 +1,6 @@
 ---
 name: yearn-finance
-description: "Yearn Finance yVaults — deposit, withdraw, and track auto-compounding yield on Ethereum. Trigger phrases: yearn, yvault, yearn deposit, yearn withdraw, yearn positions, yearn rates, yearn finance, yVault. Chinese: Yearn质押, Yearn存款, Yearn提款, 查看Yearn收益, Yearn金库"
+description: "Yearn Finance yVaults - deposit, withdraw, and track auto-compounding yield on Ethereum. Trigger phrases: yearn, yvault, yearn deposit, yearn withdraw, yearn positions, yearn rates, yearn finance, yVault, Yearn deposit, Yearn withdraw, Yearn vault balance, Yearn yield"
 license: MIT
 metadata:
   author: GeoGu360
@@ -38,7 +38,7 @@ This skill supports:
 **Triggers:** "show yearn vaults", "list yvaults", "what yearn vaults are available", "yearn USDT vault"
 
 ```bash
-yearn-finance vaults [--chain 1] [--token USDT]
+yearn-finance [--chain 1] vaults [--token USDT]
 ```
 
 **Parameters:**
@@ -73,7 +73,7 @@ yearn-finance vaults [--chain 1] [--token USDT]
 **Triggers:** "yearn rates", "yearn APR", "what is yearn yield", "yearn USDT APR", "best yearn vault"
 
 ```bash
-yearn-finance rates [--chain 1] [--token USDT]
+yearn-finance [--chain 1] rates [--token USDT]
 ```
 
 **Parameters:**
@@ -104,7 +104,7 @@ yearn-finance rates [--chain 1] [--token USDT]
 **Triggers:** "my yearn positions", "yearn balance", "how much is in my yearn vault", "yearn holdings"
 
 ```bash
-yearn-finance positions [--chain 1] [--wallet 0x...]
+yearn-finance [--chain 1] positions [--wallet 0x...]
 ```
 
 **Parameters:**

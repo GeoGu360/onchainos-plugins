@@ -88,11 +88,18 @@ pub fn wallet_contract_call(
 
 /// Extract txHash from onchainos response
 /// Checks: data.txHash (primary for EVM)
-pub fn extract_tx_hash(result: &Value) -> String {
-    result["data"]["txHash"]
+/// Returns an error if txHash is missing or equals the sentinel "pending".
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    let hash = result["data"]["txHash"]
         .as_str()
-        .unwrap_or("pending")
-        .to_string()
+        .unwrap_or("pending");
+    if hash == "pending" || hash.is_empty() {
+        anyhow::bail!(
+            "Transaction hash not available in onchainos response: {}",
+            result
+        );
+    }
+    Ok(hash.to_string())
 }
 
 /// Encode ERC-20 approve(address,uint256) calldata
@@ -124,10 +131,3 @@ pub fn encode_redeem(shares: u128, receiver: &str, owner: &str) -> String {
     format!("0xba087652{}{}{}", shares_hex, receiver_padded, owner_padded)
 }
 
-/// Encode balanceOf(address) call
-/// selector: 0x70a08231
-pub fn encode_balance_of(owner: &str) -> String {
-    let owner_clean = owner.trim_start_matches("0x");
-    let owner_padded = format!("{:0>64}", owner_clean);
-    format!("0x70a08231{}", owner_padded)
-}
