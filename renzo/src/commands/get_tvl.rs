@@ -8,12 +8,15 @@ pub async fn run() -> anyhow::Result<()> {
     let result = onchainos::eth_call(config::RESTAKE_MANAGER, &calldata, config::RPC_URL)?;
     let raw = rpc::extract_return_data(&result)?;
 
-    // The return data is complex ABI-encoded. The simplest extraction:
-    // totalTVL is the last 32 bytes of the return data
+    // ABI decode (uint256[][], uint256[], uint256):
+    // word[0] = offset to param1 (uint256[][])
+    // word[1] = offset to param2 (uint256[])
+    // word[2] = totalTVL (uint256) — the third return value is a plain uint256
     let hex = raw.trim_start_matches("0x");
-    let total_tvl_wei: u128 = if hex.len() >= 64 {
-        let last_word = &hex[hex.len() - 64..];
-        u128::from_str_radix(last_word, 16).unwrap_or(0)
+    let total_tvl_wei: u128 = if hex.len() >= 192 {
+        // word[2] starts at byte offset 128 (2 * 64 hex chars per word)
+        let word2 = &hex[128..192];
+        u128::from_str_radix(word2, 16).unwrap_or(0)
     } else {
         0
     };

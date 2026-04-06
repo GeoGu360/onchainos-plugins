@@ -1,8 +1,9 @@
 /// ABI encoding helpers
 
 /// Pad a hex address (with or without 0x) to a 32-byte (64 hex char) left-zero-padded word.
+/// Address is lowercased to ensure consistent ABI encoding.
 pub fn encode_address(addr: &str) -> String {
-    let addr = addr.trim_start_matches("0x").trim_start_matches("0X");
+    let addr = addr.trim_start_matches("0x").trim_start_matches("0X").to_lowercase();
     format!("{:0>64}", addr)
 }
 
