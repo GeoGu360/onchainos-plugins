@@ -1,6 +1,13 @@
 ---
 name: stakestone
-description: Stake ETH with StakeStone liquid staking protocol to receive STONE yield-bearing tokens, manage withdrawal requests, and track your staking position on Ethereum mainnet.
+description: >-
+  Stake ETH with StakeStone liquid staking protocol to receive STONE
+  yield-bearing tokens, manage withdrawal requests, and track your staking
+  position on Ethereum mainnet. Triggers: stake ETH StakeStone, get STONE,
+  StakeStone deposit, StakeStone withdraw, StakeStone position, STONE rate.
+  Do NOT use for: Lido staking (use lido skill), Solana staking (use jito
+  skill), ERC-20 token swaps (use dex skill), wallet balance queries (use
+  onchainos wallet balance).
 ---
 
 # StakeStone Liquid Staking Plugin
@@ -94,9 +101,12 @@ stakestone request-withdraw --amount <STONE_AMOUNT> [--from <ADDR>] [--dry-run]
 2. Fetch current rate to estimate ETH return
 3. Show user: STONE to withdraw, estimated ETH, withdrawal fee, expected round
 4. **Ask user to confirm** the withdrawal request before submitting
-5. Execute: `onchainos wallet contract-call --chain 1 --to 0xA62F9C5af106FeEE069F38dE51098D9d81B90572 --input-data 0x745400c9<SHARES_HEX_64> --force`
+5. Step 1 — Approve STONE to vault: `onchainos wallet contract-call --chain 1 --to 0x7122985656e38BDC0302Db86685bb972b145bD3C --input-data 0x095ea7b3<VAULT_ADDR_64><SHARES_HEX_64> --force`
+6. Step 2 — Request withdrawal: `onchainos wallet contract-call --chain 1 --to 0xA62F9C5af106FeEE069F38dE51098D9d81B90572 --input-data 0x745400c9<SHARES_HEX_64> --force`
 
-**Calldata structure:** `0x745400c9` + 32-byte uint256 (STONE shares in wei)
+**Calldata structure:**
+- Approve: `0x095ea7b3` + 32-byte vault address + 32-byte uint256 (STONE shares in wei)
+- RequestWithdraw: `0x745400c9` + 32-byte uint256 (STONE shares in wei)
 
 **Note:** Withdrawal is batched into settlement rounds. Monitor with `stakestone get-position`.
 

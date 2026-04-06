@@ -77,15 +77,41 @@ pub async fn wallet_contract_call(
     }
 
     let output = Command::new("onchainos").args(&args).output()?;
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        anyhow::bail!(
+            "onchainos contract-call failed (exit {}): {} {}",
+            output.status.code().unwrap_or(-1),
+            stderr.trim(),
+            stdout.trim()
+        );
+    }
     let stdout = String::from_utf8_lossy(&output.stdout);
-    Ok(serde_json::from_str(&stdout)?)
+    let json: Value = serde_json::from_str(&stdout)
+        .map_err(|e| anyhow::anyhow!("Failed to parse onchainos response: {e}\nRaw: {stdout}"))?;
+    if json["ok"].as_bool() == Some(false) {
+        anyhow::bail!(
+            "onchainos contract-call returned ok=false: {}",
+            json["error"].as_str().unwrap_or(&json.to_string())
+        );
+    }
+    Ok(json)
 }
 
 /// Extract txHash from onchainos response.
-pub fn extract_tx_hash(result: &Value) -> String {
-    result["data"]["txHash"]
+/// Returns Err if the response is missing a real hash (e.g. "pending" or empty).
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    let hash = result["data"]["txHash"]
         .as_str()
         .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-        .to_string()
+        .unwrap_or("");
+    if hash.is_empty() || hash == "pending" {
+        anyhow::bail!(
+            "Transaction hash not available (got {:?}). Response: {}",
+            hash,
+            result
+        );
+    }
+    Ok(hash.to_string())
 }

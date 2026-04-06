@@ -30,19 +30,15 @@ pub struct WithdrawArgs {
 }
 
 pub async fn run(args: WithdrawArgs) -> anyhow::Result<Value> {
-    // Resolve wallet — after dry_run guard
-    let wallet = if args.dry_run {
-        args.from.clone().unwrap_or_else(|| "0x0000000000000000000000000000000000000000".to_string())
-    } else {
-        match args.from.clone() {
-            Some(addr) => addr,
-            None => {
-                let w = onchainos::resolve_wallet(args.chain)?;
-                if w.is_empty() {
-                    anyhow::bail!("Cannot resolve wallet address. Pass --from or log in via onchainos.");
-                }
-                w
+    // Resolve wallet — always resolve so dry-run calldata uses real address
+    let wallet = match args.from.clone() {
+        Some(addr) => addr,
+        None => {
+            let w = onchainos::resolve_wallet(args.chain)?;
+            if w.is_empty() {
+                anyhow::bail!("Cannot resolve wallet address. Pass --from or log in via onchainos.");
             }
+            w
         }
     };
 
@@ -120,6 +116,11 @@ pub async fn run(args: WithdrawArgs) -> anyhow::Result<Value> {
         false,
     ).await?;
 
+    // Check withdraw succeeded
+    if result["ok"].as_bool() != Some(true) {
+        let err_msg = result["error"].as_str().unwrap_or("withdraw transaction failed");
+        anyhow::bail!("Vault withdraw failed: {}", err_msg);
+    }
     let tx_hash = onchainos::extract_tx_hash(&result);
 
     Ok(serde_json::json!({

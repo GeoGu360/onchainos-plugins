@@ -76,6 +76,14 @@ pub async fn run(args: RequestWithdrawArgs) -> anyhow::Result<()> {
         }
     }
 
+    // Build calldata for approve: approve(spender, amount)
+    // selector: 0x095ea7b3
+    let approve_calldata = format!(
+        "0x095ea7b3{}{}",
+        rpc::encode_address(config::STONE_VAULT),
+        rpc::encode_uint256_u128(shares_wei)
+    );
+
     // Build calldata: requestWithdraw(uint256 _shares)
     let calldata = format!(
         "0x{}{}",
@@ -89,7 +97,8 @@ pub async fn run(args: RequestWithdrawArgs) -> anyhow::Result<()> {
     println!("Est. ETH return:  {:.6} ETH (at {:.6} ETH/STONE)", estimated_eth, price_eth);
     println!("Withdrawal fee:   {:.4}%", fee_pct);
     println!("Contract:         {}", config::STONE_VAULT);
-    println!("Calldata:         {}", calldata);
+    println!("Step 1 calldata:  {} (STONE approve)", approve_calldata);
+    println!("Step 2 calldata:  {}", calldata);
     println!();
     println!("Note: Withdrawal is processed in settlement rounds. ETH is released after the");
     println!("next round settles. Check your position with 'stakestone get-position'.");
@@ -97,16 +106,35 @@ pub async fn run(args: RequestWithdrawArgs) -> anyhow::Result<()> {
 
     if args.dry_run {
         println!("[dry-run] Transaction NOT submitted.");
-        println!("calldata: {}", calldata);
+        println!("Step 1 (approve): {}", approve_calldata);
+        println!("Step 2 (withdraw): {}", calldata);
         return Ok(());
     }
 
     // Ask user to confirm before submitting
     println!("This will queue {:.6} STONE for withdrawal (~{:.6} ETH).", args.amount, estimated_eth);
-    println!("Please confirm you want to submit this transaction.");
+    println!("This requires 2 transactions: (1) approve STONE, (2) requestWithdraw.");
+    println!("Please confirm you want to submit both transactions.");
     println!();
-    println!("Submitting withdrawal request...");
 
+    // Step 1: approve STONE to vault
+    println!("Step 1/2: Approving STONE transfer to vault...");
+    let approve_result = onchainos::wallet_contract_call(
+        chain_id,
+        config::STONE_TOKEN,
+        &approve_calldata,
+        Some(&wallet),
+        None,
+        false,
+    )
+    .await?;
+    let approve_hash = onchainos::extract_tx_hash(&approve_result)?;
+    println!("Approve tx submitted: {}", approve_hash);
+    println!("Waiting ~15s for approve to confirm before requesting withdrawal...");
+    tokio::time::sleep(std::time::Duration::from_secs(15)).await;
+
+    // Step 2: requestWithdraw
+    println!("Step 2/2: Submitting withdrawal request...");
     let result = onchainos::wallet_contract_call(
         chain_id,
         config::STONE_VAULT,
@@ -117,8 +145,8 @@ pub async fn run(args: RequestWithdrawArgs) -> anyhow::Result<()> {
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
-    println!("Transaction submitted: {}", tx_hash);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
+    println!("Withdrawal request tx submitted: {}", tx_hash);
     println!("Your withdrawal request has been queued. Monitor with 'stakestone get-position'.");
 
     Ok(())

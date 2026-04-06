@@ -30,19 +30,15 @@ pub struct DepositArgs {
 }
 
 pub async fn run(args: DepositArgs) -> anyhow::Result<Value> {
-    // Resolve wallet — must be done AFTER dry_run check (but we need it for encoding)
-    let wallet = if args.dry_run {
-        args.from.clone().unwrap_or_else(|| "0x0000000000000000000000000000000000000000".to_string())
-    } else {
-        match args.from.clone() {
-            Some(addr) => addr,
-            None => {
-                let w = onchainos::resolve_wallet(args.chain)?;
-                if w.is_empty() {
-                    anyhow::bail!("Cannot resolve wallet address. Pass --from or log in via onchainos.");
-                }
-                w
+    // Resolve wallet — always resolve so dry-run calldata uses real address
+    let wallet = match args.from.clone() {
+        Some(addr) => addr,
+        None => {
+            let w = onchainos::resolve_wallet(args.chain)?;
+            if w.is_empty() {
+                anyhow::bail!("Cannot resolve wallet address. Pass --from or log in via onchainos.");
             }
+            w
         }
     };
 
@@ -115,6 +111,11 @@ pub async fn run(args: DepositArgs) -> anyhow::Result<Value> {
         false,
     ).await?;
 
+    // Check approve succeeded before proceeding
+    if approve_result["ok"].as_bool() != Some(true) {
+        let err_msg = approve_result["error"].as_str().unwrap_or("approve transaction failed");
+        anyhow::bail!("ERC-20 approve failed: {}", err_msg);
+    }
     let approve_tx = onchainos::extract_tx_hash(&approve_result);
 
     // Wait for approve to be broadcast before submitting deposit (multi-step tx delay pattern)
@@ -137,6 +138,11 @@ pub async fn run(args: DepositArgs) -> anyhow::Result<Value> {
         false,
     ).await?;
 
+    // Check deposit succeeded
+    if deposit_result["ok"].as_bool() != Some(true) {
+        let err_msg = deposit_result["error"].as_str().unwrap_or("deposit transaction failed");
+        anyhow::bail!("Vault deposit failed: {} (approve tx: {})", err_msg, approve_tx);
+    }
     let deposit_tx = onchainos::extract_tx_hash(&deposit_result);
 
     Ok(serde_json::json!({

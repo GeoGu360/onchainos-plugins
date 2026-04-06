@@ -78,7 +78,7 @@ pub async fn run(args: CancelWithdrawArgs) -> anyhow::Result<()> {
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
     println!("Transaction submitted: {}", tx_hash);
     println!("Your withdrawal has been cancelled. STONE returned to your wallet.");
 

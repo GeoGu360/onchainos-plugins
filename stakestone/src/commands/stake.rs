@@ -84,7 +84,7 @@ pub async fn run(args: StakeArgs) -> anyhow::Result<()> {
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
     println!("Transaction submitted: {}", tx_hash);
     println!("You will receive approximately {:.6} STONE once the transaction confirms.", estimated_stone);
     println!("Note: STONE accrues yield via exchange rate appreciation (not rebasing).");
