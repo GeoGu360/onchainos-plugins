@@ -19,6 +19,23 @@ Velodrome V2 is the largest DEX on Optimism. This plugin covers the classic AMM 
 
 **Architecture:** Read-only operations (quote, pools, positions) use direct eth_call via JSON-RPC to Optimism. Write ops use `onchainos wallet contract-call --force` after user confirmation.
 
+## Trigger Phrases
+
+Use this skill when the user says any of:
+- swap on velodrome, velodrome swap, trade on velodrome, velodrome v2 swap
+- add liquidity velodrome, remove liquidity velodrome, velodrome LP
+- velodrome pool, velodrome quote, velodrome positions, velodrome rewards
+- velodrome classic, velodrome AMM, velodrome volatile pool, velodrome stable pool
+- DEX swap on Optimism, swap WETH USDC optimism, swap tokens optimism
+
+## Do NOT Use For
+
+- Do NOT use for Velodrome Slipstream (CLMM/concentrated liquidity) pools — use `velodrome-slipstream` if available
+- Do NOT use for chains other than Optimism (chain ID 10)
+- Do NOT use for Aerodrome (Base chain fork of Velodrome) — different contracts
+- Do NOT use for checking portfolio/net worth — use `okx-defi-portfolio`
+- Do NOT use for cross-chain swaps — use `okx-dex-swap`
+
 ---
 
 ## Pre-flight Checks

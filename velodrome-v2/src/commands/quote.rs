@@ -37,13 +37,13 @@ pub async fn run(args: QuoteArgs) -> anyhow::Result<()> {
     for stable in stable_options {
         let pool_addr = factory_get_pool(&token_in, &token_out, stable, factory, rpc).await?;
         if pool_addr == "0x0000000000000000000000000000000000000000" {
-            println!("  stable={}: pool not deployed, skipping", stable);
+            eprintln!("  stable={}: pool not deployed, skipping", stable);
             continue;
         }
 
         match router_get_amounts_out(router, args.amount_in, &token_in, &token_out, stable, factory, rpc).await {
             Ok(amount_out) => {
-                println!("  stable={}: pool={} amountOut={}", stable, pool_addr, amount_out);
+                eprintln!("  stable={}: pool={} amountOut={}", stable, pool_addr, amount_out);
                 if amount_out > best_amount_out {
                     best_amount_out = amount_out;
                     best_stable = stable;
@@ -51,7 +51,7 @@ pub async fn run(args: QuoteArgs) -> anyhow::Result<()> {
                 }
             }
             Err(e) => {
-                println!("  stable={}: quote failed: {}", stable, e);
+                eprintln!("  stable={}: quote failed: {}", stable, e);
             }
         }
     }

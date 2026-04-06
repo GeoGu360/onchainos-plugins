@@ -71,11 +71,11 @@ pub async fn run(args: SwapArgs) -> anyhow::Result<()> {
     let slippage_factor = 1.0 - (args.slippage / 100.0);
     let amount_out_min = (best_amount_out as f64 * slippage_factor) as u128;
 
-    println!(
+    eprintln!(
         "Quote: tokenIn={} tokenOut={} amountIn={} stable={} amountOut={} amountOutMin={}",
         token_in, token_out, args.amount_in, best_stable, best_amount_out, amount_out_min
     );
-    println!("Please confirm the swap above before proceeding. (Proceeding automatically in non-interactive mode)");
+    eprintln!("Please confirm the swap above before proceeding. (Proceeding automatically in non-interactive mode)");
 
     // --- 2. Resolve recipient ---
     let recipient = if args.dry_run {
@@ -88,11 +88,11 @@ pub async fn run(args: SwapArgs) -> anyhow::Result<()> {
     if !args.dry_run {
         let allowance = get_allowance(&token_in, &recipient, router, rpc).await?;
         if allowance < args.amount_in {
-            println!("Approving {} for Router...", token_in);
+            eprintln!("Approving {} for Router...", token_in);
             let approve_data = build_approve_calldata(router, u128::MAX);
             let approve_result =
                 wallet_contract_call(CHAIN_ID, &token_in, &approve_data, true, false).await?;
-            println!("Approve tx: {}", extract_tx_hash(&approve_result));
+            eprintln!("Approve tx: {}", extract_tx_hash(&approve_result));
             // Wait 3s for approve nonce to clear before swap
             sleep(Duration::from_secs(3)).await;
         }

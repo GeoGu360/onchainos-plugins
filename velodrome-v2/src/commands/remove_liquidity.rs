@@ -52,7 +52,7 @@ pub async fn run(args: RemoveLiquidityArgs) -> anyhow::Result<()> {
             token_a, token_b, args.stable
         );
     }
-    println!("Pool: {}", pool_addr);
+    eprintln!("Pool: {}", pool_addr);
 
     // --- 2. Resolve wallet and LP balance ---
     let wallet = if args.dry_run {
@@ -74,20 +74,20 @@ pub async fn run(args: RemoveLiquidityArgs) -> anyhow::Result<()> {
         return Ok(());
     }
 
-    println!(
+    eprintln!(
         "Removing liquidity={} from pool {} ({}/{} stable={})",
         liquidity_to_remove, pool_addr, token_a, token_b, args.stable
     );
-    println!("Please confirm the remove-liquidity parameters above before proceeding. (Proceeding automatically in non-interactive mode)");
+    eprintln!("Please confirm the remove-liquidity parameters above before proceeding. (Proceeding automatically in non-interactive mode)");
 
     // --- 3. Approve LP token -> Router ---
     if !args.dry_run {
         let lp_allowance = get_allowance(&pool_addr, &wallet, router, rpc).await?;
         if lp_allowance < liquidity_to_remove {
-            println!("Approving LP token ({}) for Router...", pool_addr);
+            eprintln!("Approving LP token ({}) for Router...", pool_addr);
             let approve_data = build_approve_calldata(router, u128::MAX);
             let res = wallet_contract_call(CHAIN_ID, &pool_addr, &approve_data, true, false).await?;
-            println!("Approve LP tx: {}", extract_tx_hash(&res));
+            eprintln!("Approve LP tx: {}", extract_tx_hash(&res));
             sleep(Duration::from_secs(3)).await;
         }
     }

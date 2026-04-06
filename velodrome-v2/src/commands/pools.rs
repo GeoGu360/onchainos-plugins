@@ -58,7 +58,7 @@ pub async fn run(args: PoolsArgs) -> anyhow::Result<()> {
 
         if deployed {
             let (reserve0, reserve1) = pool_get_reserves(&pool_addr, rpc).await.unwrap_or((0, 0));
-            println!(
+            eprintln!(
                 "  stable={}: {} (reserve0={}, reserve1={})",
                 stable, pool_addr, reserve0, reserve1
             );
@@ -70,7 +70,7 @@ pub async fn run(args: PoolsArgs) -> anyhow::Result<()> {
                 "deployed": true,
             }));
         } else {
-            println!("  stable={}: not deployed", stable);
+            eprintln!("  stable={}: not deployed", stable);
             pools.push(serde_json::json!({
                 "stable": stable,
                 "address": pool_addr,

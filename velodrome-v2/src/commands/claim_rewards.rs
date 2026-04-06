@@ -39,7 +39,7 @@ pub async fn run(args: ClaimRewardsArgs) -> anyhow::Result<()> {
         if pool_addr == "0x0000000000000000000000000000000000000000" {
             anyhow::bail!("Pool not found for {}/{} stable={}", token_a, token_b, args.stable);
         }
-        println!("Pool: {}", pool_addr);
+        eprintln!("Pool: {}", pool_addr);
         let gauge = voter_get_gauge(voter, &pool_addr, rpc).await?;
         if gauge == "0x0000000000000000000000000000000000000000" {
             anyhow::bail!("No gauge found for pool {}. The pool may not have gauge rewards.", pool_addr);
@@ -49,7 +49,7 @@ pub async fn run(args: ClaimRewardsArgs) -> anyhow::Result<()> {
         anyhow::bail!("Provide --token-a and --token-b, or --gauge <address>");
     };
 
-    println!("Gauge: {}", gauge_addr);
+    eprintln!("Gauge: {}", gauge_addr);
 
     // --- 2. Resolve wallet ---
     let wallet = if args.dry_run {
@@ -65,14 +65,14 @@ pub async fn run(args: ClaimRewardsArgs) -> anyhow::Result<()> {
         gauge_earned(&gauge_addr, &wallet, rpc).await?
     };
 
-    println!("VELO earned: {}", earned);
+    eprintln!("VELO earned: {}", earned);
 
     if !args.dry_run && earned == 0 {
         println!("{{\"ok\":true,\"message\":\"No VELO rewards to claim\",\"gauge\":\"{}\",\"earned\":0}}", gauge_addr);
         return Ok(());
     }
 
-    println!("Please confirm claiming {} VELO from gauge {}. (Proceeding automatically in non-interactive mode)", earned, gauge_addr);
+    eprintln!("Please confirm claiming {} VELO from gauge {}. (Proceeding automatically in non-interactive mode)", earned, gauge_addr);
 
     // --- 4. Build getReward(address account) calldata ---
     // Selector: 0xc00007b0

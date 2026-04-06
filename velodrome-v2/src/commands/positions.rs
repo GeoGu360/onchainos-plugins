@@ -43,7 +43,7 @@ pub async fn run(args: PositionsArgs) -> anyhow::Result<()> {
         None => resolve_wallet(CHAIN_ID)?,
     };
 
-    println!("Fetching Velodrome V2 LP positions for wallet: {}", owner);
+    eprintln!("Fetching Velodrome V2 LP positions for wallet: {}", owner);
 
     let mut positions = Vec::new();
 
@@ -91,7 +91,7 @@ pub async fn run(args: PositionsArgs) -> anyhow::Result<()> {
                 let (reserve0, reserve1) = pool_get_reserves(&pool_addr, rpc).await?;
                 let total_supply = pool_total_supply(&pool_addr, rpc).await?;
                 positions.push(build_position_json(&pool_addr, ta, tb, lp_bal, reserve0, reserve1, total_supply));
-                println!(
+                eprintln!(
                     "  Found: pool={} token0={} token1={} stable={} lpBalance={}",
                     pool_addr, ta, tb, stable, lp_bal
                 );

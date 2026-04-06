@@ -55,7 +55,7 @@ pub async fn run(args: AddLiquidityArgs) -> anyhow::Result<()> {
             token_a, token_b, args.stable
         );
     }
-    println!("Pool verified: {}", pool_addr);
+    eprintln!("Pool verified: {}", pool_addr);
 
     // --- 2. Auto-quote amount_b if not provided ---
     let amount_b_desired = if args.amount_b_desired == 0 {
@@ -64,7 +64,7 @@ pub async fn run(args: AddLiquidityArgs) -> anyhow::Result<()> {
             args.amount_a_desired, u128::MAX / 2,
             rpc
         ).await.unwrap_or((0, 0, 0));
-        println!("Auto-quoted amountBDesired: {}", quoted_b);
+        eprintln!("Auto-quoted amountBDesired: {}", quoted_b);
         quoted_b
     } else {
         args.amount_b_desired
@@ -77,30 +77,30 @@ pub async fn run(args: AddLiquidityArgs) -> anyhow::Result<()> {
         resolve_wallet(CHAIN_ID)?
     };
 
-    println!(
+    eprintln!(
         "Adding liquidity: {}/{} stable={} amountA={} amountB={}",
         token_a, token_b, args.stable, args.amount_a_desired, amount_b_desired
     );
-    println!("Please confirm the add-liquidity parameters above before proceeding. (Proceeding automatically in non-interactive mode)");
+    eprintln!("Please confirm the add-liquidity parameters above before proceeding. (Proceeding automatically in non-interactive mode)");
 
     // --- 4. Approve token A if needed ---
     if !args.dry_run {
         let allowance_a = get_allowance(&token_a, &recipient, router, rpc).await?;
         if allowance_a < args.amount_a_desired {
-            println!("Approving tokenA ({}) for Router...", token_a);
+            eprintln!("Approving tokenA ({}) for Router...", token_a);
             let approve_data = build_approve_calldata(router, u128::MAX);
             let res = wallet_contract_call(CHAIN_ID, &token_a, &approve_data, true, false).await?;
-            println!("Approve tokenA tx: {}", extract_tx_hash(&res));
+            eprintln!("Approve tokenA tx: {}", extract_tx_hash(&res));
             sleep(Duration::from_secs(5)).await;
         }
 
         // --- 5. Approve token B if needed ---
         let allowance_b = get_allowance(&token_b, &recipient, router, rpc).await?;
         if allowance_b < amount_b_desired {
-            println!("Approving tokenB ({}) for Router...", token_b);
+            eprintln!("Approving tokenB ({}) for Router...", token_b);
             let approve_data = build_approve_calldata(router, u128::MAX);
             let res = wallet_contract_call(CHAIN_ID, &token_b, &approve_data, true, false).await?;
-            println!("Approve tokenB tx: {}", extract_tx_hash(&res));
+            eprintln!("Approve tokenB tx: {}", extract_tx_hash(&res));
             sleep(Duration::from_secs(5)).await;
         }
     }
