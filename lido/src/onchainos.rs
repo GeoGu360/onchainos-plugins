@@ -61,15 +61,6 @@ pub async fn wallet_contract_call(
     Ok(serde_json::from_str(&stdout)?)
 }
 
-/// Extract txHash from wallet contract-call response
-/// Response shape: {"ok":true,"data":{"txHash":"0x..."}}
-pub fn extract_tx_hash(result: &Value) -> &str {
-    result["data"]["txHash"]
-        .as_str()
-        .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-}
-
 /// Extract txHash or return an error if missing/pending.
 /// Use this for write operations where a missing hash indicates a submission failure.
 pub fn extract_tx_hash_or_err(result: &Value) -> anyhow::Result<String> {

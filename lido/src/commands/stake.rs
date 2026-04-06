@@ -87,7 +87,8 @@ pub async fn run(
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash_or_err(&result)
+        .map_err(|e| anyhow::anyhow!("Stake tx failed: {}", e))?;
     println!(
         "{}",
         json!({
