@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::Result;
 use serde_json::Value;
 use std::process::Command;
 
@@ -9,9 +9,21 @@ pub fn resolve_wallet_solana() -> Result<String> {
     let output = Command::new("onchainos")
         .args(["wallet", "balance", "--chain", "501"])
         .output()?;
-    let stdout = String::from_utf8_lossy(&output.stdout);
+    let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+    let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+
+    if !output.status.success() {
+        let err = if !stderr.is_empty() { stderr.trim().to_string() } else { stdout.trim().to_string() };
+        anyhow::bail!("onchainos failed (exit {}): {}", output.status, err);
+    }
+
     let json: Value = serde_json::from_str(&stdout)
         .map_err(|e| anyhow::anyhow!("Failed to parse wallet balance: {}\nOutput: {}", e, stdout))?;
+
+    if json["ok"].as_bool() != Some(true) {
+        let err_msg = json["error"].as_str().unwrap_or("unknown onchainos error");
+        anyhow::bail!("onchainos execution failed: {}", err_msg);
+    }
 
     // Try details[0].tokenAssets[0].address first
     if let Some(addr) = json["data"]["details"]
@@ -70,21 +82,34 @@ pub async fn wallet_contract_call_solana(
         ])
         .output()?;
 
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    serde_json::from_str(&stdout)
-        .map_err(|e| anyhow::anyhow!("Failed to parse onchainos response: {}\nOutput: {}", e, stdout))
+    let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+    let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+
+    if !output.status.success() {
+        let err = if !stderr.is_empty() { stderr.trim().to_string() } else { stdout.trim().to_string() };
+        anyhow::bail!("onchainos failed (exit {}): {}", output.status, err);
+    }
+
+    let result: Value = serde_json::from_str(&stdout)
+        .map_err(|e| anyhow::anyhow!("Failed to parse onchainos response: {}\nOutput: {}", e, stdout))?;
+
+    if result["ok"].as_bool() != Some(true) {
+        let err_msg = result["error"].as_str().unwrap_or("unknown onchainos error");
+        anyhow::bail!("onchainos execution failed: {}", err_msg);
+    }
+
+    Ok(result)
 }
 
 /// Extract txHash from onchainos response.
 /// Checks: data.swapTxHash → data.txHash → txHash (root)
 /// Returns Err if no txHash is present, so callers can decide whether to retry.
-pub fn extract_tx_hash(result: &Value) -> Result<String> {
-    let raw = result.to_string();
-    result["data"]["swapTxHash"]
-        .as_str()
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    let hash = result["data"]["swapTxHash"].as_str()
         .or_else(|| result["data"]["txHash"].as_str())
-        .or_else(|| result["txHash"].as_str())
-        .filter(|s| !s.is_empty())
-        .map(|s| s.to_string())
-        .ok_or_else(|| anyhow!("tx hash not found in onchainos output; raw output: {}", raw))
+        .or_else(|| result["txHash"].as_str());
+    match hash {
+        Some(h) if !h.is_empty() && h != "pending" => Ok(h.to_string()),
+        _ => anyhow::bail!("txHash not found in onchainos output; raw: {}", result),
+    }
 }
