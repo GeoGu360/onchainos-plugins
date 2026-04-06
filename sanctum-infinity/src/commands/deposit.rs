@@ -58,7 +58,7 @@ pub async fn execute(
 
     // Submit via onchainos
     let result = onchainos::wallet_contract_call_solana(INF_PROGRAM_ID, &tx_b64, false).await?;
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
 
     let output = json!({
         "ok": true,

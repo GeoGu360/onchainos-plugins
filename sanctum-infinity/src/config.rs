@@ -13,7 +13,7 @@ pub const INF_PROGRAM_ID: &str = "5ocnV1qiCgaQR8Jb8xWnVbApfaygJ8tNoZfgPwsgx9kx";
 pub const WSOL_MINT: &str = "So11111111111111111111111111111111111111112";
 
 /// JitoSOL mint
-pub const JITO_SOL_MINT: &str = "J1toso1uCk3RLmjorhTtrVBVzHQDSsvVQ6n8CGBbBTkp";
+pub const JITO_SOL_MINT: &str = "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn";
 
 /// mSOL mint
 pub const MSOL_MINT: &str = "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So";

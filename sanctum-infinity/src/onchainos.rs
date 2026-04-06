@@ -82,11 +82,19 @@ pub async fn wallet_contract_call_solana(
 
 /// Extract txHash from onchainos response.
 /// Checks data.swapTxHash → data.txHash → txHash (root).
-pub fn extract_tx_hash(result: &Value) -> String {
-    result["data"]["swapTxHash"]
+/// Returns Err if the response indicates failure or no hash is present.
+pub fn extract_tx_hash(result: &Value) -> Result<String> {
+    // Check if the response itself signals an error
+    if result["ok"].as_bool() == Some(false) {
+        let err_msg = result["error"].as_str().unwrap_or("unknown onchainos error");
+        anyhow::bail!("onchainos error: {}", err_msg);
+    }
+    let hash = result["data"]["swapTxHash"]
         .as_str()
         .or_else(|| result["data"]["txHash"].as_str())
-        .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-        .to_string()
+        .or_else(|| result["txHash"].as_str());
+    match hash {
+        Some(h) if !h.is_empty() => Ok(h.to_string()),
+        _ => anyhow::bail!("txHash not found in onchainos response: {}", result),
+    }
 }

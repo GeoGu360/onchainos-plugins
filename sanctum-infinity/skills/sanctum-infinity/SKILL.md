@@ -1,10 +1,11 @@
 ---
 name: sanctum-infinity
-description: "Sanctum Infinity is Solana's flagship infinite-LST pool. Swap between any LSTs at near-zero cost, deposit LSTs to earn staking yields + trading fees, and query pool stats. Trigger phrases: swap LST on Sanctum, swap jitoSOL to INF, swap mSOL to INF, deposit to Sanctum Infinity, add liquidity Sanctum, withdraw from Sanctum Infinity, Sanctum pool stats, INF pool, check INF balance. Chinese: 在Sanctum上交换LST, 存入Sanctum Infinity, 从Sanctum取回, 查询Sanctum池子"
+description: "Sanctum Infinity is Solana's flagship infinite-LST pool. Swap between any LSTs at near-zero cost, deposit LSTs to earn staking yields + trading fees, and query pool stats. Trigger phrases: swap LST on Sanctum, swap jitoSOL to INF, swap mSOL to INF, deposit to Sanctum Infinity, add liquidity Sanctum, withdraw from Sanctum Infinity, Sanctum pool stats, INF pool, check INF balance, zai Sanctum shang jiao huan LST, cun ru Sanctum Infinity, cong Sanctum qu hui, cha xun Sanctum chi zi. Do NOT use for: EVM chain swaps, Ethereum DeFi protocols, Jupiter swaps, non-LST Solana token swaps."
 license: MIT
 metadata:
   author: skylavis-sky
   version: "0.1.0"
+  source_repo: "https://github.com/onchainos/onchainos-plugins"
 ---
 
 ## Overview
