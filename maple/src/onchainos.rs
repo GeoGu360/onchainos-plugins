@@ -96,11 +96,11 @@ pub async fn erc20_approve(
 }
 
 /// Extract txHash from onchainos response
-pub fn extract_tx_hash(result: &Value) -> String {
+pub fn extract_tx_hash(result: &Value) -> Result<String> {
     result["data"]["txHash"]
         .as_str()
-        .unwrap_or("pending")
-        .to_string()
+        .map(|s| s.to_string())
+        .ok_or_else(|| anyhow::anyhow!("txHash missing in onchainos response: {}", result))
 }
 
 /// Check if onchainos returned a successful result

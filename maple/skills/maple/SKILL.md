@@ -1,28 +1,35 @@
 ---
 name: maple
-description: Maple Finance institutional lending — deposit USDC/USDT into syrup pools to earn yield
+description: Maple Finance institutional lending - deposit USDC/USDT into syrup pools to earn yield
 version: "0.1.0"
 ---
 
 # Maple Finance Skill
 
-> ⚠️ **Protocol Status: KYC/Authorization Required for Deposits**
+> **Protocol Status: KYC/Authorization Required for Deposits**
 > Maple Finance is an institutional lending protocol. Deposits require wallet authorization via `PoolPermissionManager` (off-chain KYC/allowlist). The `deposit` and `withdraw` commands will produce correct calldata but on-chain execution requires your wallet to be whitelisted by a pool delegate. Contact Maple Finance at https://maple.finance to apply.
 
 Maple Finance is an institutional lending protocol on Ethereum. Users can deposit USDC or USDT into syrup pool vaults (ERC-4626) to earn yield.
 
 Supported chains: **Ethereum (chain 1)**
 
+## Do NOT use for
+
+- Any chain other than Ethereum mainnet (chain 1)
+- Token swaps, bridges, or DEX operations
+- Maple V1 or non-syrup pool products
+- Immediate (same-block) withdrawals -- requestRedeem enqueues shares in a queue
+
 ## Architecture
 
-- Read ops (pools, positions, rates) → direct `eth_call` via public RPC
-- Write ops → after user confirmation, submits via `onchainos wallet contract-call`
+- Read ops (pools, positions, rates) -> direct `eth_call` via public RPC
+- Write ops -> after user confirmation, submits via `onchainos wallet contract-call`
 
 ---
 
 ## Commands
 
-### pools — List syrup pools
+### pools - List syrup pools
 
 Lists all Maple Finance syrup pools with TVL.
 
@@ -56,7 +63,7 @@ maple pools --chain 1
 
 ---
 
-### positions — Show lending positions
+### positions - Show lending positions
 
 Shows the user's current lending positions (shares held and their underlying value).
 
@@ -91,7 +98,7 @@ maple positions --chain 1 --from 0x...
 
 ---
 
-### rates — Show pool exchange rates
+### rates - Show pool exchange rates
 
 Shows exchange rates and TVL for all pools.
 
@@ -123,7 +130,7 @@ maple rates --chain 1
 
 ---
 
-### deposit — Deposit into a syrup pool
+### deposit - Deposit into a syrup pool
 
 Deposits USDC or USDT into a Maple Finance syrup pool.
 
@@ -166,9 +173,9 @@ maple deposit --pool usdc --amount 0.01 --chain 1
 
 ---
 
-### withdraw — Request redemption from a pool
+### withdraw - Request redemption from a pool
 
-Initiates a withdrawal by calling `requestRedeem` on the pool contract. This enqueues shares in the withdrawal queue — funds are released after queue processing (timing depends on pool liquidity).
+Initiates a withdrawal by calling `requestRedeem` on the pool contract. This enqueues shares in the withdrawal queue - funds are released after queue processing (timing depends on pool liquidity).
 
 **Trigger examples:**
 - "Withdraw my USDC from Maple"
@@ -211,6 +218,6 @@ maple withdraw --pool usdc --chain 1
 ## Notes
 
 - Maple Finance is an **institutional lending** protocol. Deposits go to vetted institutional borrowers.
-- Withdrawal is a 2-step process: `requestRedeem` → wait for queue → `redeem`. This skill handles the first step.
+- Withdrawal is a 2-step process: `requestRedeem` -> wait for queue -> `redeem`. This skill handles the first step.
 - USDT deposits require setting allowance to 0 first if a prior allowance exists (USDT race condition). The deposit command handles this automatically.
 - Exchange rate > 1.0 means your USDC/USDT has grown since deposit.

@@ -90,7 +90,7 @@ pub async fn run(
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
 
     println!(
         "{}",

@@ -90,7 +90,7 @@ pub async fn run(
             if !onchainos::is_ok(&approve_result) {
                 anyhow::bail!("ERC-20 approve failed: {}", serde_json::to_string(&approve_result)?);
             }
-            eprintln!("Approve tx: {}", onchainos::extract_tx_hash(&approve_result));
+            eprintln!("Approve tx: {}", onchainos::extract_tx_hash(&approve_result).unwrap_or_else(|_| "pending".to_string()));
 
             // Wait 3 seconds between approve and deposit
             tokio::time::sleep(std::time::Duration::from_secs(3)).await;
@@ -122,7 +122,7 @@ pub async fn run(
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
 
     println!(
         "{}",

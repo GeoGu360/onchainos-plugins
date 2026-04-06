@@ -25,7 +25,7 @@ build:
   lang: rust
   binary_name: maple
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "0000000000000000000000000000000000000000"
+  source_commit: "2975640ecf937c8f42fe2dcc5a00acf9ee24e381"
   source_dir: maple
 
 api_calls:
