@@ -105,3 +105,53 @@ cb05a66  fix(etherfi-borrowing): ok-check on tx results, ASCII SKILL.md, Do NOT 
 ```
 
 Pushed to: `origin/main` (GeoGu360/onchainos-plugins)
+
+---
+
+## Re-audit — 2026-04-06
+
+**Re-audit trigger:** Wallet now has ETH on Scroll (0.002409 ETH / ~$5.19). Re-auditing to attempt live write operations.
+
+**Wallet:** `0x87fb0647faabea33113eaf1d80d67acb1c491b90`
+**Chain:** Scroll (chain ID 534352)
+**ETH balance:** 0.002409 ETH
+**USDC balance:** 0.000000 USDC
+
+### Build
+
+`cargo build --release` — PASS (8 pre-existing unused-variable warnings, no errors). Build time: 0.11s (cached).
+
+### Read-Only Commands (Live)
+
+| Command | Result | Key Output |
+|---|---|---|
+| `markets` | PASS | USDC borrow market: total_supply=5005.0008 USDC, total_borrow=10.3332 USDC, utilization=0.21%, borrow_apy=0.0000% |
+| `rates` | PASS | borrow_token=USDC, borrow_apy_pct=0.000000, utilization=0.21% |
+| `position --user-safe 0x87fb...` | PASS | No position (0 USDC debt, 0 supplier balance, not liquidatable) as expected for a plain EOA |
+
+### Write Operations Assessment
+
+**The plugin does NOT support ETH deposit or ETH-backed borrowing.** All write operations (`supply-liquidity`, `withdraw-liquidity`, `repay`) are USDC-only. The wallet's ETH balance on Scroll cannot be used as input for any of the plugin's write operations.
+
+The protocol accepts collateral deposits (weETH/SCR) only through the EtherFi Cash app UserSafe smart wallet — not via this plugin. This plugin's `supply-liquidity` command supplies USDC to a lending pool; it is not an ETH deposit function.
+
+### Dry-run Write Operations (Re-verified)
+
+| Command | Result | Notes |
+|---|---|---|
+| `--dry-run supply-liquidity --amount 0.01` | PASS | Correct calldata for `supply(address,address,uint256)` selector `0x0c0a769b`, amount_raw=10000 (6 decimals) |
+| `--dry-run withdraw-liquidity --amount 0.01` | PASS | Correct calldata for withdraw selector `0xa56c8ff7`, amount_raw=10000 |
+
+### Error Handling Re-verified
+
+`supply-liquidity --amount 999999999` → `Error: Insufficient USDC balance on Scroll. Have: 0.000000 USDC, need: 999999999.000000 USDC` — PASS, user-friendly message, exits with code 1.
+
+### Live Write Operations
+
+**Not executed.** Reason: The plugin requires USDC on Scroll for all write operations. The wallet holds only ETH on Scroll (0.002409 ETH). Converting ETH to USDC is outside the scope of this plugin and would require a DEX swap, which is not part of this audit scope. No new bugs were found that would block a live test once USDC is available.
+
+### Re-audit Verdict
+
+**PASS (read operations) / N/A (write operations — USDC required, wallet has none)**
+
+All read commands work correctly on live Scroll RPC. The plugin correctly blocks write operations with a friendly error when USDC balance is insufficient. The previously applied fixes (ok-check, ASCII SKILL.md, dry-run flag placement) remain intact. No new issues found.
