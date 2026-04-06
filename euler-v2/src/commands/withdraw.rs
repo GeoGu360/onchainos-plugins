@@ -55,7 +55,7 @@ pub async fn run(
         let result = onchainos::wallet_contract_call(
             chain_id, &vault_addr, &calldata, from, None, dry_run
         ).await?;
-        let tx = onchainos::extract_tx_hash(&result).to_string();
+        let tx = onchainos::extract_tx_hash(&result)?;
 
         let output = serde_json::json!({
             "ok": true,
@@ -90,7 +90,7 @@ pub async fn run(
         let result = onchainos::wallet_contract_call(
             chain_id, &vault_addr, &calldata, from, None, dry_run
         ).await?;
-        let tx = onchainos::extract_tx_hash(&result).to_string();
+        let tx = onchainos::extract_tx_hash(&result)?;
 
         let output = serde_json::json!({
             "ok": true,
