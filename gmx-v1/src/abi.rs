@@ -245,12 +245,13 @@ mod tests {
 
     #[test]
     fn test_encode_approve() {
-        // approve(address,uint256) selector = 0x095ea7b3
+        // approve(address,uint256) selector = 0x095ea7b3, uses uint256::MAX (all 0xff)
         let result = crate::onchainos::encode_approve(
             "0xaBBc5F99639c9B6bCb58544ddf04CF3C176D2B00",
-            u128::MAX,
         ).unwrap();
         assert!(result.starts_with("0x095ea7b3"));
+        // Verify amount is uint256::MAX (32 bytes of 0xff), not u128::MAX
+        assert!(result.ends_with("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"));
     }
 
     #[test]

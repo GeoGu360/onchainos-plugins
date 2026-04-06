@@ -66,25 +66,38 @@ pub async fn wallet_contract_call(
     }
     let output = Command::new("onchainos").args(&args).output()?;
     let stdout = String::from_utf8_lossy(&output.stdout);
-    Ok(serde_json::from_str(&stdout)?)
+    let result: Value = serde_json::from_str(&stdout)?;
+    // Check ok field: if ok=false, propagate the error message instead of silently returning
+    if result["ok"].as_bool() == Some(false) {
+        let msg = result["msg"]
+            .as_str()
+            .or_else(|| result["message"].as_str())
+            .or_else(|| result["error"].as_str())
+            .unwrap_or("onchainos returned ok:false with no message");
+        anyhow::bail!("onchainos contract-call failed: {}", msg);
+    }
+    Ok(result)
 }
 
 /// Extract txHash from onchainos response: data.txHash -> txHash (root fallback).
-pub fn extract_tx_hash(result: &Value) -> String {
+/// Returns an error if no txHash is found, to prevent silent failures.
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
     result["data"]["txHash"]
         .as_str()
         .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-        .to_string()
+        .map(|s| s.to_string())
+        .ok_or_else(|| anyhow::anyhow!("No txHash in onchainos response: {}", result))
 }
 
 /// ERC-20 approve calldata: approve(address,uint256) = 0x095ea7b3
-pub fn encode_approve(spender: &str, amount: u128) -> anyhow::Result<String> {
+/// Uses type(uint256).max (all 32 bytes = 0xff) for true unlimited approval.
+pub fn encode_approve(spender: &str) -> anyhow::Result<String> {
     let spender_clean = spender.trim_start_matches("0x");
     if spender_clean.len() != 40 {
         anyhow::bail!("Invalid spender address: {}", spender);
     }
     let spender_padded = format!("{:0>64}", spender_clean);
-    let amount_hex = format!("{:064x}", amount);
+    // type(uint256).max = 2^256 - 1 = 32 bytes of 0xff
+    let amount_hex = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
     Ok(format!("0x095ea7b3{}{}", spender_padded, amount_hex))
 }

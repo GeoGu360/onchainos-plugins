@@ -5,6 +5,14 @@ description: Trade perpetuals, swap tokens, and manage GLP liquidity on GMX V1 (
 
 # GMX V1 Plugin
 
+## Do NOT use for
+
+- GMX V2 (keeper model, GM pools) — use the `gmx-v2` skill instead
+- Spot DEX swaps on Uniswap, Curve, or other non-GMX protocols
+- Checking wallet balances or token holdings — use `onchainos wallet balance`
+- Bridging tokens between chains
+- Any chain other than Arbitrum (42161) or Avalanche (43114)
+
 GMX V1 is a decentralized perpetuals and spot trading protocol on Arbitrum and Avalanche. Unlike GMX V2, V1 uses direct execution (no keeper delay) for swaps and GLP operations. Perpetual positions use a lightweight keeper with a 0.0001 ETH execution fee.
 
 **Architecture:** Read ops call the GMX REST API. Write ops always ask user to confirm before submitting via `onchainos wallet contract-call` to GMX V1 contracts (Router, RewardRouter, PositionRouter).
@@ -171,7 +179,7 @@ gmx-v1 open-position \
   --index-token 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1 \
   --amount-in 5000000 \
   --size-usd 50.0 \
-  --is-long true \
+  --is-long \
   --acceptable-price 2000000000000000000000000000000000 \
   --dry-run
 ```
@@ -183,7 +191,7 @@ Remove `--dry-run` after user confirms.
 - `--index-token`: Token to trade (e.g. WETH address)
 - `--amount-in`: Collateral amount in token's smallest unit
 - `--size-usd`: Total position size in USD (e.g. 50.0 for $50)
-- `--is-long`: `true` for long, `false` for short
+- `--is-long`: presence flag — include for long positions, omit for short positions
 - `--acceptable-price`: Acceptable price from `get-prices` output in 30-decimal format
 - `--execution-fee`: Override execution fee in wei (default: 100000000000000 = 0.0001 ETH)
 
@@ -206,7 +214,7 @@ gmx-v1 close-position \
   --collateral-token 0xaf88d065e77c8cC2239327C5EDb3A432268e5831 \
   --index-token 0x82aF49447D8a07e3bd95BD0d56f35241523fBab1 \
   --size-usd 50.0 \
-  --is-long true \
+  --is-long \
   --acceptable-price 1800000000000000000000000000000000 \
   --dry-run
 ```
@@ -218,7 +226,7 @@ Remove `--dry-run` after user confirms.
 - `--index-token`: Token being traded (e.g. WETH)
 - `--collateral-delta`: Collateral amount to withdraw (0 = leave in position)
 - `--size-usd`: USD size to close (use full position size to close entirely)
-- `--is-long`: `true` for long, `false` for short
+- `--is-long`: presence flag — include for long positions, omit for short positions
 - `--acceptable-price`: Acceptable price in 30-decimal GMX format
 - `--min-out`: Minimum output tokens (0 = no slippage protection)
 - `--withdraw-eth`: Set to `true` to receive ETH instead of WETH

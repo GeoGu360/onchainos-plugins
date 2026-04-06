@@ -10,8 +10,8 @@ pub async fn run(
 ) -> Result<()> {
     let _cfg = get_chain_config(chain_id)?;
 
-    // approve(address,uint256) — max uint256 for unlimited approval
-    let calldata = onchainos::encode_approve(spender, u128::MAX)?;
+    // approve(address,uint256) — type(uint256).max for true unlimited approval
+    let calldata = onchainos::encode_approve(spender)?;
 
     println!("Approve {} to spend {} (unlimited)", spender, token);
     println!("Token contract: {}", token);
@@ -29,7 +29,7 @@ pub async fn run(
     if dry_run {
         println!("Dry run result: {}", serde_json::to_string_pretty(&result)?);
     } else {
-        let tx_hash = onchainos::extract_tx_hash(&result);
+        let tx_hash = onchainos::extract_tx_hash(&result)?;
         println!("Approve submitted. TxHash: {}", tx_hash);
         println!("Full result: {}", serde_json::to_string_pretty(&result)?);
     }

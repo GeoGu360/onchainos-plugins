@@ -62,7 +62,7 @@ pub async fn run(
     if dry_run {
         println!("Dry run result: {}", serde_json::to_string_pretty(&result)?);
     } else {
-        let tx_hash = onchainos::extract_tx_hash(&result);
+        let tx_hash = onchainos::extract_tx_hash(&result)?;
         println!("Open position submitted. TxHash: {}", tx_hash);
         println!("Full result: {}", serde_json::to_string_pretty(&result)?);
     }

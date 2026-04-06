@@ -42,7 +42,7 @@ pub async fn run(chain_id: u64, account: Option<String>) -> Result<()> {
     println!("{}", "-".repeat(100));
     println!(
         "{:<44} {:<8} {:<20} {:<20}",
-        "Market", "Side", "Size (USD)", "PnL"
+        "Market", "Side", "Size (USD)", "PnL (USD)"
     );
     println!("{}", "-".repeat(100));
 
@@ -52,16 +52,26 @@ pub async fn run(chain_id: u64, account: Option<String>) -> Result<()> {
             .unwrap_or(p["market"].as_str().unwrap_or("?"));
         let is_long = p["isLong"].as_bool().unwrap_or(false);
         let side = if is_long { "LONG" } else { "SHORT" };
-        let size = p["sizeInUsd"]
+        // Size and PnL are in GMX 30-decimal format: divide by 1e30 for USD
+        let size_raw: u128 = p["sizeInUsd"]
             .as_str()
             .or_else(|| p["size"].as_str())
-            .unwrap_or("0");
-        let pnl = p["pnl"]
+            .unwrap_or("0")
+            .parse()
+            .unwrap_or(0);
+        let pnl_raw: i128 = p["pnl"]
             .as_str()
             .or_else(|| p["unrealisedPnl"].as_str())
-            .unwrap_or("0");
+            .unwrap_or("0")
+            .parse()
+            .unwrap_or(0);
+        let size_usd = size_raw as f64 / 1e30;
+        let pnl_usd = pnl_raw as f64 / 1e30;
 
-        println!("{:<44} {:<8} {:<20} {:<20}", market, side, size, pnl);
+        println!(
+            "{:<44} {:<8} ${:<19.2} ${:<19.4}",
+            market, side, size_usd, pnl_usd
+        );
     }
     Ok(())
 }
