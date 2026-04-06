@@ -1,6 +1,5 @@
 // Venus Core Pool — Configuration (BSC chain 56)
 
-pub const BSC_CHAIN_ID: u64 = 56;
 pub const BSC_RPC_URL: &str = "https://bsc-rpc.publicnode.com";
 
 // ~3s block time on BSC; used for APY calculation
@@ -15,6 +14,7 @@ pub const VUSDT: &str = "0xfd5840cd36d94d7229439859c0112a4185bc0255";
 pub const VBTC: &str = "0x882c173bc7ff3b7786ca16dfed3dfffb9ee7847b";
 pub const VETH: &str = "0xf508fcd89b8bd15579dc79a6827cb4686a3592c8";
 pub const VUSDC: &str = "0xeca88125a5adbe82614ffc12d0db554e2e2867c8";
+#[allow(dead_code)]
 pub const VXVS: &str = "0x151b1e2635a717bcdc836ecd6fbb62b674fe3e1d";
 
 // Underlying ERC-20 token addresses

@@ -7,10 +7,12 @@ use std::process::Command;
 /// Resolve EVM wallet address for given chain
 pub fn resolve_wallet(chain_id: u64) -> Result<String> {
     let chain_str = chain_id.to_string();
+    // Primary: wallet balance (returns address in response)
     let output = Command::new("onchainos")
         .args(["wallet", "balance", "--chain", &chain_str])
         .output()?;
-    let json: Value = serde_json::from_str(&String::from_utf8_lossy(&output.stdout))?;
+    let json: Value = serde_json::from_str(&String::from_utf8_lossy(&output.stdout))
+        .unwrap_or(Value::Null);
     if let Some(addr) = json["data"]["details"]
         .get(0)
         .and_then(|d| d["tokenAssets"].get(0))
@@ -30,7 +32,8 @@ pub fn resolve_wallet(chain_id: u64) -> Result<String> {
     let out2 = Command::new("onchainos")
         .args(["wallet", "addresses"])
         .output()?;
-    let j2: Value = serde_json::from_str(&String::from_utf8_lossy(&out2.stdout))?;
+    let j2: Value = serde_json::from_str(&String::from_utf8_lossy(&out2.stdout))
+        .unwrap_or(Value::Null);
     let chain_idx = chain_id.to_string();
     if let Some(evm_list) = j2["data"]["evm"].as_array() {
         for entry in evm_list {
@@ -51,7 +54,7 @@ pub async fn wallet_contract_call(
     chain_id: u64,
     to: &str,
     input_data: &str,
-    amt: Option<u64>,
+    amt: Option<u128>,
     dry_run: bool,
 ) -> Result<Value> {
     if dry_run {
@@ -80,8 +83,17 @@ pub async fn wallet_contract_call(
     }
 
     let output = Command::new("onchainos").args(&args).output()?;
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        anyhow::bail!("onchainos contract-call failed: {}", stderr);
+    }
     let stdout = String::from_utf8_lossy(&output.stdout);
-    Ok(serde_json::from_str(&stdout)?)
+    let json: Value = serde_json::from_str(&stdout)
+        .map_err(|e| anyhow::anyhow!("Failed to parse onchainos response: {}", e))?;
+    if !json["ok"].as_bool().unwrap_or(false) {
+        anyhow::bail!("onchainos contract-call returned error: {}", json);
+    }
+    Ok(json)
 }
 
 /// ERC-20 approve
@@ -99,12 +111,20 @@ pub async fn erc20_approve(
     wallet_contract_call(chain_id, token_addr, &calldata, None, dry_run).await
 }
 
-/// Extract txHash from onchainos response
-pub fn extract_tx_hash(result: &Value) -> String {
-    result["data"]["swapTxHash"]
+/// Extract txHash from onchainos response.
+/// Returns Err if the response does not contain a valid hash (rejects "pending" and empty strings).
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    let hash = result["data"]["swapTxHash"]
         .as_str()
         .or_else(|| result["data"]["txHash"].as_str())
         .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-        .to_string()
+        .unwrap_or("");
+
+    if hash.is_empty() || hash == "pending" {
+        anyhow::bail!(
+            "Transaction hash not available in response: {}",
+            result
+        );
+    }
+    Ok(hash.to_string())
 }

@@ -65,7 +65,7 @@ pub async fn execute(
 
     let result =
         onchainos::wallet_contract_call(chain_id, vtoken_addr, &calldata, None, false).await?;
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
 
     println!(
         "{}",

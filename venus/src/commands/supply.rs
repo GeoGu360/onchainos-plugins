@@ -57,11 +57,11 @@ pub async fn execute(
             chain_id,
             vtoken_addr,
             &calldata,
-            Some(amount_raw as u64),
+            Some(amount_raw),
             false,
         )
         .await?;
-        let tx_hash = onchainos::extract_tx_hash(&result);
+        let tx_hash = onchainos::extract_tx_hash(&result)?;
 
         println!(
             "{}",
@@ -124,7 +124,7 @@ pub async fn execute(
         // 2. mint(amount)
         let result =
             onchainos::wallet_contract_call(chain_id, vtoken_addr, &calldata, None, false).await?;
-        let tx_hash = onchainos::extract_tx_hash(&result);
+        let tx_hash = onchainos::extract_tx_hash(&result)?;
 
         // Verify underlying address in RPC
         let _ = rpc_url;

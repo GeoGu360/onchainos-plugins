@@ -1,6 +1,16 @@
 ---
 name: venus
-description: "Venus Core Pool lending and borrowing on BSC. Supply assets, borrow, repay, withdraw, and manage collateral on the Venus Compound V2 fork. Trigger phrases: supply to venus, borrow from venus, venus positions, check venus markets, repay venus loan, withdraw from venus, claim venus rewards, venus APY, venus lending, venus BSC"
+description: >-
+  Venus Core Pool lending and borrowing on BSC (BNB Chain, chain 56).
+  Supply assets to earn interest, borrow against collateral, repay loans,
+  withdraw supplied assets, enable collateral, and claim XVS rewards.
+  Compound V2 fork. Supported assets: BNB, USDT, BTC, ETH, USDC.
+  Trigger phrases: supply to venus, borrow from venus, venus positions,
+  check venus markets, repay venus loan, withdraw from venus, claim venus rewards,
+  venus APY, venus lending, venus BSC, venus supply, venus borrow.
+  Do NOT use for: Aave, Compound, or other lending protocols.
+  Do NOT use for: DEX swaps or token bridging.
+  Do NOT use for: Venus on any chain other than BSC (chain 56).
 license: MIT
 metadata:
   author: GeoGu360

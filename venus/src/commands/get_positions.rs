@@ -16,8 +16,8 @@ pub async fn execute(chain_id: u64, wallet: Option<String>) -> Result<()> {
     let markets = rpc::get_all_markets(rpc_url, config::COMPTROLLER).await?;
 
     let mut positions = Vec::new();
-    let mut total_supply_usd = 0f64;
-    let mut total_borrow_usd = 0f64;
+    let total_supply_usd = 0f64;
+    let total_borrow_usd = 0f64;
 
     for vtoken_addr in &markets {
         let (err_code, vtoken_bal, borrow_bal, exchange_rate) =

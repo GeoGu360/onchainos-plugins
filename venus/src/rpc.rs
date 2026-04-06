@@ -83,6 +83,7 @@ pub fn pad_address(addr: &str) -> String {
 }
 
 /// Pad a uint256 to 32 bytes
+#[allow(dead_code)]
 pub fn pad_uint256(val: u128) -> String {
     format!("{:064x}", val)
 }
@@ -100,6 +101,7 @@ pub async fn erc20_symbol(rpc_url: &str, token: &str) -> String {
 }
 
 /// Decode ERC-20 decimals
+#[allow(dead_code)]
 pub async fn erc20_decimals(rpc_url: &str, token: &str) -> u32 {
     // decimals() selector: 0x313ce567
     if let Ok(hex) = eth_call(rpc_url, token, "0x313ce567").await {
@@ -114,6 +116,7 @@ pub async fn erc20_decimals(rpc_url: &str, token: &str) -> u32 {
 }
 
 /// Get ERC-20 balance of address
+#[allow(dead_code)]
 pub async fn erc20_balance(rpc_url: &str, token: &str, holder: &str) -> u128 {
     // balanceOf(address) selector: 0x70a08231
     let data = format!("0x70a08231{}", pad_address(holder));
