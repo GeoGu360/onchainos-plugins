@@ -81,7 +81,7 @@ pub async fn run(args: StakeArgs, chain_id: u64) -> anyhow::Result<()> {
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
     let output = serde_json::json!({
         "ok": true,
         "action": "stake",

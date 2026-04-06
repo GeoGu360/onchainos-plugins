@@ -72,8 +72,17 @@ pub async fn wallet_contract_call(
     }
 
     let output = Command::new("onchainos").args(&args).output()?;
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        anyhow::bail!("onchainos wallet contract-call failed (exit {}): {}", output.status, stderr.trim());
+    }
     let stdout = String::from_utf8_lossy(&output.stdout);
-    Ok(serde_json::from_str(&stdout)?)
+    let json: Value = serde_json::from_str(&stdout)
+        .map_err(|e| anyhow::anyhow!("Failed to parse onchainos response: {} (stdout: {})", e, stdout.trim()))?;
+    if json["ok"].as_bool() != Some(true) {
+        anyhow::bail!("onchainos wallet contract-call returned ok=false: {}", json);
+    }
+    Ok(json)
 }
 
 /// Read-only eth_call via direct JSON-RPC to the public Ethereum RPC endpoint.
@@ -109,12 +118,14 @@ pub fn eth_call(chain_id: u64, to: &str, input_data: &str) -> anyhow::Result<Val
     }))
 }
 
-/// Extract txHash from an onchainos response.
-/// Checks data.txHash first, then root txHash.
-pub fn extract_tx_hash(result: &Value) -> String {
-    result["data"]["txHash"]
+/// Extract txHash from an onchainos response. Returns an error if not present or "pending".
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    let hash = result["data"]["txHash"]
         .as_str()
         .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-        .to_string()
+        .unwrap_or("");
+    if hash.is_empty() || hash == "pending" {
+        anyhow::bail!("Transaction hash unavailable (got: {:?}). The transaction may still be pending.", hash);
+    }
+    Ok(hash.to_string())
 }

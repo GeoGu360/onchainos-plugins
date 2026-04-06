@@ -1,6 +1,6 @@
 ---
 name: swell-staking
-description: "Stake ETH with Swell Network to receive swETH (liquid staking) or rswETH (liquid restaking via EigenLayer) on Ethereum mainnet. Query exchange rates and positions. Trigger phrases: stake ETH swell, buy swETH, restake ETH EigenLayer, check swETH balance, rswETH rate, swell staking positions. Chinese: Swell质押ETH, 获取swETH, EigenLayer再质押, 查询swETH余额"
+description: "Stake ETH with Swell Network to receive swETH (liquid staking) or rswETH (liquid restaking via EigenLayer) on Ethereum mainnet. Query exchange rates and positions. Trigger phrases: stake ETH swell, buy swETH, restake ETH EigenLayer, check swETH balance, rswETH rate, swell staking positions. Chinese triggers: Swell staking ETH, get swETH, EigenLayer restaking, query swETH balance."
 license: MIT
 metadata:
   author: GeoGu360
@@ -166,6 +166,13 @@ swell-staking restake --amount <ETH_AMOUNT> [--from <ADDR>] [--dry-run] [--chain
 - **Unstaking:** swETH and rswETH can be unstaked via the Swell app (https://app.swellnetwork.io). The process takes 1–7 days and generates a swEXIT NFT. This plugin does not implement unstaking.
 - **Rate appreciation:** Unlike rebasing tokens (e.g. stETH), swETH and rswETH appreciate in price vs ETH as rewards accumulate.
 - **EigenLayer:** rswETH holders additionally earn EigenLayer AVS restaking rewards on top of base validator yield.
+
+## Do NOT use for
+
+- Unstaking / withdrawing swETH or rswETH (direct users to https://app.swellnetwork.io)
+- Any chain other than Ethereum mainnet (chain 1)
+- Lido stETH staking (use the `lido` skill instead)
+- Generic token swaps or DEX trades involving swETH/rswETH
 
 ## Skill Routing
 

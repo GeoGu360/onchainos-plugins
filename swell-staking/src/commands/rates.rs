@@ -35,13 +35,13 @@ pub async fn run(chain_id: u64) -> anyhow::Result<()> {
             "contract": config::SWETH_ADDRESS,
             "swETH_per_ETH": eth_to_sweth,
             "ETH_per_swETH": sweth_to_eth,
-            "description": "1 ETH = ~{swETH_per_ETH} swETH (liquid staking token)"
+            "description": format!("1 ETH = ~{} swETH (liquid staking token)", eth_to_sweth)
         },
         "rswETH": {
             "contract": config::RSWETH_ADDRESS,
             "rswETH_per_ETH": eth_to_rsweth,
             "ETH_per_rswETH": rsweth_to_eth,
-            "description": "1 ETH = ~{rswETH_per_ETH} rswETH (liquid restaking via EigenLayer)"
+            "description": format!("1 ETH = ~{} rswETH (liquid restaking via EigenLayer)", eth_to_rsweth)
         }
     });
 
