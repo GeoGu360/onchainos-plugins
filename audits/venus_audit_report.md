@@ -145,3 +145,62 @@ Config hardcodes `decimals: 18` for all assets — correct.
 Venus Core Pool plugin is functionally well-structured. The BSC-only scope is appropriate and clearly documented. All five bugs found were directly fixable and have been committed. The main remaining concern is performance of read commands due to serial RPC calls — acceptable for a v0.1.0 but should be addressed before heavy usage.
 
 **Rating**: ⭐⭐⭐⭐ (4/5) — solid implementation with minor robustness fixes applied
+
+---
+
+## Re-audit — Live Write Verification
+
+**Re-audit date**: 2026-04-06
+**Reason**: Previous audit was dry-run only (no BNB balance). Wallet now funded on BSC.
+**Wallet assets at re-audit time**: BNB 0.01260, USDT 0.01, CAKE 0.417
+
+### Pre-condition Check
+
+`get-positions` before write: `positions: []` — wallet had no Venus positions. Baseline confirmed.
+
+Markets queried before write:
+- vBNB: supply APY 0.0317%, borrow APY 0.1458%
+- vUSDT: supply APY 0.2492%, borrow APY 0.5215%
+
+### Live Write: `supply --asset BNB --amount 0.001`
+
+| Field | Value |
+|-------|-------|
+| Command | `venus supply --asset BNB --amount 0.001` |
+| Plugin output | `{"ok":true,"action":"supply_bnb","amount":0.001,"asset":"BNB","tx_hash":"0x36383d2749323ec3213069cae1dbc6bb519544da9893a81b619970def133d38c","vtoken":"0xa07c5b74c9b40447a954e1466938b865b6bbea36"}` |
+| Tx Hash | `0x36383d2749323ec3213069cae1dbc6bb519544da9893a81b619970def133d38c` |
+| On-chain status | ✅ status=1 \| block 90943531 \| gasUsed 200005 |
+| RPC | https://bsc-dataseed.binance.org |
+
+### Post-write State Verification
+
+`get-positions` after write confirmed new vBNB position:
+
+```json
+{
+  "positions": [
+    {
+      "symbol": "vBNB",
+      "vtoken_address": "0xa07c5b74c9b40447a954e1466938b865b6bbea36",
+      "vtoken_balance_raw": "4011845",
+      "supply_underlying_raw": "999999864578794",
+      "borrow_balance_raw": "0"
+    }
+  ]
+}
+```
+
+`supply_underlying_raw` = 999999864578794 ≈ 0.001 BNB (18 decimals). State change confirmed. ✅
+
+### Re-audit Summary
+
+| Item | Result |
+|------|--------|
+| Live supply (BNB) | ✅ tx confirmed on-chain |
+| On-chain receipt | ✅ status=1, block 90943531 |
+| State change verified | ✅ vBNB position appeared post-tx |
+| All previous bugs | ✅ still fixed (no regressions) |
+
+**Re-audit verdict**: Venus plugin is **fully verified for live write operations on BSC**. The supply path for BNB (vBNB market, native value call with `mint()` selector `0x1249c58b`) executes correctly end-to-end. No regressions from the initial audit fixes.
+
+**Updated Rating**: ⭐⭐⭐⭐ (4/5) — unchanged; serial RPC performance (P2) remains the only outstanding concern.
