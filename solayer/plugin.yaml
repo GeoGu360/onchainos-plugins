@@ -21,7 +21,7 @@ build:
   lang: rust
   binary_name: solayer
   source_repo: skylavis-sky/onchainos-plugins
-  source_commit: "0000000000000000000000000000000000000000"
+  source_commit: "eae6ba840ef712ac1c409a0529c8a7510473ce7d"
   source_dir: solayer
 
 api_calls:
