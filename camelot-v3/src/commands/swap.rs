@@ -124,6 +124,10 @@ pub async fn run(args: SwapArgs) -> anyhow::Result<()> {
     // 7. Execute swap
     let result = wallet_contract_call(args.chain, router, &calldata, true, args.dry_run).await?;
 
+    if !args.dry_run && !result["ok"].as_bool().unwrap_or(false) {
+        anyhow::bail!("Swap failed: {}", result);
+    }
+
     let tx_hash = extract_tx_hash(&result);
     let output = serde_json::json!({
         "ok": result["ok"].as_bool().unwrap_or(false),

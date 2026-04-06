@@ -104,6 +104,9 @@ pub async fn run(args: AddLiquidityArgs) -> anyhow::Result<()> {
             if allowance0 < args.amount0 {
                 eprintln!("Approving token0 ({}) for NFPM...", token0);
                 let res = erc20_approve(args.chain, &token0, nfpm_addr, u128::MAX, false).await?;
+                if !res["ok"].as_bool().unwrap_or(false) {
+                    anyhow::bail!("Approve token0 failed: {}", res);
+                }
                 eprintln!("token0 approve tx: {}", extract_tx_hash(&res));
                 sleep(Duration::from_secs(5)).await;
             }
@@ -113,6 +116,9 @@ pub async fn run(args: AddLiquidityArgs) -> anyhow::Result<()> {
             if allowance1 < args.amount1 {
                 eprintln!("Approving token1 ({}) for NFPM...", token1);
                 let res = erc20_approve(args.chain, &token1, nfpm_addr, u128::MAX, false).await?;
+                if !res["ok"].as_bool().unwrap_or(false) {
+                    anyhow::bail!("Approve token1 failed: {}", res);
+                }
                 eprintln!("token1 approve tx: {}", extract_tx_hash(&res));
                 sleep(Duration::from_secs(5)).await;
             }

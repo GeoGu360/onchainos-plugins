@@ -14,13 +14,13 @@ metadata:
 Camelot V3 is Arbitrum's native concentrated liquidity DEX, built on the Algebra V1 protocol. It supports token swaps, price quotes, and LP position management on Arbitrum (chain 42161).
 
 ## Key Differences from Uniswap V3
-- **Single pool per token pair** — no fee tier selection needed
-- **Algebra protocol** — slightly different contract ABIs
+- **Single pool per token pair** -- no fee tier selection needed
+- **Algebra protocol** -- slightly different contract ABIs
 - All operations are on **Arbitrum** (chain ID 42161)
 
 ## Available Commands
 
-### quote — Get a swap price quote (read-only)
+### quote -- Get a swap price quote (read-only)
 
 Get the estimated output amount for swapping tokens on Camelot V3.
 
@@ -35,10 +35,10 @@ camelot-v3 quote --token-in <TOKEN> --token-out <TOKEN> --amount-in <RAW_AMOUNT>
 ```
 
 **Parameters:**
-- `--token-in` — Input token symbol (WETH, USDT, USDC, ARB) or hex address
-- `--token-out` — Output token symbol or hex address
-- `--amount-in` — Amount in raw units (e.g. `1000000` for 1 USDT with 6 decimals)
-- `--chain` — Chain ID (default: 42161 for Arbitrum)
+- `--token-in` -- Input token symbol (WETH, USDT, USDC, ARB) or hex address
+- `--token-out` -- Output token symbol or hex address
+- `--amount-in` -- Amount in raw units (e.g. `1000000` for 1 USDT with 6 decimals)
+- `--chain` -- Chain ID (default: 42161 for Arbitrum)
 
 **Example:**
 ```
@@ -64,7 +64,7 @@ camelot-v3 quote --token-in WETH --token-out USDT --amount-in 1000000000000000 -
 
 ---
 
-### swap — Execute a token swap
+### swap -- Execute a token swap
 
 Swap tokens on Camelot V3. Requires user confirmation before broadcasting.
 
@@ -79,15 +79,15 @@ camelot-v3 swap --token-in <TOKEN> --token-out <TOKEN> --amount-in <RAW_AMOUNT> 
 ```
 
 **Parameters:**
-- `--token-in` — Input token symbol or hex address
-- `--token-out` — Output token symbol or hex address
-- `--amount-in` — Amount in raw units
-- `--slippage` — Slippage tolerance percent (default: 0.5)
-- `--deadline-minutes` — Transaction deadline in minutes (default: 20)
-- `--chain` — Chain ID (default: 42161)
-- `--dry-run` — Preview calldata without broadcasting
+- `--token-in` -- Input token symbol or hex address
+- `--token-out` -- Output token symbol or hex address
+- `--amount-in` -- Amount in raw units
+- `--slippage` -- Slippage tolerance percent (default: 0.5)
+- `--deadline-minutes` -- Transaction deadline in minutes (default: 20)
+- `--chain` -- Chain ID (default: 42161)
+- `--dry-run` -- Preview calldata without broadcasting
 
-**Write operation — ask user to confirm the swap details before executing.**
+**Write operation -- ask user to confirm the swap details before executing.**
 
 The binary will:
 1. Verify the pool exists via AlgebraFactory
@@ -102,7 +102,7 @@ camelot-v3 swap --token-in USDT --token-out WETH --amount-in 1000000 --chain 421
 
 ---
 
-### positions — List your LP positions
+### positions -- List your LP positions
 
 View all your Camelot V3 concentrated liquidity positions.
 
@@ -117,8 +117,8 @@ camelot-v3 positions [--owner <ADDRESS>] [--chain 42161]
 ```
 
 **Parameters:**
-- `--owner` — Wallet address (defaults to logged-in wallet)
-- `--chain` — Chain ID (default: 42161)
+- `--owner` -- Wallet address (defaults to logged-in wallet)
+- `--chain` -- Chain ID (default: 42161)
 
 **Example:**
 ```
@@ -153,7 +153,7 @@ camelot-v3 positions --chain 42161
 
 ---
 
-### add-liquidity — Add concentrated liquidity
+### add-liquidity -- Add concentrated liquidity
 
 Add liquidity to a Camelot V3 pool. Requires user confirmation before broadcasting.
 
@@ -168,24 +168,24 @@ camelot-v3 add-liquidity --token0 <TOKEN> --token1 <TOKEN> --amount0 <RAW> --amo
 ```
 
 **Parameters:**
-- `--token0` — First token symbol or hex address
-- `--token1` — Second token symbol or hex address
-- `--amount0` — Desired amount of token0 (raw units)
-- `--amount1` — Desired amount of token1 (raw units)
-- `--tick-lower` — Lower price tick (default: -887200 full range)
-- `--tick-upper` — Upper price tick (default: 887200 full range)
-- `--amount0-min` — Minimum token0 accepted (slippage, default: 0)
-- `--amount1-min` — Minimum token1 accepted (slippage, default: 0)
-- `--chain` — Chain ID (default: 42161)
-- `--dry-run` — Preview without broadcasting
+- `--token0` -- First token symbol or hex address
+- `--token1` -- Second token symbol or hex address
+- `--amount0` -- Desired amount of token0 (raw units)
+- `--amount1` -- Desired amount of token1 (raw units)
+- `--tick-lower` -- Lower price tick (default: -887200 full range)
+- `--tick-upper` -- Upper price tick (default: 887200 full range)
+- `--amount0-min` -- Minimum token0 accepted (slippage, default: 0)
+- `--amount1-min` -- Minimum token1 accepted (slippage, default: 0)
+- `--chain` -- Chain ID (default: 42161)
+- `--dry-run` -- Preview without broadcasting
 
-**Write operation — ask user to confirm before executing add-liquidity.**
+**Write operation -- ask user to confirm before executing add-liquidity.**
 
 The binary will approve tokens and call NFPM.mint via `onchainos wallet contract-call --force`.
 
 ---
 
-### remove-liquidity — Remove liquidity from a position
+### remove-liquidity -- Remove liquidity from a position
 
 Remove liquidity from your Camelot V3 LP position. Requires user confirmation.
 
@@ -200,14 +200,14 @@ camelot-v3 remove-liquidity --token-id <ID> --liquidity <AMOUNT> [--amount0-min 
 ```
 
 **Parameters:**
-- `--token-id` — NFT position token ID (from `positions` command)
-- `--liquidity` — Amount of liquidity to remove
-- `--amount0-min` — Minimum token0 to receive (slippage protection)
-- `--amount1-min` — Minimum token1 to receive (slippage protection)
-- `--chain` — Chain ID (default: 42161)
-- `--dry-run` — Preview without broadcasting
+- `--token-id` -- NFT position token ID (from `positions` command)
+- `--liquidity` -- Amount of liquidity to remove
+- `--amount0-min` -- Minimum token0 to receive (slippage protection)
+- `--amount1-min` -- Minimum token1 to receive (slippage protection)
+- `--chain` -- Chain ID (default: 42161)
+- `--dry-run` -- Preview without broadcasting
 
-**Write operation — ask user to confirm before executing remove-liquidity.**
+**Write operation -- ask user to confirm before executing remove-liquidity.**
 
 The binary calls:
 1. `NFPM.decreaseLiquidity` via `onchainos wallet contract-call --force`

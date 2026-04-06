@@ -101,10 +101,15 @@ pub async fn run(args: RemoveLiquidityArgs) -> anyhow::Result<()> {
 
     let collect_result =
         wallet_contract_call(args.chain, nfpm_addr, &collect_calldata, true, args.dry_run).await?;
+
+    if !args.dry_run && !collect_result["ok"].as_bool().unwrap_or(false) {
+        anyhow::bail!("collect failed: {}", collect_result);
+    }
+
     let collect_tx = extract_tx_hash(&collect_result);
 
     let output = serde_json::json!({
-        "ok": true,
+        "ok": collect_result["ok"].as_bool().unwrap_or(args.dry_run),
         "dry_run": args.dry_run,
         "data": {
             "token_id": args.token_id,
