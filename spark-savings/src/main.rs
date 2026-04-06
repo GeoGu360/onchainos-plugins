@@ -70,10 +70,21 @@ async fn main() {
     match result {
         Ok(val) => println!("{}", serde_json::to_string_pretty(&val).unwrap_or_default()),
         Err(e) => {
-            let err = serde_json::json!({
-                "ok": false,
-                "error": e.to_string()
-            });
+            // Use {:?} (debug) to include the full anyhow error chain with all causes.
+            // e.to_string() only shows the top-level context message and loses the root cause.
+            let chain: Vec<String> = e.chain().map(|c| c.to_string()).collect();
+            let err = if chain.len() > 1 {
+                serde_json::json!({
+                    "ok": false,
+                    "error": chain[0],
+                    "cause": chain[1..].join(": ")
+                })
+            } else {
+                serde_json::json!({
+                    "ok": false,
+                    "error": e.to_string()
+                })
+            };
             eprintln!("{}", serde_json::to_string_pretty(&err).unwrap_or_default());
             std::process::exit(1);
         }
