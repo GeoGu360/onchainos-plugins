@@ -71,8 +71,11 @@ pub async fn execute(chain_id: u64, wallet: Option<String>) -> Result<()> {
         "AT_RISK"
     } else if liquidity > 0 {
         "HEALTHY"
-    } else {
+    } else if positions.is_empty() {
         "NO_POSITION"
+    } else {
+        // Has supply positions but no collateral entered yet (liquidity=0, shortfall=0)
+        "SUPPLIED_NO_COLLATERAL"
     };
 
     println!(

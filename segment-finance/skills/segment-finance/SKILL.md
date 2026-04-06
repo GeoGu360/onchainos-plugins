@@ -35,7 +35,7 @@ List all Segment Finance markets with supply/borrow APY, utilization, and USD pr
 
 **Usage:**
 ```
-segment-finance get-markets --chain 56
+segment-finance --chain 56 get-markets
 ```
 
 **Example output:**
@@ -65,8 +65,8 @@ Show your current supply and borrow positions across all Segment Finance markets
 
 **Usage:**
 ```
-segment-finance get-positions --chain 56
-segment-finance get-positions --chain 56 --wallet 0xYourAddress
+segment-finance --chain 56 get-positions
+segment-finance --chain 56 get-positions --wallet 0xYourAddress
 ```
 
 ---
@@ -79,8 +79,8 @@ Supply an asset to Segment Finance to earn interest. Receives seTokens in return
 
 **Usage:**
 ```
-segment-finance supply --asset USDT --amount 10.0 --chain 56 --dry-run
-segment-finance supply --asset BNB --amount 0.01 --chain 56 --dry-run
+segment-finance --chain 56 --dry-run supply --asset USDT --amount 10.0
+segment-finance --chain 56 --dry-run supply --asset BNB --amount 0.01
 ```
 
 **Before executing:**
@@ -99,7 +99,7 @@ Withdraw a previously supplied asset (redeem underlying).
 
 **Usage:**
 ```
-segment-finance withdraw --asset USDT --amount 5.0 --chain 56 --dry-run
+segment-finance --chain 56 --dry-run withdraw --asset USDT --amount 5.0
 ```
 
 **Before executing:**
@@ -117,7 +117,7 @@ Borrow an asset against your supplied collateral. Requires collateral to be enab
 
 **Usage:**
 ```
-segment-finance borrow --asset USDT --amount 5.0 --chain 56 --dry-run
+segment-finance --chain 56 --dry-run borrow --asset USDT --amount 5.0
 ```
 
 **Before executing:**
@@ -135,7 +135,7 @@ Repay borrowed assets to Segment Finance.
 
 **Usage:**
 ```
-segment-finance repay --asset USDT --amount 5.0 --chain 56 --dry-run
+segment-finance --chain 56 --dry-run repay --asset USDT --amount 5.0
 ```
 
 **Before executing:**
@@ -152,7 +152,7 @@ Enable an asset as collateral so it can be used to back borrowing positions.
 
 **Usage:**
 ```
-segment-finance enter-market --asset USDT --chain 56 --dry-run
+segment-finance --chain 56 --dry-run enter-market --asset USDT
 ```
 
 **Before executing:**
