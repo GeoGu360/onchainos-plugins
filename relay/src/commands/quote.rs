@@ -37,12 +37,31 @@ pub fn run(args: QuoteArgs) -> anyhow::Result<()> {
             .unwrap_or_else(|_| "0x0000000000000000000000000000000000000000".to_string())
     };
 
-    // Resolve currency addresses
-    let origin_currency = resolve_currency(&args.token);
-    let destination_currency = resolve_currency(&args.token);
+    // Resolve currency addresses and decimals
+    let (origin_currency, decimals) = if args.token.starts_with("0x") {
+        // Raw address provided — assume 18 decimals (user must pass correct amount)
+        (args.token.clone(), 18u32)
+    } else {
+        match rpc::resolve_token(args.from_chain, &args.token)? {
+            Some((addr, dec)) => (addr, dec),
+            None => {
+                eprintln!("Warning: token '{}' not found on chain {} — treating as ETH", args.token, args.from_chain);
+                (config::ETH_ADDRESS.to_string(), 18u32)
+            }
+        }
+    };
+    let destination_currency = if args.token.starts_with("0x") {
+        args.token.clone()
+    } else {
+        match rpc::resolve_token(args.to_chain, &args.token)? {
+            Some((addr, _)) => addr,
+            None => origin_currency.clone(),
+        }
+    };
 
-    // Convert amount to wei (assume 18 decimals for ETH/native tokens)
-    let amount_wei = (args.amount * 1e18) as u128;
+    // Convert amount using actual token decimals
+    let scale = 10u128.pow(decimals);
+    let amount_wei = (args.amount * scale as f64) as u128;
     let amount_str = amount_wei.to_string();
 
     let recipient = args.recipient.as_deref();
@@ -50,7 +69,7 @@ pub fn run(args: QuoteArgs) -> anyhow::Result<()> {
     println!("=== Relay Bridge Quote ===");
     println!("From:     Chain {} ({} {})", args.from_chain, args.amount, args.token);
     println!("To:       Chain {}", args.to_chain);
-    println!("Amount:   {} wei", amount_str);
+    println!("Amount:   {} ({}d scaled)", amount_str, decimals);
     println!("User:     {}", user);
     println!();
 
@@ -130,16 +149,3 @@ pub fn run(args: QuoteArgs) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn resolve_currency(token: &str) -> String {
-    match token.to_uppercase().as_str() {
-        "ETH" => config::ETH_ADDRESS.to_string(),
-        _ => {
-            // If it looks like an address, use it directly
-            if token.starts_with("0x") {
-                token.to_string()
-            } else {
-                config::ETH_ADDRESS.to_string()
-            }
-        }
-    }
-}

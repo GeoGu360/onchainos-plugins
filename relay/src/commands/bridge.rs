@@ -40,11 +40,30 @@ pub async fn run(args: BridgeArgs) -> anyhow::Result<()> {
         onchainos::resolve_wallet(args.from_chain, args.dry_run)?
     };
 
-    let origin_currency = resolve_currency(&args.token);
-    let destination_currency = resolve_currency(&args.token);
+    // Resolve currency addresses and decimals
+    let (origin_currency, decimals) = if args.token.starts_with("0x") {
+        (args.token.clone(), 18u32)
+    } else {
+        match rpc::resolve_token(args.from_chain, &args.token)? {
+            Some((addr, dec)) => (addr, dec),
+            None => {
+                eprintln!("Warning: token '{}' not found on chain {} — treating as ETH", args.token, args.from_chain);
+                (config::ETH_ADDRESS.to_string(), 18u32)
+            }
+        }
+    };
+    let destination_currency = if args.token.starts_with("0x") {
+        args.token.clone()
+    } else {
+        match rpc::resolve_token(args.to_chain, &args.token)? {
+            Some((addr, _)) => addr,
+            None => origin_currency.clone(),
+        }
+    };
 
-    // Convert amount to wei (18 decimals for ETH/native)
-    let amount_wei = (args.amount * 1e18) as u128;
+    // Convert amount using actual token decimals
+    let scale = 10u128.pow(decimals);
+    let amount_wei = (args.amount * scale as f64) as u128;
     let amount_str = amount_wei.to_string();
 
     let recipient = args.recipient.as_deref().unwrap_or(&wallet);
@@ -159,15 +178,3 @@ pub async fn run(args: BridgeArgs) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn resolve_currency(token: &str) -> String {
-    match token.to_uppercase().as_str() {
-        "ETH" => config::ETH_ADDRESS.to_string(),
-        _ => {
-            if token.starts_with("0x") {
-                token.to_string()
-            } else {
-                config::ETH_ADDRESS.to_string()
-            }
-        }
-    }
-}
