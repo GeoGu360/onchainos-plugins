@@ -1,4 +1,4 @@
-/// ABI encoding helpers for Kelp plugin — hand-rolled, no alloy dependency
+/// ABI encoding helpers for Kelp plugin -- hand-rolled, no alloy dependency
 
 /// Pad a hex address (with or without 0x) to a 32-byte (64 hex char) left-zero-padded word.
 pub fn encode_address(addr: &str) -> String {
@@ -28,7 +28,7 @@ pub fn calldata_single_uint256(selector: &str, val: u128) -> String {
     format!("0x{}{}", selector, encode_uint256_u128(val))
 }
 
-/// Build calldata for rsETHPrice() — no parameters.
+/// Build calldata for rsETHPrice() -- no parameters.
 pub fn calldata_no_params(selector: &str) -> String {
     format!("0x{}", selector)
 }

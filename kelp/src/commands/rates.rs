@@ -49,7 +49,7 @@ pub async fn run(chain_id: u64) -> anyhow::Result<()> {
                     if let Ok(mint_hex) = rpc::extract_return_data(&mint_result) {
                         if let Ok(mint_amount) = rpc::decode_uint256(&mint_hex) {
                             let mint_eth = mint_amount as f64 / 1e18;
-                            println!("Deposit Rate:      1 ETH → {:.8} rsETH", mint_eth);
+                            println!("Deposit Rate:      1 ETH -> {:.8} rsETH", mint_eth);
                             println!("                   (from LRTDepositPool.getRsETHAmountToMint)");
                         }
                     }

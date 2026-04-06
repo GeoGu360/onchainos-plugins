@@ -48,7 +48,7 @@ pub async fn run() -> anyhow::Result<()> {
                     println!("Estimated APY:     {:.2}% (annualized from 7d ETH price change)", apy_estimate);
                 } else if let Some(change_24h) = eth_24h_change {
                     let apy_estimate = change_24h * 365.0;
-                    println!("Estimated APY:     ~{:.2}% (annualized from 24h change — indicative only)", apy_estimate);
+                    println!("Estimated APY:     ~{:.2}% (annualized from 24h change -- indicative only)", apy_estimate);
                 } else {
                     println!("Estimated APY:     ~4-5% (restaking + staking rewards, check kelpdao.xyz for latest)");
                 }
@@ -61,9 +61,9 @@ pub async fn run() -> anyhow::Result<()> {
 
     println!();
     println!("Yield Sources:");
-    println!("  • EigenLayer restaking rewards");
-    println!("  • Underlying LST staking rewards (stETH, ETHx, sfrxETH)");
-    println!("  • Kelp DAO points (KELP token allocation)");
+    println!("  - EigenLayer restaking rewards");
+    println!("  - Underlying LST staking rewards (stETH, ETHx, sfrxETH)");
+    println!("  - Kelp DAO points (KELP token allocation)");
     println!("Note: APY is variable and depends on EigenLayer operator performance.");
 
     Ok(())

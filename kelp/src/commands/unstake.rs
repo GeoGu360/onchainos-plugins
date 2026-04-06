@@ -15,7 +15,7 @@ pub struct UnstakeArgs {
     #[arg(long)]
     pub from: Option<String>,
 
-    /// Dry run — show calldata without broadcasting
+    /// Dry run -- show calldata without broadcasting
     #[arg(long, default_value_t = false)]
     pub dry_run: bool,
 }
@@ -54,7 +54,7 @@ pub async fn run(args: UnstakeArgs) -> anyhow::Result<()> {
     // asset = ETH sentinel address
     let calldata = rpc::calldata_initiate_withdrawal(config::ETH_ASSET_ADDRESS, rs_eth_amount_wei);
 
-    println!("=== Kelp DAO Unstake rsETH → ETH ===");
+    println!("=== Kelp DAO Unstake rsETH -> ETH ===");
     println!("From:              {}", wallet);
     println!("rsETH Amount:      {} rsETH ({} wei)", args.amount, rs_eth_amount_wei);
     println!("Expected ETH:      ~{:.8} ETH (at current rate)", expected_eth);
@@ -92,7 +92,7 @@ pub async fn run(args: UnstakeArgs) -> anyhow::Result<()> {
         anyhow::bail!("Transaction failed: {}", result);
     }
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
     println!("Withdrawal initiated: {}", tx_hash);
     println!();
     println!("Your withdrawal is now queued. Once finalized, call completeWithdrawal.");

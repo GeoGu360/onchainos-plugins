@@ -111,9 +111,12 @@ pub fn eth_call(chain_id: u64, to: &str, input_data: &str) -> anyhow::Result<Val
 }
 
 /// Extract transaction hash from onchainos response.
-pub fn extract_tx_hash(result: &Value) -> &str {
+/// Returns an error if no txHash field is present, so callers can propagate
+/// the failure instead of silently printing "pending".
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
     result["data"]["txHash"]
         .as_str()
         .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
+        .map(|s| s.to_string())
+        .ok_or_else(|| anyhow::anyhow!("No txHash in response: {}", result))
 }

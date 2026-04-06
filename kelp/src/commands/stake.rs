@@ -15,7 +15,7 @@ pub struct StakeArgs {
     #[arg(long)]
     pub from: Option<String>,
 
-    /// Dry run — show calldata without broadcasting
+    /// Dry run -- show calldata without broadcasting
     #[arg(long, default_value_t = false)]
     pub dry_run: bool,
 }
@@ -65,7 +65,7 @@ pub async fn run(args: StakeArgs) -> anyhow::Result<()> {
     // minRSETHAmountExpected = 0 (no slippage protection for simplicity)
     let calldata = rpc::calldata_deposit_eth(0);
 
-    println!("=== Kelp DAO Stake ETH → rsETH ===");
+    println!("=== Kelp DAO Stake ETH -> rsETH ===");
     println!("From:              {}", wallet);
     println!("Amount:            {} ETH ({} wei)", args.amount, amount_wei);
     println!("Expected rsETH:    {:.8} rsETH", if expected_rseth > 0.0 { expected_rseth } else { args.amount / price_eth });
@@ -99,7 +99,7 @@ pub async fn run(args: StakeArgs) -> anyhow::Result<()> {
         anyhow::bail!("Transaction failed: {}", result);
     }
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
     println!("Transaction submitted: {}", tx_hash);
     println!("You will receive approximately {:.8} rsETH.", if expected_rseth > 0.0 { expected_rseth } else { args.amount / price_eth });
     println!();

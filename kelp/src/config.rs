@@ -18,34 +18,34 @@ pub const ETH_ASSET_ADDRESS: &str = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 
 // Function selectors (Keccak-256 of signature, first 4 bytes)
 
-/// depositETH(uint256,string) — payable, LRTDepositPool
+/// depositETH(uint256,string) -- payable, LRTDepositPool
 pub const SEL_DEPOSIT_ETH: &str = "72c51c0b";
 
-/// depositAsset(address,uint256,uint256,string) — LRTDepositPool
+/// depositAsset(address,uint256,uint256,string) -- LRTDepositPool
 #[allow(dead_code)]
 pub const SEL_DEPOSIT_ASSET: &str = "c3ae1766";
 
-/// getRsETHAmountToMint(address,uint256) — LRTDepositPool view
+/// getRsETHAmountToMint(address,uint256) -- LRTDepositPool view
 pub const SEL_GET_RSETH_AMOUNT: &str = "ba5bb442";
 
-/// rsETHPrice() — LRTOracle view, returns price in 1e18 units (ETH per rsETH)
+/// rsETHPrice() -- LRTOracle view, returns price in 1e18 units (ETH per rsETH)
 pub const SEL_RSETH_PRICE: &str = "b4b46434";
 
-/// getAssetCurrentPrice(address) — LRTOracle view
+/// getAssetCurrentPrice(address) -- LRTOracle view
 #[allow(dead_code)]
 pub const SEL_ASSET_PRICE: &str = "7a95e516";
 
-/// balanceOf(address) — ERC-20
+/// balanceOf(address) -- ERC-20
 pub const SEL_BALANCE_OF: &str = "70a08231";
 
-/// totalSupply() — ERC-20
+/// totalSupply() -- ERC-20
 #[allow(dead_code)]
 pub const SEL_TOTAL_SUPPLY: &str = "18160ddd";
 
-/// initiateWithdrawal(address,uint256) — LRTWithdrawalManager
+/// initiateWithdrawal(address,uint256) -- LRTWithdrawalManager
 pub const SEL_INITIATE_WITHDRAWAL: &str = "c8393ba9";
 
-/// completeWithdrawal(address) — LRTWithdrawalManager
+/// completeWithdrawal(address) -- LRTWithdrawalManager
 #[allow(dead_code)]
 pub const SEL_COMPLETE_WITHDRAWAL: &str = "6dbaf9ee";
 

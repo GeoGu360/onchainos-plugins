@@ -2,22 +2,27 @@
 name: kelp
 description: >-
   Kelp DAO rsETH liquid restaking plugin. Stake ETH or LSTs (stETH, ETHx, sfrxETH)
-  to receive rsETH — a Liquid Restaking Token earning EigenLayer restaking rewards
+  to receive rsETH - a Liquid Restaking Token earning EigenLayer restaking rewards
   and staking APY. Supports apy, rates, positions, stake, unstake on Ethereum
   mainnet (chain 1) and rsETH bridged chains (Base, Arbitrum).
+  Trigger phrases: stake ETH Kelp, Kelp DAO restaking, rsETH staking, deposit ETH kelp,
+  kelp unstake, kelp positions, kelp apy, kelp rates, liquid restaking ETH.
+  Do NOT use for: staking with Lido, Rocket Pool, Stader, or Frax; SOL staking;
+  swapping rsETH on DEXes; bridging rsETH cross-chain; EigenLayer direct restaking
+  outside Kelp DAO.
 ---
 
 # Kelp DAO rsETH Liquid Restaking Plugin
 
 ## Overview
 
-Kelp DAO is a liquid restaking protocol built on EigenLayer. Users deposit ETH or LSTs to receive **rsETH** — a Liquid Restaking Token that accrues:
+Kelp DAO is a liquid restaking protocol built on EigenLayer. Users deposit ETH or LSTs to receive **rsETH** -- a Liquid Restaking Token that accrues:
 - EigenLayer restaking rewards
 - Underlying LST staking yields (stETH, ETHx, sfrxETH)
 - Kelp DAO protocol incentives
 
 **Key facts:**
-- rsETH is NOT a rebasing token — it appreciates in ETH value over time
+- rsETH is NOT a rebasing token -- it appreciates in ETH value over time
 - Primary chain: Ethereum Mainnet (chain ID 1)
 - rsETH can be bridged to Base, Arbitrum, and Optimism
 - Withdrawals go through a queue (several days wait time)
@@ -25,8 +30,8 @@ Kelp DAO is a liquid restaking protocol built on EigenLayer. Users deposit ETH o
 
 ## Architecture
 
-- Read ops (apy, rates, positions) → direct eth_call via publicnode RPC + CoinGecko API
-- Write ops (stake, unstake) → after user confirmation, submits via `onchainos wallet contract-call --force`
+- Read ops (apy, rates, positions) -> direct eth_call via publicnode RPC + CoinGecko API
+- Write ops (stake, unstake) -> after user confirmation, submits via `onchainos wallet contract-call --force`
 
 ## Pre-flight Checks
 
@@ -48,7 +53,7 @@ Before running any command:
 
 ## Commands
 
-### `apy` — Get Current rsETH APY
+### `apy` -- Get Current rsETH APY
 
 Fetch current estimated APY for rsETH liquid restaking. No wallet required.
 
@@ -69,14 +74,14 @@ rsETH Price:       1.076000 ETH  ($2189.13 USD)
 Estimated APY:     ~4.8% (annualized from 7d ETH price change)
 
 Yield Sources:
-  • EigenLayer restaking rewards
-  • Underlying LST staking rewards (stETH, ETHx, sfrxETH)
-  • Kelp DAO points (KELP token allocation)
+  * EigenLayer restaking rewards
+  * Underlying LST staking rewards (stETH, ETHx, sfrxETH)
+  * Kelp DAO points (KELP token allocation)
 ```
 
 ---
 
-### `rates` — Get Exchange Rates
+### `rates` -- Get Exchange Rates
 
 Get current rsETH/ETH exchange rate from LRTOracle on-chain.
 
@@ -91,8 +96,8 @@ kelp rates [--chain <CHAIN_ID>]
 | `--chain` | No | Chain ID (default: 1) |
 
 **Data sources:**
-1. `LRTOracle.rsETHPrice()` — on-chain oracle price
-2. `LRTDepositPool.getRsETHAmountToMint(ETH_ADDR, 1e18)` — actual deposit rate
+1. `LRTOracle.rsETHPrice()` -- on-chain oracle price
+2. `LRTDepositPool.getRsETHAmountToMint(ETH_ADDR, 1e18)` -- actual deposit rate
 3. CoinGecko for USD reference price
 
 **Example output:**
@@ -100,12 +105,12 @@ kelp rates [--chain <CHAIN_ID>]
 === Kelp DAO rsETH Exchange Rates ===
 rsETH/ETH Price:   1.07600000 ETH per rsETH
 rsETH/USD Price:   $2189.13 USD
-Deposit Rate:      1 ETH → 0.92940000 rsETH
+Deposit Rate:      1 ETH -> 0.92940000 rsETH
 ```
 
 ---
 
-### `positions` — Check rsETH Holdings
+### `positions` -- Check rsETH Holdings
 
 Query rsETH balance and underlying ETH value for an address.
 
@@ -121,9 +126,9 @@ kelp positions [--address <ADDR>] [--chain <CHAIN_ID>]
 | `--chain` | No | Chain ID (default: 1) |
 
 **Steps:**
-1. Call `rsETH.balanceOf(address)` → raw rsETH balance
-2. Call `LRTOracle.rsETHPrice()` → current ETH rate
-3. Compute ETH value = balance × rate
+1. Call `rsETH.balanceOf(address)` -> raw rsETH balance
+2. Call `LRTOracle.rsETHPrice()` -> current ETH rate
+3. Compute ETH value = balance x rate
 4. Fetch USD price from CoinGecko
 
 **Example output:**
@@ -138,7 +143,7 @@ USD Value:         $101.75
 
 ---
 
-### `stake` — Stake ETH → rsETH
+### `stake` -- Stake ETH -> rsETH
 
 Deposit ETH into Kelp DAO via LRTDepositPool and receive rsETH.
 
@@ -159,7 +164,7 @@ kelp stake --amount <ETH> [--chain <CHAIN_ID>] [--from <ADDR>] [--dry-run]
 1. Resolve wallet address via `onchainos wallet addresses`
 2. Fetch current rsETH rate from LRTOracle
 3. Compute expected rsETH output via `getRsETHAmountToMint`
-4. Build calldata: `depositETH(0, "")` — selector `0x72c51c0b`
+4. Build calldata: `depositETH(0, "")` -- selector `0x72c51c0b`
 5. Display: amount, expected rsETH, rate, contract
 6. **Ask user to confirm** the transaction before submitting
 7. Execute: `onchainos wallet contract-call --chain 1 --to <DEPOSIT_POOL> --amt <WEI> --input-data <CALLDATA> --force`
@@ -185,7 +190,7 @@ kelp stake --amount 0.5 --chain 1
 
 ---
 
-### `unstake` — Initiate rsETH Withdrawal
+### `unstake` -- Initiate rsETH Withdrawal
 
 Initiate withdrawal of rsETH back to ETH via LRTWithdrawalManager.
 
@@ -206,7 +211,7 @@ kelp unstake --amount <RSETH> [--chain <CHAIN_ID>] [--from <ADDR>] [--dry-run]
 1. Resolve wallet address
 2. Fetch rsETH/ETH rate from oracle
 3. Compute expected ETH payout
-4. Build calldata: `initiateWithdrawal(ETH_ADDR, rsEthAmountWei)` — selector `0xc8393ba9`
+4. Build calldata: `initiateWithdrawal(ETH_ADDR, rsEthAmountWei)` -- selector `0xc8393ba9`
 5. Display: amount, expected ETH, wait time warning
 6. **Ask user to confirm** the transaction before submitting
 7. Execute: `onchainos wallet contract-call --chain 1 --to <WITHDRAWAL_MANAGER> --input-data <CALLDATA> --force`
@@ -249,8 +254,8 @@ After **positions**: if you want to exit, use `kelp unstake --amount <BALANCE>`.
 
 ## Skill Routing
 
-- For ETH-only staking without restaking → use the `lido` skill (stETH)
-- For SOL liquid staking → use the `jito` skill
-- For Aave/lending with rsETH collateral → use `aave-v3` skill
-- For wallet balance queries → use `onchainos wallet balance`
-- For EigenLayer direct restaking → kelp wraps this automatically
+- For ETH-only staking without restaking -> use the `lido` skill (stETH)
+- For SOL liquid staking -> use the `jito` skill
+- For Aave/lending with rsETH collateral -> use `aave-v3` skill
+- For wallet balance queries -> use `onchainos wallet balance`
+- For EigenLayer direct restaking -> kelp wraps this automatically
