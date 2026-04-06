@@ -70,8 +70,12 @@ pub async fn run(chain: &str, dry_run: bool, args: OpenPositionArgs) -> anyhow::
     let max_price_usd = crate::api::raw_price_to_usd(max_price_raw, index_decimals);
     let mid_price_usd = (min_price_usd + max_price_usd) / 2.0;
 
-    // Size in GMX 30-decimal units
-    let size_delta_usd = (args.size_usd * 1e30) as u128;
+    // Size in GMX 30-decimal units (price_usd * 10^30).
+    // Use integer arithmetic to avoid float precision issues.
+    // args.size_usd is a float; scale cents (2 decimal places) then multiply by 10^28.
+    let size_dollars = args.size_usd as u128;
+    let size_cents = ((args.size_usd - size_dollars as f64) * 100.0).round() as u128;
+    let size_delta_usd = (size_dollars * 100 + size_cents) * 10u128.pow(28);
 
     // Check liquidity
     let avail_liq = if args.long {
@@ -88,9 +92,15 @@ pub async fn run(chain: &str, dry_run: bool, args: OpenPositionArgs) -> anyhow::
         );
     }
 
-    // Compute acceptable price with slippage
-    let base_price = if args.long { min_price_raw } else { max_price_raw };
-    let acceptable_price = crate::abi::compute_acceptable_price(base_price, args.long, args.slippage_bps);
+    // Compute acceptable price with slippage.
+    // GMX API returns prices as price_usd * 10^(30 - index_decimals).
+    // GMX contract requires prices in full 30-decimal precision (price_usd * 10^30).
+    // Scale up: multiply by 10^index_decimals to convert to contract precision.
+    let price_scale_factor: u128 = 10u128.pow(index_decimals as u32);
+    let min_price_30dec = min_price_raw.saturating_mul(price_scale_factor);
+    let max_price_30dec = max_price_raw.saturating_mul(price_scale_factor);
+    let base_price_30dec = if args.long { min_price_30dec } else { max_price_30dec };
+    let acceptable_price = crate::abi::compute_acceptable_price(base_price_30dec, args.long, args.slippage_bps);
 
     let execution_fee = cfg.execution_fee_wei;
 
@@ -119,29 +129,60 @@ pub async fn run(chain: &str, dry_run: bool, args: OpenPositionArgs) -> anyhow::
         }
     }
 
-    // Build multicall: [sendWnt, sendTokens, createOrder]
-    let send_wnt = crate::abi::encode_send_wnt(cfg.order_vault, execution_fee);
-    let send_tokens = crate::abi::encode_send_tokens(
-        &args.collateral_token,
-        cfg.order_vault,
-        args.collateral_amount,
-    );
-    let create_order = crate::abi::encode_create_order(
-        &wallet,
-        &wallet,
-        market_token,
-        &args.collateral_token,
-        2, // MarketIncrease
-        size_delta_usd,
-        args.collateral_amount,
-        0, // triggerPrice = 0 for market orders
-        acceptable_price,
-        execution_fee,
-        args.long,
-        cfg.chain_id,
-    );
+    // Determine if collateral is native ETH (WETH address on each chain).
+    // For GMX V2: WETH collateral must be deposited via sendWnt (ETH auto-wraps in vault),
+    // NOT via sendTokens (which transfers ERC-20 WETH from wallet).
+    // Total ETH sent as tx value = executionFee + collateralAmount (if WETH) or executionFee only.
+    let weth_arb = "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
+    let weth_avax = "0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB";
+    let collateral_is_native_eth = args.collateral_token.to_lowercase() == weth_arb.to_lowercase()
+        || args.collateral_token.to_lowercase() == weth_avax.to_lowercase();
 
-    let multicall_hex = crate::abi::encode_multicall(&[send_wnt, send_tokens, create_order]);
+    let (multicall_calls, total_eth_value): (Vec<String>, u64) = if collateral_is_native_eth {
+        // Single sendWnt for both execution fee and collateral; no ERC-20 sendTokens needed
+        let total_wnt = execution_fee + args.collateral_amount as u64;
+        let send_wnt = crate::abi::encode_send_wnt(cfg.order_vault, total_wnt);
+        let create_order = crate::abi::encode_create_order(
+            &wallet,   // _account (unused, msg.sender implicit)
+            &wallet,   // receiver
+            market_token,
+            &args.collateral_token,
+            2, // MarketIncrease
+            size_delta_usd,
+            args.collateral_amount,
+            0, // triggerPrice = 0 for market orders
+            acceptable_price,
+            execution_fee,
+            args.long,
+            cfg.chain_id, // _src_chain_id (unused)
+        );
+        (vec![send_wnt, create_order], total_wnt)
+    } else {
+        // ERC-20 collateral: sendWnt for fee + sendTokens for collateral
+        let send_wnt = crate::abi::encode_send_wnt(cfg.order_vault, execution_fee);
+        let send_tokens = crate::abi::encode_send_tokens(
+            &args.collateral_token,
+            cfg.order_vault,
+            args.collateral_amount,
+        );
+        let create_order = crate::abi::encode_create_order(
+            &wallet,   // _account (unused, msg.sender implicit)
+            &wallet,   // receiver
+            market_token,
+            &args.collateral_token,
+            2, // MarketIncrease
+            size_delta_usd,
+            args.collateral_amount,
+            0, // triggerPrice = 0 for market orders
+            acceptable_price,
+            execution_fee,
+            args.long,
+            cfg.chain_id, // _src_chain_id (unused)
+        );
+        (vec![send_wnt, send_tokens, create_order], execution_fee)
+    };
+
+    let multicall_hex = crate::abi::encode_multicall(&multicall_calls);
     let calldata = format!("0x{}", multicall_hex);
 
     let leverage = if mid_price_usd > 0.0 {
@@ -168,7 +209,7 @@ pub async fn run(chain: &str, dry_run: bool, args: OpenPositionArgs) -> anyhow::
         cfg.exchange_router,
         &calldata,
         Some(&wallet),
-        Some(execution_fee),
+        Some(total_eth_value),
         dry_run,
     ).await?;
 
