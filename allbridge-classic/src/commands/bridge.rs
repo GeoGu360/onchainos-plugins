@@ -170,7 +170,9 @@ pub async fn run(args: BridgeArgs) -> Result<()> {
             chain_tokens.iter().map(|t| t.symbol.as_str()).collect::<Vec<_>>().join(", ")))?;
 
     let decimals = token_info.precision.unwrap_or(6) as u32;
-    let amount_raw = (args.amount * 10f64.powi(decimals as i32)) as u128;
+    // Use rounding instead of truncation to avoid f64 precision errors
+    // e.g. 2.01 * 1e6 = 2009999.9999... would truncate to 2009999 without round()
+    let amount_raw = (args.amount * 10f64.powi(decimals as i32)).round() as u128;
 
     // 4. Encode recipient as 32 bytes
     let recipient_bytes32 = encode_recipient(&args.recipient, &dest_blockchain_id)?;
@@ -216,10 +218,12 @@ pub async fn run(args: BridgeArgs) -> Result<()> {
         args.dry_run,
     ).await?;
 
-    let approve_tx = onchainos::extract_tx_hash(&approve_result);
-    if !args.dry_run && approve_tx == "pending" {
-        return Err(anyhow!("Approve transaction failed to broadcast: {}", serde_json::to_string(&approve_result)?));
-    }
+    let approve_tx = if args.dry_run {
+        onchainos::extract_tx_hash(&approve_result).unwrap_or_else(|_| "0x0".to_string())
+    } else {
+        onchainos::extract_tx_hash(&approve_result)
+            .map_err(|e| anyhow!("Approve transaction failed: {}", e))?
+    };
 
     // 9. Step 2: Lock tokens
     eprintln!("\nStep 2: Locking {} {} on bridge...", args.amount, token_upper);
@@ -243,10 +247,12 @@ pub async fn run(args: BridgeArgs) -> Result<()> {
         args.dry_run,
     ).await?;
 
-    let lock_tx = onchainos::extract_tx_hash(&lock_result);
-    if !args.dry_run && lock_tx == "pending" {
-        return Err(anyhow!("Lock transaction failed to broadcast: {}", serde_json::to_string(&lock_result)?));
-    }
+    let lock_tx = if args.dry_run {
+        onchainos::extract_tx_hash(&lock_result).unwrap_or_else(|_| "0x0".to_string())
+    } else {
+        onchainos::extract_tx_hash(&lock_result)
+            .map_err(|e| anyhow!("Lock transaction failed: {}", e))?
+    };
 
     // 10. Return result
     let output = serde_json::json!({

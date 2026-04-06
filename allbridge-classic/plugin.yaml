@@ -21,7 +21,7 @@ build:
   lang: rust
   binary_name: allbridge-classic
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "0000000000000000000000000000000000000000"
+  source_commit: "c99f51fe67f39fb1655263fe4461e2b8a97b0599"
   source_dir: allbridge-classic
 
 api_calls:
