@@ -87,3 +87,55 @@ No live write transactions executed (no Balancer positions held; dry-run validat
 ## Verdict
 
 **PASS with fixes applied.** Two bugs fixed, pushed to main at ae8aa36.
+
+---
+
+## Re-Audit — Live Write Operations
+
+**Date:** 2026-04-06
+**Re-audit reason:** Wallet now holds USDC (5.40) and ETH (0.1747) on Ethereum mainnet — previous audit was dry-run only.
+**Chain tested:** Ethereum Mainnet (chain 1)
+**Pool used:** USDC/WETH 50/50 Weighted (`0x96646936b91d6b9d7d0c47c496afbf3d6ec7b6f8000200000000000000000019`, $180K TVL)
+**Post-fix commit:** f6f31e8
+
+### Pool Discovery
+
+`pools --chain 1 --limit 50` returned 50 Ethereum pools from Balancer API. The USDC/WETH V2 pool was identified by filtering for 66-char pool IDs containing USDC/WETH symbols. Key V2 pools on Ethereum:
+
+| Pool | Type | TVL | Tokens |
+|------|------|-----|--------|
+| `0x96646936...0019` | WEIGHTED | $180K | USDC / WETH |
+| `0x5c6ee304...0014` | WEIGHTED | $5.3M | BAL / WETH |
+| `0xa6f548df...000e` | WEIGHTED | $1.6M | WBTC / WETH |
+| `0x8353157...05d9` | COMPOSABLE_STABLE | $120K | GHO / USDT / USDC |
+
+Note: Most top pools by TVL on Ethereum use the Balancer V3 contracts and return short (non-V2) pool IDs -- the `pool-info` command correctly rejects them with BAL#500 (V2 Vault call on V3 pool). Users should use V2 pool IDs (66-char hex) when interacting with this plugin.
+
+### Write Operation Results
+
+| # | Command | Amount | Tx Hash | On-chain Status | State Change |
+|---|---------|--------|---------|-----------------|-------------|
+| 1 | `join` | 1.0 USDC + 0 WETH | `0x44b0a65c...059d` | status=1, block 24820279 | 0 BPT -> 0.016983 BPT |
+| 2 | `swap` | 1.0 USDC -> WETH | `0xe3fd7212...cc5` | status=1, block 24820305 | USDC spent, ~0.000461 WETH received |
+| 3 | `exit` | 0.005 BPT | `0xa55b47d5...741` | status=1, block 24820308 | 0.016983 BPT -> 0.011983 BPT |
+
+All three write operations **confirmed on-chain** (status=1). No reverts.
+
+### Approve Flow (join step 1)
+
+The `join` command automatically approved USDC to the Vault before calling `joinPool`:
+- Approve tx: `0x5a0c8f15...b48`
+- The subsequent `swap` reused the existing MAX allowance (no second approve needed).
+
+### Bug Found and Fixed During Re-Audit
+
+**BUG-3: `known_pools()` had no Ethereum mainnet entries**
+- **File:** `src/config.rs`
+- **Issue:** `known_pools(1)` returned `vec![]`, causing `positions --chain 1` to always return an empty positions array, even when the wallet holds BPT tokens from Ethereum mainnet pools.
+- **Fix:** Added 4 Ethereum mainnet pools to the `chain_id = 1` arm: USDC/WETH, BAL/WETH, WBTC/WETH, and GHO/USDT/USDC.
+- **Verification:** After fix, `positions --chain 1` correctly returned `bpt_balance: "0.016983"` immediately after the join tx confirmed.
+- **Commit:** f6f31e8 pushed to remote main.
+
+### Re-Audit Verdict
+
+**PASS — all write operations confirmed on-chain.** The plugin is fully functional on Ethereum mainnet for USDC/WETH pool operations. BUG-3 fixed.
