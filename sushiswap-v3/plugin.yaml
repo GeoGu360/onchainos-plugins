@@ -23,7 +23,7 @@ build:
   lang: rust
   binary_name: sushiswap-v3
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "c49ed9d28b9fd4924b6aadb7c7195b4b768f0431"
+  source_commit: "f29c9f895e4fc5d8e059d606d4c2b6be32570663"
   source_dir: sushiswap-v3
 
 api_calls:
