@@ -36,6 +36,10 @@ enum Commands {
         /// Slippage tolerance in percent [default: 1.0]
         #[arg(long, default_value = "1.0")]
         slippage: f64,
+
+        /// Simulate without broadcasting to chain
+        #[arg(long)]
+        dry_run: bool,
     },
 
     /// Unstake mSOL to receive SOL (mSOL → SOL via Jupiter)
@@ -47,6 +51,10 @@ enum Commands {
         /// Slippage tolerance in percent [default: 1.0]
         #[arg(long, default_value = "1.0")]
         slippage: f64,
+
+        /// Simulate without broadcasting to chain
+        #[arg(long)]
+        dry_run: bool,
     },
 }
 
@@ -56,11 +64,11 @@ async fn main() {
     let result = match cli.command {
         Commands::Rates => commands::rates::execute().await,
         Commands::Positions => commands::positions::execute().await,
-        Commands::Stake { amount, slippage } => {
-            commands::stake::execute(&amount, slippage, cli.dry_run).await
+        Commands::Stake { amount, slippage, dry_run } => {
+            commands::stake::execute(&amount, slippage, cli.dry_run || dry_run).await
         }
-        Commands::Unstake { amount, slippage } => {
-            commands::unstake::execute(&amount, slippage, cli.dry_run).await
+        Commands::Unstake { amount, slippage, dry_run } => {
+            commands::unstake::execute(&amount, slippage, cli.dry_run || dry_run).await
         }
     };
 
