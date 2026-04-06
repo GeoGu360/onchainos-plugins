@@ -1,10 +1,9 @@
 /// markets — list Synthetix V3 Perps markets with funding rates and sizes
 use anyhow::Result;
 use serde::Serialize;
-use serde_json::Value;
 
 use crate::config::{BASE_RPC_URL, PERPS_MARKET_PROXY};
-use crate::rpc::{decode_int256, decode_uint256_array, decode_uint256_as_u128, eth_call};
+use crate::rpc::{decode_uint256_array, decode_uint256_as_u128, eth_call};
 
 // Verified selectors (cast sig):
 // getMarkets()                  → 0xec2c9016
@@ -108,15 +107,12 @@ async fn fetch_market_summary(market_id: u128) -> Result<Market> {
         };
 
     // Decode values (18 decimals for sizes)
-    let skew = decode_signed_int256_str(skew_raw);
     let max_oi = decode_uint256_as_u128(&format!("0x{}", max_oi_raw));
     let size = decode_uint256_as_u128(&format!("0x{}", size_raw));
-    let funding_rate = decode_signed_int256_str(funding_rate_raw);
-    let funding_vel = decode_signed_int256_str(funding_vel_raw);
 
     // Format: divide by 1e18 for human-readable values
     let skew_f = format!("{:.4}", decode_signed_float(skew_raw));
-    let size_f = format!("{:.4}", max_oi as f64 / 1e18);
+    let size_f = format!("{:.4}", size as f64 / 1e18);
     let max_oi_f = format!("{:.4}", max_oi as f64 / 1e18);
     let funding_f = format!("{:.8}", decode_signed_float(funding_rate_raw));
     let funding_vel_f = format!("{:.8}", decode_signed_float(funding_vel_raw));
@@ -146,10 +142,6 @@ fn decode_signed_float(hex: &str) -> f64 {
     } else {
         bytes as f64 / 1e18
     }
-}
-
-fn decode_signed_int256_str(hex: &str) -> String {
-    format!("{:.8}", decode_signed_float(hex))
 }
 
 /// Map well-known market IDs to symbols

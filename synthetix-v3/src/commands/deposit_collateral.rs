@@ -57,7 +57,7 @@ pub async fn execute(
         Some(from_addr),
         false,
     )?;
-    let approve_tx = extract_tx_hash(&approve_result);
+    let approve_tx = extract_tx_hash(&approve_result)?;
     eprintln!("Approve tx: {}", approve_tx);
 
     // Small delay to allow approval to confirm
@@ -67,7 +67,7 @@ pub async fn execute(
     eprintln!("[2/2] Depositing collateral...");
     let calldata = build_deposit_calldata(account_id, SUSDC, amount_raw);
     let result = wallet_contract_call(chain_id, CORE_PROXY, &calldata, Some(from_addr), None, false)?;
-    let tx_hash = extract_tx_hash(&result);
+    let tx_hash = extract_tx_hash(&result)?;
 
     println!(
         "{}",

@@ -63,7 +63,7 @@ pub async fn execute(
     let from_addr = from.as_deref().unwrap_or(&wallet);
     let calldata = build_withdraw_calldata(account_id, SUSDC, amount_raw);
     let result = wallet_contract_call(chain_id, CORE_PROXY, &calldata, Some(from_addr), None, false)?;
-    let tx_hash = extract_tx_hash(&result);
+    let tx_hash = extract_tx_hash(&result)?;
 
     println!(
         "{}",

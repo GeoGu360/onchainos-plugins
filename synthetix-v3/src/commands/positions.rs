@@ -3,7 +3,7 @@ use anyhow::Result;
 use serde::Serialize;
 
 use crate::config::{BASE_RPC_URL, PERPS_MARKET_PROXY};
-use crate::rpc::{decode_uint256_array, decode_uint256_as_u128, eth_call};
+use crate::rpc::{decode_uint256_array, eth_call};
 
 // Verified selectors (cast sig):
 // getAccountOpenPositions(uint128)     → 0x35254238

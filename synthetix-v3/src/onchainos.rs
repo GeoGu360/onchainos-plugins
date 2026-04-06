@@ -7,10 +7,21 @@ use std::process::Command;
 pub fn resolve_wallet(chain_id: u64) -> Result<String> {
     let chain_str = chain_id.to_string();
     let output = Command::new("onchainos")
-        .args(["wallet", "balance", "--chain", &chain_str, "--output", "json"])
+        .args(["wallet", "balance", "--chain", &chain_str])
         .output()?;
-    let json: Value = serde_json::from_str(&String::from_utf8_lossy(&output.stdout))?;
-    Ok(json["data"]["address"].as_str().unwrap_or("").to_string())
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    if stdout.trim().is_empty() {
+        anyhow::bail!("onchainos wallet balance returned no output. Ensure onchainos is logged in.");
+    }
+    let json: Value = serde_json::from_str(&stdout)
+        .map_err(|e| anyhow::anyhow!("Failed to parse onchainos wallet balance response: {}", e))?;
+    // Response structure: data.details[0].tokenAssets[0].address
+    if let Some(addr) = json["data"]["details"][0]["tokenAssets"][0]["address"].as_str() {
+        if !addr.is_empty() {
+            return Ok(addr.to_string());
+        }
+    }
+    anyhow::bail!("Cannot resolve wallet address from onchainos response. Ensure onchainos is logged in.")
 }
 
 /// onchainos wallet contract-call (EVM)
@@ -59,20 +70,32 @@ pub fn wallet_contract_call(
     }
 
     let output = Command::new("onchainos").args(&args).output()?;
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        anyhow::bail!("onchainos contract-call failed (exit {}): {} {}", output.status, stderr.trim(), stdout.trim());
+    }
     let stdout = String::from_utf8_lossy(&output.stdout);
     let result: Value = serde_json::from_str(&stdout)
         .unwrap_or_else(|_| serde_json::json!({"ok": false, "error": stdout.trim()}));
+    if result["ok"].as_bool() == Some(false) {
+        let err = result["error"].as_str().unwrap_or("unknown error");
+        anyhow::bail!("onchainos contract-call error: {}", err);
+    }
     Ok(result)
 }
 
-/// Extract txHash from onchainos response
-pub fn extract_tx_hash(result: &Value) -> String {
-    result["data"]["swapTxHash"]
+/// Extract txHash from onchainos response, returns error if not found or "pending"
+pub fn extract_tx_hash(result: &Value) -> Result<String> {
+    let hash = result["data"]["swapTxHash"]
         .as_str()
         .or_else(|| result["data"]["txHash"].as_str())
         .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-        .to_string()
+        .unwrap_or("");
+    if hash.is_empty() || hash == "pending" {
+        anyhow::bail!("Transaction hash not found in onchainos response: {:?}", result);
+    }
+    Ok(hash.to_string())
 }
 
 /// ERC-20 approve — selector 0x095ea7b3

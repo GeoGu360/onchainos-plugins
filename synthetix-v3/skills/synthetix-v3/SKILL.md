@@ -1,6 +1,6 @@
 ---
 name: synthetix-v3
-description: "Synthetix V3 perps market queries and collateral management on Base. Trigger phrases: synthetix markets, synthetix perps, synthetix positions, deposit collateral synthetix, withdraw collateral synthetix, synthetix v3. Chinese: Synthetix市场, Synthetix持仓, Synthetix存款, Synthetix抵押品"
+description: "Synthetix V3 perps market queries and collateral management on Base. Trigger phrases: synthetix markets, synthetix perps, synthetix positions, deposit collateral synthetix, withdraw collateral synthetix, synthetix v3, synthetix market query, synthetix perps position, synthetix collateral deposit, synthetix collateral withdraw"
 license: MIT
 metadata:
   author: GeoGu360
@@ -8,6 +8,8 @@ metadata:
 ---
 
 # Synthetix V3 Skill
+
+Do NOT use for: general token swaps, Synthetix V2 (legacy), staking SNX on Ethereum, Synthetix on Optimism or Arbitrum unless specified, or non-Synthetix DeFi protocols.
 
 Interact with Synthetix V3 on Base (chain 8453) — query Perps markets, manage sUSDC collateral, and view account positions.
 

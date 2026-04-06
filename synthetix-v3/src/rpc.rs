@@ -55,7 +55,7 @@ pub fn decode_int256(hex: &str) -> i128 {
         let high = u8::from_str_radix(&clean[..2], 16).unwrap_or(0);
         if high >= 0x80 {
             // Negative: compute two's complement
-            let val = u128::from_str_radix(&clean[32..], 16).unwrap_or(0);
+            let _val = u128::from_str_radix(&clean[32..], 16).unwrap_or(0);
             // For display purposes, treat as signed
             let full = i128::from_str_radix(&clean[32..], 16).unwrap_or(0);
             // If the upper half is all f's, it's a small negative number
