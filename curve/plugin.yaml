@@ -22,7 +22,7 @@ build:
   lang: rust
   binary_name: curve
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "a98284d"
+  source_commit: "33a3b93"
   source_dir: curve
 
 api_calls:
