@@ -60,7 +60,7 @@ pub async fn run(
     }
 
     let result = wallet_contract_call(chain_id, market.qi_token, &calldata, Some(&wallet), None, false).await?;
-    let tx_hash = extract_tx_hash(&result);
+    let tx_hash = extract_tx_hash(&result)?;
 
     Ok(json!({
         "ok": true,

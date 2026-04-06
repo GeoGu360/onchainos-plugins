@@ -101,6 +101,7 @@ pub async fn borrow_balance_current(qi_token: &str, wallet: &str, rpc_url: &str)
 
 /// ERC-20 balanceOf(address) -> u128
 /// selector: 0x70a08231
+#[allow(dead_code)]
 pub async fn erc20_balance_of(token: &str, wallet: &str, rpc_url: &str) -> anyhow::Result<u128> {
     let data = format!("0x70a08231{}", pad_address(wallet));
     let result = eth_call(token, &data, rpc_url).await?;
@@ -125,12 +126,14 @@ pub async fn get_account_liquidity(comptroller: &str, wallet: &str, rpc_url: &st
 
 /// Comptroller.getAllMarkets() -> address[]
 /// selector: 0xb0772d0b
+#[allow(dead_code)]
 pub async fn get_all_markets(comptroller: &str, rpc_url: &str) -> anyhow::Result<Vec<String>> {
     let result = eth_call(comptroller, "0xb0772d0b", rpc_url).await?;
     decode_address_array(&result)
 }
 
 /// Decode a dynamic ABI-encoded address[] array from eth_call result
+#[allow(dead_code)]
 fn decode_address_array(hex_result: &str) -> anyhow::Result<Vec<String>> {
     let clean = hex_result.trim_start_matches("0x");
     if clean.len() < 128 {
@@ -171,6 +174,7 @@ pub fn qi_token_to_underlying(qi_balance: u128, exchange_rate: u128, underlying_
 }
 
 /// eth_call returning raw hex for multi-value decoding
+#[allow(dead_code)]
 pub async fn eth_call_raw(to: &str, data: &str, rpc_url: &str) -> anyhow::Result<Value> {
     let client = build_client()?;
     let body = json!({

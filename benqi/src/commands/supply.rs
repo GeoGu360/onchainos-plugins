@@ -67,7 +67,7 @@ pub async fn run(
         }
 
         let result = wallet_contract_call(chain_id, market.qi_token, &calldata, Some(&wallet), Some(raw_amount), false).await?;
-        let tx_hash = extract_tx_hash(&result);
+        let tx_hash = extract_tx_hash(&result)?;
 
         let new_qi_bal = balance_of(market.qi_token, &wallet, RPC_URL).await.unwrap_or(0);
         let new_qi_human = (new_qi_bal as f64) / 1e8;
@@ -122,7 +122,7 @@ pub async fn run(
 
     // Step 1: ERC20 approve
     let approve_result = erc20_approve(chain_id, underlying, market.qi_token, raw_amount, Some(&wallet), false).await?;
-    let approve_hash = extract_tx_hash(&approve_result);
+    let approve_hash = extract_tx_hash(&approve_result)?;
     eprintln!("[supply] approve txHash: {}", approve_hash);
 
     // Wait for nonce safety (3 seconds between approve and mint)
@@ -130,7 +130,7 @@ pub async fn run(
 
     // Step 2: qiToken.mint(uint256)
     let mint_result = wallet_contract_call(chain_id, market.qi_token, &mint_calldata, Some(&wallet), None, false).await?;
-    let mint_hash = extract_tx_hash(&mint_result);
+    let mint_hash = extract_tx_hash(&mint_result)?;
 
     let new_qi_bal = balance_of(market.qi_token, &wallet, RPC_URL).await.unwrap_or(0);
     let new_qi_human = (new_qi_bal as f64) / 1e8;
