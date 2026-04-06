@@ -5,7 +5,7 @@ description: "Umami Finance GM Vault plugin — deposit USDC/WETH/WBTC into auto
 author:
   name: "GeoGu360"
   github: "GeoGu360"
-category: defi
+category: defi-protocol
 tags:
   - yield
   - vault

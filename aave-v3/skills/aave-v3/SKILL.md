@@ -23,8 +23,8 @@ Aave V3 is the leading decentralized lending protocol with over $43B TVL. This s
 | Base | 8453 (default) |
 
 **Architecture:**
-- Supply / Withdraw / Borrow / Repay / Set Collateral / Set E-Mode → `aave-v3` binary constructs ABI calldata, submits via `onchainos wallet contract-call` directly to Aave Pool
-- Supply / Repay first approve the ERC-20 token via `wallet contract-call` before the Pool call
+- Supply / Withdraw / Borrow / Repay / Set Collateral / Set E-Mode → `aave-v3` binary constructs ABI calldata; **ask user to confirm** before submitting via `onchainos wallet contract-call` to Aave Pool
+- Supply / Repay first **ask user to confirm**, then approve the ERC-20 token via `wallet contract-call` before the Pool call
 - Claim Rewards → `onchainos defi collect --platform-id <id>` (platform-id from `defi positions`)
 - Health Factor / Reserves / Positions → `aave-v3` binary makes read-only `eth_call` via public RPC
 - Pool address is always resolved at runtime via `PoolAddressesProvider.getPool()` — never hardcoded
@@ -108,8 +108,9 @@ aave-v3 --chain 8453 --dry-run supply --asset USDC --amount 1000
 **What it does:**
 1. Resolves token contract address via `onchainos token search` (or uses address directly if provided)
 2. Resolves Pool address at runtime via `PoolAddressesProvider.getPool()`
-3. Approves token to Pool: `onchainos wallet contract-call` → ERC-20 `approve(pool, amount)`
-4. Deposits to Pool: `onchainos wallet contract-call` → `Pool.supply(asset, amount, onBehalfOf, 0)`
+3. **Ask user to confirm** the supply amount and asset before proceeding with on-chain transactions.
+4. Approves token to Pool: `onchainos wallet contract-call` → ERC-20 `approve(pool, amount)`
+5. Deposits to Pool: `onchainos wallet contract-call` → `Pool.supply(asset, amount, onBehalfOf, 0)`
 
 **Expected output:**
 ```json

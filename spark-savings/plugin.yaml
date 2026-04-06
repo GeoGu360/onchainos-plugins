@@ -28,7 +28,7 @@ build:
   lang: rust
   binary_name: spark-savings
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: ""
+  source_commit: "e2ee157a170100112e1f668c655ea80dde9a1c2f"
   source_dir: spark-savings
 
 api_calls:

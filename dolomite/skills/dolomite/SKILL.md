@@ -1,3 +1,14 @@
+---
+name: dolomite
+description: >-
+  Use for Dolomite isolated lending markets on Arbitrum. Triggers: supply to dolomite,
+  dolomite borrow, dolomite positions, dolomite yield.
+  Do NOT use for other lending protocols.
+license: Apache-2.0
+metadata:
+  author: oker
+  version: "1.0.0"
+---
 # dolomite Skill
 
 Interact with **Dolomite** isolated lending markets — supply assets to earn yield, view positions, and simulate borrowing/repayment.

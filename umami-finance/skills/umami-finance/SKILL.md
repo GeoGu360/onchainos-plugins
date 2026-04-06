@@ -1,3 +1,14 @@
+---
+name: umami-finance
+description: >-
+  Use for Umami Finance GM vaults on Arbitrum. Triggers: deposit to umami,
+  umami vault yield, umami finance, umami withdraw.
+  Do NOT use for GMX directly.
+license: Apache-2.0
+metadata:
+  author: oker
+  version: "1.0.0"
+---
 # Umami Finance Skill
 
 Umami Finance is an Arbitrum-native yield protocol offering auto-compounding GM Vaults built on GMX V2. Users deposit USDC, WETH, or WBTC to earn yield from GMX trading fees with delta-neutral hedging.

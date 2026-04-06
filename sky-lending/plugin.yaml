@@ -24,7 +24,7 @@ build:
   lang: rust
   binary_name: sky-lending
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "placeholder"
+  source_commit: "e9700e918a3585785aaec44961be81d1a6ba4ac1"
   source_dir: sky-lending
 
 api_calls:

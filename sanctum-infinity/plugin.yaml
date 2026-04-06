@@ -20,8 +20,8 @@ components:
 build:
   lang: rust
   binary_name: sanctum-infinity
-  source_repo: skylavis-sky/onchainos-plugins
-  source_commit: "0000000000000000000000000000000000000000"
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: "3768d8db70a111c00d3b54b0d8358b474e85c44c"
   source_dir: sanctum-infinity
 
 api_calls:

@@ -1,6 +1,10 @@
 ---
 name: kelp
-description: Kelp DAO rsETH liquid restaking plugin. Stake ETH or LSTs (stETH, ETHx, sfrxETH) to receive rsETH — a Liquid Restaking Token earning EigenLayer restaking rewards and staking APY. Supports: apy, rates, positions, stake, unstake on Ethereum mainnet (chain 1) and rsETH bridged chains (Base, Arbitrum).
+description: >-
+  Kelp DAO rsETH liquid restaking plugin. Stake ETH or LSTs (stETH, ETHx, sfrxETH)
+  to receive rsETH — a Liquid Restaking Token earning EigenLayer restaking rewards
+  and staking APY. Supports apy, rates, positions, stake, unstake on Ethereum
+  mainnet (chain 1) and rsETH bridged chains (Base, Arbitrum).
 ---
 
 # Kelp DAO rsETH Liquid Restaking Plugin

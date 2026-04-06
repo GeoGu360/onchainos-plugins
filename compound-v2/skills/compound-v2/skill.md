@@ -7,6 +7,21 @@ metadata:
   version: "0.1.0"
 ---
 
+## ⚠️ Protocol Status: Deprecated
+
+Compound V2 has been **officially deprecated** by Compound governance. All supply/borrow reserves are **frozen** — new deposits (`mint`) and new borrows are rejected at the contract level with "mint is paused".
+
+**What still works:**
+- ✅ `markets` / `positions` — read market data and view existing positions
+- ✅ `redeem` — existing suppliers can withdraw their funds
+- ✅ `claim-comp` — claim accrued COMP rewards
+- ❌ `supply` — will fail on-chain (reserves frozen)
+- ❌ `borrow` / `repay` — dry-run only regardless
+
+**Recommendation:** For active lending/borrowing, use **Compound V3** (`compound-v3`) instead, which is the actively maintained successor.
+
+---
+
 ## Architecture
 
 - Read ops (`markets`, `positions`) → direct `eth_call` via public RPC; no wallet needed

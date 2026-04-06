@@ -24,7 +24,7 @@ build:
   lang: rust
   binary_name: swell-restaking
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "placeholder"
+  source_commit: "86a95fcc95fb3bced6ea6ec47abeb8c0da187d23"
   source_dir: swell-restaking
 
 api_calls:

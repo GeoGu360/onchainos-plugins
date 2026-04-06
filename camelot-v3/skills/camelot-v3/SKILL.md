@@ -1,3 +1,14 @@
+---
+name: camelot-v3
+description: >-
+  Use for Camelot V3 DEX on Arbitrum. Triggers: swap tokens on camelot,
+  camelot price quote, camelot liquidity, add LP camelot, remove LP camelot.
+  Do NOT use for other DEXes.
+license: Apache-2.0
+metadata:
+  author: oker
+  version: "1.0.0"
+---
 # Camelot V3 Skill
 
 Camelot V3 is Arbitrum's native concentrated liquidity DEX, built on the Algebra V1 protocol. It supports token swaps, price quotes, and LP position management on Arbitrum (chain 42161).

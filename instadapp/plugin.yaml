@@ -24,7 +24,7 @@ build:
   lang: rust
   binary_name: instadapp
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "placeholder"
+  source_commit: "4a58070b647f83773af57d4a1a594436f264d72e"
   source_dir: instadapp
 
 api_calls:

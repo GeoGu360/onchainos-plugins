@@ -24,7 +24,7 @@ build:
   lang: rust
   binary_name: aave-v2
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: ""
+  source_commit: "5218c37b58cde8d6b5a3b5ae41710a9f7a278997"
   source_dir: aave-v2
 
 api_calls:

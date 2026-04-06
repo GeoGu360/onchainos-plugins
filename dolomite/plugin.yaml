@@ -26,7 +26,7 @@ build:
   lang: rust
   binary_name: dolomite
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "placeholder"
+  source_commit: "a538df7884c074e5750af8e6731795bf4e413e45"
   source_dir: dolomite
 
 api_calls:

@@ -5,7 +5,7 @@ description: "Camelot V3 DEX on Arbitrum — swap tokens, get price quotes, and 
 author:
   name: "GeoGu360"
   github: "GeoGu360"
-category: dex
+category: trading-strategy
 tags:
   - dex
   - arbitrum

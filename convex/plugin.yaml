@@ -23,7 +23,7 @@ build:
   lang: rust
   binary_name: convex
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "placeholder"
+  source_commit: "f63e28a74749dbd08a941c25c16205d115389002"
   source_dir: convex
 
 api_calls:
