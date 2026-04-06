@@ -45,7 +45,7 @@ pub async fn run(chain: &str, dry_run: bool, args: CancelOrderArgs) -> anyhow::R
         dry_run,
     ).await?;
 
-    let tx_hash = crate::onchainos::extract_tx_hash(&result);
+    let tx_hash = crate::onchainos::extract_tx_hash(&result)?;
 
     println!(
         "{}",

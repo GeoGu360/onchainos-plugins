@@ -7,6 +7,14 @@ metadata:
   version: "0.1.0"
 ---
 
+## Do NOT use for
+
+- Token swaps on other DEXes (use a swap plugin instead)
+- Simple token transfers or balance queries (use wallet commands directly)
+- GMX V1 perpetuals (this plugin is V2 only)
+- Chains other than Arbitrum and Avalanche
+- Actions without explicit user confirmation for write operations
+
 ## Architecture
 
 - Read ops (list-markets, get-prices, get-positions, get-orders) → direct `eth_call` via public RPC or GMX REST API; no confirmation needed
@@ -104,12 +112,21 @@ No confirmation needed (read-only).
 Opens a long or short position on GMX V2 (market order). Uses a multicall: sendWnt (execution fee) + sendTokens (collateral) + createOrder (MarketIncrease).
 
 ```
+# Long position (use --long flag for long; omit for short)
 gmx-v2 --chain arbitrum open-position \
   --market "ETH/USD" \
   --collateral-token 0xaf88d065e77c8cC2239327C5EDb3A432268e5831 \
   --collateral-amount 1000000000 \
   --size-usd 5000.0 \
-  --long true \
+  --long \
+  --slippage-bps 100
+
+# Short position (omit --long flag)
+gmx-v2 --chain arbitrum open-position \
+  --market "ETH/USD" \
+  --collateral-token 0xaf88d065e77c8cC2239327C5EDb3A432268e5831 \
+  --collateral-amount 1000000000 \
+  --size-usd 5000.0 \
   --slippage-bps 100
 ```
 
@@ -118,7 +135,8 @@ gmx-v2 --chain arbitrum open-position \
 - `--collateral-token`: ERC-20 token used as collateral (address)
 - `--collateral-amount`: Collateral in smallest units (USDC = 6 decimals, ETH = 18)
 - `--size-usd`: Total position size in USD (collateral × leverage)
-- `--long`: `true` for long, `false` for short
+- `--long`: Boolean flag — presence means long position, absence means short
+
 - `--slippage-bps`: Acceptable slippage in basis points (default: 100 = 1%)
 - `--from`: Wallet address (optional, auto-detected)
 
@@ -136,12 +154,20 @@ gmx-v2 --chain arbitrum open-position \
 Closes a position (fully or partially) using a market decrease order. Only sends execution fee — no collateral transfer needed.
 
 ```
+# Close a long position
 gmx-v2 --chain arbitrum close-position \
   --market-token 0xMarketTokenAddress \
   --collateral-token 0xCollateralTokenAddress \
   --size-usd 5000.0 \
   --collateral-amount 1000000000 \
-  --long true
+  --long
+
+# Close a short position (omit --long)
+gmx-v2 --chain arbitrum close-position \
+  --market-token 0xMarketTokenAddress \
+  --collateral-token 0xCollateralTokenAddress \
+  --size-usd 5000.0 \
+  --collateral-amount 1000000000
 ```
 
 **Parameters:**
@@ -164,7 +190,7 @@ gmx-v2 --chain arbitrum close-position \
 Places a conditional order that executes when the trigger price is reached.
 
 ```
-# Stop-loss at $1700 for ETH long position
+# Stop-loss at $1700 for ETH long position (use --long flag for long direction)
 gmx-v2 --chain arbitrum place-order \
   --order-type stop-loss \
   --market-token 0xMarketToken \
@@ -173,14 +199,18 @@ gmx-v2 --chain arbitrum place-order \
   --collateral-amount 1000000000 \
   --trigger-price-usd 1700.0 \
   --acceptable-price-usd 1690.0 \
-  --long true
+  --long
 
-# Take-profit at $2200
+# Take-profit at $2200 for long position
 gmx-v2 --chain arbitrum place-order \
   --order-type limit-decrease \
+  --market-token 0xMarketToken \
+  --collateral-token 0xCollateralToken \
+  --size-usd 5000.0 \
+  --collateral-amount 1000000000 \
   --trigger-price-usd 2200.0 \
   --acceptable-price-usd 2190.0 \
-  --long true ...
+  --long
 ```
 
 **Order types:** `limit-increase`, `limit-decrease`, `stop-loss`, `stop-increase`
@@ -306,7 +336,7 @@ gmx-v2 --chain arbitrum --dry-run open-position \
   --collateral-token 0xaf88d065e77c8cC2239327C5EDb3A432268e5831 \
   --collateral-amount 1000000000 \
   --size-usd 5000.0 \
-  --long true
+  --long
 
 # 4. Ask user to confirm, then execute (remove --dry-run)
 gmx-v2 --chain arbitrum open-position \
@@ -314,7 +344,7 @@ gmx-v2 --chain arbitrum open-position \
   --collateral-token 0xaf88d065e77c8cC2239327C5EDb3A432268e5831 \
   --collateral-amount 1000000000 \
   --size-usd 5000.0 \
-  --long true \
+  --long \
   --from 0xYourWallet
 
 # 5. Check position was created (wait ~30s for keeper)

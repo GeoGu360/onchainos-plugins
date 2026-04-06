@@ -113,7 +113,8 @@ pub async fn run(chain: &str, dry_run: bool, args: OpenPositionArgs) -> anyhow::
                 Some(&wallet),
                 false,
             ).await?;
-            let approve_hash = crate::onchainos::extract_tx_hash(&approve_result);
+            let approve_hash = crate::onchainos::extract_tx_hash(&approve_result)
+                .unwrap_or_else(|e| format!("(approval error: {})", e));
             eprintln!("Approval tx: {}", approve_hash);
         }
     }
@@ -171,7 +172,7 @@ pub async fn run(chain: &str, dry_run: bool, args: OpenPositionArgs) -> anyhow::
         dry_run,
     ).await?;
 
-    let tx_hash = crate::onchainos::extract_tx_hash(&result);
+    let tx_hash = crate::onchainos::extract_tx_hash(&result)?;
 
     println!(
         "{}",

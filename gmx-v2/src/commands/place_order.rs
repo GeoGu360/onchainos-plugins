@@ -158,7 +158,7 @@ pub async fn run(chain: &str, dry_run: bool, args: PlaceOrderArgs) -> anyhow::Re
                 Some(&wallet),
                 false,
             ).await?;
-            eprintln!("Approval tx: {}", crate::onchainos::extract_tx_hash(&approve_result));
+            eprintln!("Approval tx: {}", crate::onchainos::extract_tx_hash(&approve_result).unwrap_or_else(|e| format!("(approval error: {})", e)));
         }
     }
 
@@ -171,7 +171,7 @@ pub async fn run(chain: &str, dry_run: bool, args: PlaceOrderArgs) -> anyhow::Re
         dry_run,
     ).await?;
 
-    let tx_hash = crate::onchainos::extract_tx_hash(&result);
+    let tx_hash = crate::onchainos::extract_tx_hash(&result)?;
 
     println!(
         "{}",

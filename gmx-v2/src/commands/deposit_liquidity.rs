@@ -62,7 +62,7 @@ pub async fn run(chain: &str, dry_run: bool, args: DepositLiquidityArgs) -> anyh
             let r = crate::onchainos::erc20_approve(
                 cfg.chain_id, long_token, cfg.router, u128::MAX, Some(&wallet), false,
             ).await?;
-            eprintln!("Approval tx: {}", crate::onchainos::extract_tx_hash(&r));
+            eprintln!("Approval tx: {}", crate::onchainos::extract_tx_hash(&r).unwrap_or_else(|e| format!("(approval error: {})", e)));
         }
     }
 
@@ -76,7 +76,7 @@ pub async fn run(chain: &str, dry_run: bool, args: DepositLiquidityArgs) -> anyh
             let r = crate::onchainos::erc20_approve(
                 cfg.chain_id, short_token, cfg.router, u128::MAX, Some(&wallet), false,
             ).await?;
-            eprintln!("Approval tx: {}", crate::onchainos::extract_tx_hash(&r));
+            eprintln!("Approval tx: {}", crate::onchainos::extract_tx_hash(&r).unwrap_or_else(|e| format!("(approval error: {})", e)));
         }
     }
 
@@ -125,7 +125,7 @@ pub async fn run(chain: &str, dry_run: bool, args: DepositLiquidityArgs) -> anyh
         dry_run,
     ).await?;
 
-    let tx_hash = crate::onchainos::extract_tx_hash(&result);
+    let tx_hash = crate::onchainos::extract_tx_hash(&result)?;
 
     println!(
         "{}",

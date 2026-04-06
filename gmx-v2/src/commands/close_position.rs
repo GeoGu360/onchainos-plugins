@@ -94,7 +94,16 @@ pub async fn run(chain: &str, dry_run: bool, args: ClosePositionArgs) -> anyhow:
     let multicall_hex = crate::abi::encode_multicall(&[send_wnt, create_order]);
     let calldata = format!("0x{}", multicall_hex);
 
-    let mid_price_usd = (min_price_raw as f64 + max_price_raw as f64) / 2.0 / 1e30;
+    // Use token decimals for correct price display (same as open_position logic)
+    let token_infos = crate::api::fetch_tokens(cfg).await.unwrap_or_default();
+    let index_decimals = market_info
+        .and_then(|m| m.index_token.as_deref())
+        .and_then(|addr| token_infos.iter().find(|t| t.address.as_deref().map(|a| a.to_lowercase()) == Some(addr.to_lowercase())))
+        .and_then(|t| t.decimals)
+        .unwrap_or(18u8);
+    let min_price_usd_display = crate::api::raw_price_to_usd(min_price_raw, index_decimals);
+    let max_price_usd_display = crate::api::raw_price_to_usd(max_price_raw, index_decimals);
+    let mid_price_usd = (min_price_usd_display + max_price_usd_display) / 2.0;
 
     eprintln!("=== Close Position Preview ===");
     eprintln!("Market token: {}", args.market_token);
@@ -115,7 +124,7 @@ pub async fn run(chain: &str, dry_run: bool, args: ClosePositionArgs) -> anyhow:
         dry_run,
     ).await?;
 
-    let tx_hash = crate::onchainos::extract_tx_hash(&result);
+    let tx_hash = crate::onchainos::extract_tx_hash(&result)?;
 
     println!(
         "{}",
