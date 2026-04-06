@@ -145,6 +145,15 @@ swell-restaking stake --amount <ETH_AMOUNT> [--from <ADDR>] [--dry-run] [--chain
 - **EigenLayer:** rswETH holders earn EigenLayer AVS restaking rewards on top of base validator yield. APY is typically higher than swETH.
 - **DeFi utility:** rswETH can be used as collateral in Aave V3, Morpho, and other DeFi protocols.
 
+## Do NOT Use For
+
+- Swell liquid staking (swETH) — use the `swell-staking` skill instead
+- Lido staking (stETH/wstETH) — use the `lido` skill instead
+- Unstaking / withdrawing rswETH — direct users to https://app.swellnetwork.io
+- Any chain other than Ethereum mainnet (chain 1)
+- Wallet balance queries — use `onchainos wallet balance --chain 1`
+- EigenLayer direct restaking (non-Swell) — this skill only covers Swell's rswETH product
+
 ## Skill Routing
 
 - For Swell liquid staking (swETH) - use the `swell-staking` skill

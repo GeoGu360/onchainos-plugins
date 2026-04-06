@@ -82,6 +82,16 @@ pub async fn run(args: StakeArgs, chain_id: u64) -> anyhow::Result<()> {
     )
     .await?;
 
+    // Check that onchainos reported success before treating result as ok
+    let ok = result["ok"].as_bool().unwrap_or(false);
+    if !ok {
+        let err_msg = result["error"]
+            .as_str()
+            .or_else(|| result["message"].as_str())
+            .unwrap_or("unknown error");
+        anyhow::bail!("Transaction failed: {}", err_msg);
+    }
+
     let tx_hash = onchainos::extract_tx_hash(&result);
     let output = serde_json::json!({
         "ok": true,
