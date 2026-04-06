@@ -53,15 +53,15 @@ pub async fn run(args: IlksArgs) -> anyhow::Result<()> {
             Err(e) => println!("  (RPC error: {})", e),
         }
 
-        // Jug.ilks(bytes32) -> (duty, rho)
+        // Jug.ilks(bytes32) -> (duty, rho)  [only 2 uint256 returned]
         let jug_calldata = rpc::calldata_jug_ilks(ilk_hex);
         match onchainos::eth_call(chain_id, config::JUG, &jug_calldata) {
             Ok(result) => {
                 match rpc::extract_return_data(&result) {
                     Ok(hex) => {
-                        if let Ok((duty_f64, _rho, _, _, _)) = rpc::decode_five_uint256_f64(&hex) {
+                        if let Ok((duty_raw, _rho)) = rpc::decode_two_uint256(&hex) {
                             // duty in ray (1e27); annualized: (duty/1e27)^seconds_per_year - 1
-                            let duty_normalized = duty_f64 / 1e27;
+                            let duty_normalized = duty_raw as f64 / 1e27;
                             // Approximate: (duty_normalized - 1.0) * seconds_per_year * 100
                             let per_second_excess = duty_normalized - 1.0;
                             let annual_rate = per_second_excess * 31_536_000.0 * 100.0;
