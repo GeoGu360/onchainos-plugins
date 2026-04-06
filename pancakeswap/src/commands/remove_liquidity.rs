@@ -25,7 +25,12 @@ pub async fn run(args: RemoveLiquidityArgs) -> Result<()> {
     let sym0 = crate::rpc::get_symbol(&pos.token0, cfg.rpc_url).await.unwrap_or_else(|_| pos.token0.clone());
     let sym1 = crate::rpc::get_symbol(&pos.token1, cfg.rpc_url).await.unwrap_or_else(|_| pos.token1.clone());
 
-    let liquidity_to_remove = (effective_liquidity as f64 * args.liquidity_pct / 100.0) as u128;
+    // Use integer arithmetic to avoid f64 precision loss on large u128 liquidity values.
+    // liquidity_pct is 0–100; multiply first, then divide to keep precision.
+    let pct_scaled = (args.liquidity_pct * 1_000_000.0).round() as u128; // 6 decimal places
+    let liquidity_to_remove = effective_liquidity
+        .saturating_mul(pct_scaled)
+        .saturating_div(100_000_000); // divide by 100 * 1_000_000
 
     println!("Remove Liquidity (chain {}):", args.chain);
     println!("  Position:     #{}", args.token_id);

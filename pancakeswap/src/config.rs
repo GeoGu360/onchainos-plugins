@@ -81,9 +81,48 @@ pub fn resolve_token_address(symbol_or_addr: &str, chain_id: u64) -> anyhow::Res
 
 /// Convert human-readable token amount to minimal units (wei/atomic).
 pub fn human_to_minimal(amount: &str, decimals: u8) -> anyhow::Result<u128> {
-    let f: f64 = amount.parse().map_err(|_| anyhow::anyhow!("Invalid amount: {}", amount))?;
-    if f < 0.0 {
+    // Parse the amount as a decimal string without going through f64 to avoid precision loss
+    // for amounts like "1000000.5" with 18 decimals.
+    let amount = amount.trim();
+    if amount.starts_with('-') {
         anyhow::bail!("Amount must be non-negative");
     }
-    Ok((f * 10f64.powi(decimals as i32)) as u128)
+
+    // Split on the decimal point
+    let (int_part, frac_part) = if let Some(dot) = amount.find('.') {
+        (&amount[..dot], &amount[dot + 1..])
+    } else {
+        (amount, "")
+    };
+
+    // Parse integer part
+    let int_val: u128 = if int_part.is_empty() {
+        0
+    } else {
+        int_part.parse().map_err(|_| anyhow::anyhow!("Invalid amount: {}", amount))?
+    };
+
+    // Build the scaled integer: int_val * 10^decimals + frac scaled to decimals places
+    let decimals = decimals as usize;
+    let mut result = int_val
+        .checked_mul(10u128.pow(decimals as u32))
+        .ok_or_else(|| anyhow::anyhow!("Amount too large: {}", amount))?;
+
+    if !frac_part.is_empty() {
+        let frac_len = frac_part.len();
+        // Truncate or pad frac to `decimals` digits
+        let frac_digits: String = if frac_len <= decimals {
+            format!("{:0<width$}", frac_part, width = decimals)
+        } else {
+            frac_part[..decimals].to_string()
+        };
+        let frac_val: u128 = frac_digits
+            .parse()
+            .map_err(|_| anyhow::anyhow!("Invalid fractional part: {}", amount))?;
+        result = result
+            .checked_add(frac_val)
+            .ok_or_else(|| anyhow::anyhow!("Amount too large: {}", amount))?;
+    }
+
+    Ok(result)
 }
