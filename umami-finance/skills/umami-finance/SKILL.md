@@ -1,19 +1,28 @@
 ---
 name: umami-finance
 description: >-
-  Use for Umami Finance GM vaults on Arbitrum. Triggers: deposit to umami,
-  umami vault yield, umami finance, umami withdraw.
+  Use for Umami Finance GM vaults on Arbitrum. Triggers: umami vault yield,
+  umami finance positions, list umami vaults.
+  Do NOT use for deposit or withdraw — write ops are NOT verified.
   Do NOT use for GMX directly.
 license: Apache-2.0
 metadata:
   author: oker
   version: "1.0.0"
+  audit_status: "FAIL"
+  audit_note: "Write path (deposit/redeem) not verified on-chain. onchainos contract-call --amt does not broadcast on Arbitrum. Re-audit required before write ops can be enabled."
 ---
 # Umami Finance Skill
 
+> ⚠️ **AUDIT STATUS: FAIL**
+> Write operations (deposit, redeem) have **NOT** been verified on-chain and must NOT be used.
+> Read-only commands (list-vaults, vault-info, positions) work correctly.
+> Blocker: onchainos `contract-call --amt` (non-zero msg.value) does not broadcast on Arbitrum.
+> Re-audit required after onchainos fix.
+
 Umami Finance is an Arbitrum-native yield protocol offering auto-compounding GM Vaults built on GMX V2. Users deposit USDC, WETH, or WBTC to earn yield from GMX trading fees with delta-neutral hedging.
 
-All write operations are submitted via `onchainos wallet contract-call` after asking the user to confirm.
+**Read-only mode**: Only use list-vaults, vault-info, and positions until write ops pass audit.
 
 ## Architecture
 
