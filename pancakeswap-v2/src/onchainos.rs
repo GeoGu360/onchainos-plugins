@@ -2,13 +2,26 @@
 use std::process::Command;
 use serde_json::Value;
 
-/// Query current logged-in wallet address via wallet balance --output json
+/// Query current logged-in wallet address via wallet balance.
+/// The balance response structure is:
+///   { "data": { "details": [ { "tokenAssets": [ { "address": "0x..." } ] } ] } }
 pub fn resolve_wallet(chain_id: u64) -> anyhow::Result<String> {
     let chain_str = chain_id.to_string();
     let output = Command::new("onchainos")
-        .args(["wallet", "balance", "--chain", &chain_str, "--output", "json"])
+        .args(["wallet", "balance", "--chain", &chain_str])
         .output()?;
     let json: Value = serde_json::from_str(&String::from_utf8_lossy(&output.stdout))?;
+    // Try data.details[0].tokenAssets[0].address first (actual onchainos format)
+    if let Some(addr) = json["data"]["details"]
+        .get(0)
+        .and_then(|d| d["tokenAssets"].get(0))
+        .and_then(|t| t["address"].as_str())
+    {
+        if !addr.is_empty() {
+            return Ok(addr.to_string());
+        }
+    }
+    // Fallback: data.address (older format)
     Ok(json["data"]["address"].as_str().unwrap_or("").to_string())
 }
 
