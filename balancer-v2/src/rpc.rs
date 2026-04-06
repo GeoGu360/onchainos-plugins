@@ -73,6 +73,7 @@ pub fn pad_bytes32(val: &str) -> String {
 }
 
 /// Serialize u128 as string for JSON output
+#[allow(dead_code)]
 pub fn serialize_u128_as_string<S>(val: &u128, s: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,

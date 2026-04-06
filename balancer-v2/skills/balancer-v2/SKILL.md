@@ -1,7 +1,7 @@
 ---
 name: balancer-v2
 version: "0.1.0"
-description: "Balancer V2 DEX — swap tokens, query pools, add/remove liquidity on Arbitrum and Ethereum"
+description: "Balancer V2 DEX - swap tokens, query pools, add/remove liquidity on Arbitrum and Ethereum"
 ---
 
 # Balancer V2 Skill
@@ -13,11 +13,11 @@ Balancer V2 is a DEX and AMM on Ethereum and Arbitrum featuring multi-token weig
 - All on-chain operations route through the **Vault** contract (`0xBA12222222228d8Ba445958a75a0704d566BF2C8`)
 - Pool queries are served via **BalancerQueries** (`0xE39B5e3B6D74016b2F6A9673D7d7493B6DF549d5`)
 - Pool discovery uses the Balancer Subgraph (GraphQL)
-- Write ops → after user confirmation, submits via `onchainos wallet contract-call` with `--force`
+- Write ops -> after user confirmation, submits via `onchainos wallet contract-call` with `--force`
 
 ## Commands
 
-### pools — List Balancer V2 Pools
+### pools - List Balancer V2 Pools
 
 List the top pools by total liquidity on a given chain.
 
@@ -44,7 +44,7 @@ balancer-v2 pools --chain 42161 --limit 10
 
 ---
 
-### pool-info — Get Pool Details
+### pool-info - Get Pool Details
 
 Get detailed on-chain information for a specific Balancer V2 pool.
 
@@ -71,14 +71,14 @@ balancer-v2 pool-info --pool 0x64541216bafffeec8ea535bb71fbc927831d0595000100000
 
 ---
 
-### quote — Get Swap Quote
+### quote - Get Swap Quote
 
 Get an estimated output amount for a swap using the on-chain BalancerQueries contract.
 
 **Trigger phrases:**
 - "quote swap 0.001 WETH for USDC on Balancer"
 - "how much USDC will I get for 0.001 WETH on Balancer?"
-- "Balancer quote: 1 USDT → WETH"
+- "Balancer quote: 1 USDT -> WETH"
 
 **Usage:**
 ```
@@ -101,7 +101,7 @@ balancer-v2 quote --from WETH --to USDC --amount 0.001 --pool 0x64541216bafffeec
 
 ---
 
-### positions — View LP Positions
+### positions - View LP Positions
 
 View the current wallet's BPT (Balancer Pool Token) holdings across known pools.
 
@@ -128,7 +128,7 @@ balancer-v2 positions --chain 42161
 
 ---
 
-### swap — Execute Token Swap
+### swap - Execute Token Swap
 
 Swap tokens through a Balancer V2 pool via Vault.swap(). Performs ERC-20 approve (if needed) then calls Vault.swap with GIVEN_IN.
 
@@ -155,8 +155,8 @@ balancer-v2 swap --from <token> --to <token> --amount <amount> --pool <pool_id> 
 1. Get quote via BalancerQueries.querySwap()
 2. Run `--dry-run` to preview calldata
 3. **Ask user to confirm** before submitting the transaction
-4. If allowance insufficient: `onchainos wallet contract-call` (ERC-20 approve → Vault)
-5. Execute: `onchainos wallet contract-call` → Vault.swap() with `--force`
+4. If allowance insufficient: `onchainos wallet contract-call` (ERC-20 approve -> Vault)
+5. Execute: `onchainos wallet contract-call` -> Vault.swap() with `--force`
 
 **Example:**
 ```
@@ -167,7 +167,7 @@ balancer-v2 swap --from WETH --to USDC --amount 0.001 --pool 0x64541216bafffeec8
 
 ---
 
-### join — Add Liquidity
+### join - Add Liquidity
 
 Add liquidity to a Balancer V2 pool via Vault.joinPool(). Uses EXACT_TOKENS_IN_FOR_BPT_OUT join kind.
 
@@ -192,7 +192,7 @@ balancer-v2 join --pool <pool_id> --amounts <a1,a2,a3> [--chain <chain_id>] [--d
 2. Run `--dry-run` to preview calldata
 3. **Ask user to confirm** before submitting
 4. Approve each non-zero token: `onchainos wallet contract-call` (ERC-20 approve) with `--force`
-5. Execute: `onchainos wallet contract-call` → Vault.joinPool() with `--force`
+5. Execute: `onchainos wallet contract-call` -> Vault.joinPool() with `--force`
 
 **Example:**
 ```
@@ -201,7 +201,7 @@ balancer-v2 join --pool 0x64541216bafffeec8ea535bb71fbc927831d059500010000000000
 
 ---
 
-### exit — Remove Liquidity
+### exit - Remove Liquidity
 
 Remove liquidity from a Balancer V2 pool via Vault.exitPool(). Burns BPT for proportional token output.
 
@@ -225,7 +225,7 @@ balancer-v2 exit --pool <pool_id> --bpt-amount <amount> [--chain <chain_id>] [--
 1. Query pool tokens via Vault.getPoolTokens()
 2. Run `--dry-run` to preview calldata
 3. **Ask user to confirm** before submitting the transaction
-4. Execute: `onchainos wallet contract-call` → Vault.exitPool() with `--force`
+4. Execute: `onchainos wallet contract-call` -> Vault.exitPool() with `--force`
 
 **Example:**
 ```
@@ -236,7 +236,7 @@ balancer-v2 exit --pool 0x64541216bafffeec8ea535bb71fbc927831d059500010000000000
 
 | Chain | Chain ID | Notes |
 |-------|----------|-------|
-| Arbitrum | 42161 | Primary — WETH, USDC.e, USDT, WBTC |
+| Arbitrum | 42161 | Primary - WETH, USDC.e, USDT, WBTC |
 | Ethereum | 1 | Secondary |
 
 ## Known Token Symbols

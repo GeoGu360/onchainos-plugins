@@ -14,6 +14,7 @@ pub fn rpc_url(chain_id: u64) -> &'static str {
 }
 
 /// Balancer API V3 GraphQL endpoint (pool discovery)
+#[allow(dead_code)]
 pub const BALANCER_API_V3: &str = "https://api-v3.balancer.fi/graphql";
 
 pub fn resolve_token_address(symbol: &str, chain_id: u64) -> String {

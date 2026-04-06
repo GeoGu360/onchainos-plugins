@@ -84,6 +84,18 @@ pub async fn wallet_contract_call(
         .map_err(|e| anyhow::anyhow!("Failed to parse onchainos response: {}\nOutput: {}", e, stdout))
 }
 
+/// Check that onchainos returned ok:true, bail otherwise
+pub fn check_ok(result: &Value) -> anyhow::Result<()> {
+    if result.get("ok").and_then(|v| v.as_bool()) == Some(false) {
+        let msg = result["msg"]
+            .as_str()
+            .or_else(|| result["error"].as_str())
+            .unwrap_or("unknown error");
+        anyhow::bail!("onchainos error: {}", msg);
+    }
+    Ok(())
+}
+
 /// Extract txHash from onchainos response
 pub fn extract_tx_hash(result: &Value) -> String {
     result["data"]["swapTxHash"]

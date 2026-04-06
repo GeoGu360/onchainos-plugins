@@ -81,6 +81,7 @@ pub async fn run(
             eprintln!("Approving {} to Vault...", from_token);
             // Ask user to confirm is handled by SKILL.md description
             let approve_result = onchainos::erc20_approve(chain_id, &asset_in, vault, u128::MAX, None, false).await?;
+            onchainos::check_ok(&approve_result)?;
             let approve_hash = onchainos::extract_tx_hash(&approve_result);
             eprintln!("Approve tx: {}", approve_hash);
             // Wait for approve to confirm before swap
@@ -98,6 +99,7 @@ pub async fn run(
         true, // --force required for DEX swaps
     )
     .await?;
+    onchainos::check_ok(&result)?;
 
     let tx_hash = onchainos::extract_tx_hash(&result);
 

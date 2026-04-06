@@ -59,6 +59,7 @@ pub async fn run(
         true, // --force for DEX ops
     )
     .await?;
+    onchainos::check_ok(&result)?;
 
     let tx_hash = onchainos::extract_tx_hash(&result);
     let output = ExitResult {

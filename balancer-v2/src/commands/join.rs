@@ -75,6 +75,7 @@ pub async fn run(
                     // Ask user to confirm before executing join (documented in SKILL.md)
                     let approve_result =
                         onchainos::erc20_approve(chain_id, token, vault, u128::MAX, None, false).await?;
+                    onchainos::check_ok(&approve_result)?;
                     let approve_hash = onchainos::extract_tx_hash(&approve_result);
                     eprintln!("Approve tx: {}", approve_hash);
                     sleep(Duration::from_secs(5)).await;
@@ -93,6 +94,7 @@ pub async fn run(
         true, // --force for DEX ops
     )
     .await?;
+    onchainos::check_ok(&result)?;
 
     let tx_hash = onchainos::extract_tx_hash(&result);
     let output = JoinResult {
