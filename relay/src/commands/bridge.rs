@@ -168,7 +168,7 @@ pub async fn run(args: BridgeArgs) -> anyhow::Result<()> {
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
     println!("Transaction submitted: {}", tx_hash);
     println!();
     println!("Bridge in progress. Request ID: {}", request_id);

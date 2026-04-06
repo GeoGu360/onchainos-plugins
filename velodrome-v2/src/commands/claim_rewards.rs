@@ -80,7 +80,7 @@ pub async fn run(args: ClaimRewardsArgs) -> anyhow::Result<()> {
 
     let result = wallet_contract_call(CHAIN_ID, &gauge_addr, &calldata, true, args.dry_run).await?;
 
-    let tx_hash = extract_tx_hash(&result);
+    let tx_hash = extract_tx_hash(&result)?;
     println!(
         "{{\"ok\":true,\"txHash\":\"{}\",\"gauge\":\"{}\",\"wallet\":\"{}\",\"earnedVelo\":\"{}\"}}",
         tx_hash, gauge_addr, wallet, earned

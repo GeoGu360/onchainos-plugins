@@ -119,7 +119,7 @@ pub async fn run(args: UnstakeArgs) -> anyhow::Result<()> {
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
     println!("Transaction submitted: {}", tx_hash);
     println!("You will receive ~{:.6} ETH once the transaction is confirmed.", expected_eth);
 

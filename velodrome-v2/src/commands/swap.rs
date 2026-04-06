@@ -92,7 +92,7 @@ pub async fn run(args: SwapArgs) -> anyhow::Result<()> {
             let approve_data = build_approve_calldata(router, u128::MAX);
             let approve_result =
                 wallet_contract_call(CHAIN_ID, &token_in, &approve_data, true, false).await?;
-            eprintln!("Approve tx: {}", extract_tx_hash(&approve_result));
+            eprintln!("Approve tx: {}", extract_tx_hash(&approve_result)?);
             // Wait 3s for approve nonce to clear before swap
             sleep(Duration::from_secs(3)).await;
         }
@@ -113,7 +113,7 @@ pub async fn run(args: SwapArgs) -> anyhow::Result<()> {
 
     let result = wallet_contract_call(CHAIN_ID, router, &calldata, true, args.dry_run).await?;
 
-    let tx_hash = extract_tx_hash(&result);
+    let tx_hash = extract_tx_hash(&result)?;
     println!(
         "{{\"ok\":true,\"txHash\":\"{}\",\"tokenIn\":\"{}\",\"tokenOut\":\"{}\",\"amountIn\":{},\"stable\":{},\"amountOutMin\":{}}}",
         tx_hash, token_in, token_out, args.amount_in, best_stable, amount_out_min
