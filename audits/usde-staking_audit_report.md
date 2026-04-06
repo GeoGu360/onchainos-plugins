@@ -179,3 +179,58 @@ Finished `release` profile [optimized] target(s) in 1.32s
 | Commit | Description |
 |--------|-------------|
 | `8dd08f9` | fix(usde-staking): extract_tx_hash Result, ok-check, dead code, SKILL.md quality |
+
+---
+
+## Re-audit — 2026-04-06 (Live Write Verified)
+
+**Context**: Initial audit was dry-run only because the test wallet had 0 USDe. Wallet now holds 2.155 USDe on Ethereum mainnet.
+
+**Re-audit date**: 2026-04-06
+**Test wallet**: `0x87fb0647faabea33113eaf1d80d67acb1c491b90`
+**Pre-conditions**: ETH 0.1747, USDe 2.155, USDT 15.03 on Ethereum mainnet
+
+### Pre-flight Baseline
+
+```
+USDe (unstaked): 2.155439 USDe
+sUSDe (staked):  0.000000 sUSDe
+Pending Unstake: None
+```
+
+`get-rates`: APY 3.49%, TVL 3.52B USDe, exchange rate 1 sUSDe = 1.226285 USDe
+
+### Live Write Results
+
+| # | Command | Status | Tx Hash | On-chain Confirm | Notes |
+|---|---------|--------|---------|-----------------|-------|
+| 1 | `stake --amount 0.1` (Step 1: approve) | ✅ | `0x3d18550cc33f2dc4a30c9341c536d9543224c658ab6df59ef545e6902f7f772b` | ✅ status=1 block 24820162 | USDe approve to sUSDe vault |
+| 2 | `stake --amount 0.1` (Step 2: deposit) | ✅ | `0x8acfc9e1d810b984d9cd7b2e0ee40ce49d29eb6a903db3bf56bb2e7dc6efa9ea` | ✅ status=1 block 24820164 | 0.1 USDe → 0.081547 sUSDe |
+| 3 | `request-unstake --shares 0.081547` | ✅ | `0x17ba416671e37492f59c435f4447bd9c71d1c50a3c4501e53c51448c287cc85f` | ✅ status=1 block 24820166 | Cooldown initiated |
+
+### Post-operation State Verification
+
+```
+USDe (unstaked): 2.055439 USDe   (was 2.155439 — delta: -0.1 ✅)
+sUSDe (staked):  0.000000 sUSDe  (in cooldown after request-unstake)
+Pending Unstake: 0.100000 USDe, cooldown ends in ~24h (status: COOLING DOWN)
+```
+
+### New Bugs Found
+
+None. All fixes from the initial audit hold. The two-tx stake flow (approve → 15s wait → deposit) performed correctly under live conditions. `extract_tx_hash` correctly returned valid hashes for all three transactions. `wallet_contract_call` exit-code and `ok` field checks did not trigger (all calls succeeded).
+
+### claim-unstake
+
+Not tested in this re-audit — cooldown period is 1 day. The sUSDe is now in the cooldown queue; `claim-unstake` can be verified 24h from now.
+
+### Re-audit Summary
+
+| Item | Result |
+|------|--------|
+| Live stake (approve) | ✅ on-chain confirmed block 24820162 |
+| Live stake (deposit) | ✅ on-chain confirmed block 24820164 |
+| Live request-unstake | ✅ on-chain confirmed block 24820166 |
+| State change verified | ✅ USDe -0.1, sUSDe in cooldown |
+| New bugs found | 0 |
+| Overall verdict | **PASS — production ready** |
