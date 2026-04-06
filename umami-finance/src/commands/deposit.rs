@@ -22,9 +22,11 @@ pub async fn execute(
         anyhow::bail!("Amount too small");
     }
 
+    let execution_fee = onchainos::DEPOSIT_EXECUTION_FEE as u128;
+
     // Build calldata for preview (always safe)
     let approve_calldata = onchainos::build_approve_calldata(vault.address, amount_raw);
-    let deposit_calldata = onchainos::build_deposit_calldata(amount_raw, "0x0000000000000000000000000000000000000001"); // placeholder for dry_run
+    let deposit_calldata = onchainos::build_deposit_calldata(amount_raw, execution_fee, "0x0000000000000000000000000000000000000001"); // placeholder for dry_run
 
     if dry_run {
         // Return preview without touching wallet
@@ -38,12 +40,11 @@ pub async fn execute(
                 "asset": vault.asset_symbol,
                 "amount_human": format!("{} {}", amount, vault.asset_symbol),
                 "amount_raw": amount_raw.to_string(),
+                "execution_fee_eth": "0.001",
                 "preview_shares": preview_shares.to_string(),
                 "approve_calldata": approve_calldata,
                 "deposit_calldata": deposit_calldata,
-                "data": {
-                    "txHash": "0x0000000000000000000000000000000000000000000000000000000000000000"
-                }
+                "note": "deposit is async: shares are minted ~30-60s after tx confirms (keeper settlement)"
             }))?
         );
         return Ok(());
@@ -81,14 +82,14 @@ pub async fn execute(
         approve_tx = Some(onchainos::extract_tx_hash(&approve_result)?);
     }
 
-    // Step 2: deposit into vault
-    let deposit_cd = onchainos::build_deposit_calldata(amount_raw, &wallet);
+    // Step 2: deposit into vault — must send executionFee as msg.value
+    let deposit_cd = onchainos::build_deposit_calldata(amount_raw, execution_fee, &wallet);
     let deposit_result = onchainos::wallet_contract_call(
         chain_id,
         vault.address,
         &deposit_cd,
         Some(&wallet),
-        None,
+        Some(onchainos::DEPOSIT_EXECUTION_FEE),
         false,
     ).await?;
     if deposit_result["ok"].as_bool() != Some(true) {

@@ -96,13 +96,15 @@ pub fn build_approve_calldata(spender: &str, amount: u128) -> String {
     format!("0x095ea7b3{}{}", spender_padded, amount_hex)
 }
 
-/// Umami custom deposit(uint256 assets, uint256 minSharesOut, address receiver) calldata
-/// selector: 0x8dbdbe6d (verified via cast sig + live tx analysis)
-/// minSharesOut = 0 (no slippage protection, acceptable for small test amounts)
-pub fn build_deposit_calldata(assets: u128, receiver: &str) -> String {
+/// Umami custom deposit(uint256 assets, uint256 executionFee, address receiver) payable calldata
+/// selector: 0x8dbdbe6d  (cast sig "deposit(uint256,uint256,address)" → 0x8dbdbe6d)
+/// executionFee must match msg.value sent with the tx (~0.001 ETH = 1e15 wei).
+/// The keeper reads this fee, fetches a Chainlink Data Streams price, then mints shares.
+pub const DEPOSIT_EXECUTION_FEE: u64 = 1_000_000_000_000_000; // 0.001 ETH in wei
+
+pub fn build_deposit_calldata(assets: u128, execution_fee: u128, receiver: &str) -> String {
     let receiver_padded = format!("{:0>64}", receiver.trim_start_matches("0x"));
-    let min_shares_out: u128 = 0;  // no slippage check
-    format!("0x8dbdbe6d{:064x}{:064x}{}", assets, min_shares_out, receiver_padded)
+    format!("0x8dbdbe6d{:064x}{:064x}{}", assets, execution_fee, receiver_padded)
 }
 
 /// Umami custom redeem(uint256 shares, uint256 minAssetsOut, address receiver, address owner) calldata
