@@ -50,6 +50,11 @@ pub async fn execute(
         dry_run,
     ).await?;
 
+    if result["ok"].as_bool() == Some(false) {
+        let err = result["error"].as_str().unwrap_or("unknown error");
+        anyhow::bail!("withdraw-liquidity transaction failed: {}", err);
+    }
+
     let tx_hash = onchainos::extract_tx_hash(&result);
 
     let output = serde_json::json!({

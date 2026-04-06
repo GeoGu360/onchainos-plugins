@@ -20,6 +20,15 @@ EtherFi Cash is a credit-card-backed borrowing protocol on Scroll. Users can dep
 
 ---
 
+## Do NOT use for
+
+- Borrowing USDC directly (requires a UserSafe wallet created at app.ether.fi)
+- Depositing collateral (weETH/SCR) -- must be done through the EtherFi Cash app
+- Any chain other than Scroll (chain ID 534352)
+- ETH staking or liquid staking (use etherfi-stake or etherfi-liquid skills instead)
+
+---
+
 ## Commands
 
 ### markets
@@ -97,7 +106,7 @@ etherfi-borrowing position --user-safe <ADDRESS> [--chain 534352]
 ```
 
 **Parameters:**
-- `--user-safe` — UserSafe contract address
+- `--user-safe` -- UserSafe contract address
 
 ---
 
@@ -113,12 +122,12 @@ Supply USDC to the EtherFi Cash debt manager to earn yield from borrowers.
 
 **Usage:**
 ```
-etherfi-borrowing supply-liquidity --amount <AMOUNT> [--chain 534352] [--dry-run]
+etherfi-borrowing [--dry-run] supply-liquidity --amount <AMOUNT> [--chain 534352]
 ```
 
 **Parameters:**
-- `--amount` — Amount of USDC to supply (e.g. `0.01`)
-- `--dry-run` — Simulate without broadcasting
+- `--amount` -- Amount of USDC to supply (e.g. `0.01`)
+- `--dry-run` -- Simulate without broadcasting (global flag, place before subcommand)
 
 **On-chain operations (requires user confirmation):**
 1. ERC-20 approve USDC to DebtManager (if needed)
@@ -141,12 +150,12 @@ Withdraw previously supplied USDC liquidity from EtherFi Cash.
 
 **Usage:**
 ```
-etherfi-borrowing withdraw-liquidity --amount <AMOUNT> [--chain 534352] [--dry-run]
+etherfi-borrowing [--dry-run] withdraw-liquidity --amount <AMOUNT> [--chain 534352]
 ```
 
 **Parameters:**
-- `--amount` — Amount of USDC to withdraw (e.g. `0.01`)
-- `--dry-run` — Simulate without broadcasting
+- `--amount` -- Amount of USDC to withdraw (e.g. `0.01`)
+- `--dry-run` -- Simulate without broadcasting (global flag, place before subcommand)
 
 **On-chain operation (requires user confirmation):**
 - `onchainos wallet contract-call --chain 534352 --to <DEBT_MANAGER> --input-data <withdraw_calldata>`
@@ -166,13 +175,13 @@ Repay USDC debt on behalf of a UserSafe.
 
 **Usage:**
 ```
-etherfi-borrowing repay --user-safe <ADDRESS> --amount <AMOUNT> [--chain 534352] [--dry-run]
+etherfi-borrowing [--dry-run] repay --user-safe <ADDRESS> --amount <AMOUNT> [--chain 534352]
 ```
 
 **Parameters:**
-- `--user-safe` — UserSafe contract address with the debt
-- `--amount` — Amount of USDC to repay (e.g. `0.01`)
-- `--dry-run` — Simulate without broadcasting
+- `--user-safe` -- UserSafe contract address with the debt
+- `--amount` -- Amount of USDC to repay (e.g. `0.01`)
+- `--dry-run` -- Simulate without broadcasting (global flag, place before subcommand)
 
 **On-chain operations (requires user confirmation):**
 1. ERC-20 approve USDC to DebtManager (if needed)

@@ -54,6 +54,10 @@ pub async fn execute(
                 Some(&wallet),
                 dry_run,
             ).await?;
+            if approve_result["ok"].as_bool() == Some(false) {
+                let err = approve_result["error"].as_str().unwrap_or("unknown error");
+                anyhow::bail!("USDC approve transaction failed: {}", err);
+            }
             let approve_hash = onchainos::extract_tx_hash(&approve_result);
             eprintln!("Approve tx: {}", approve_hash);
 
@@ -77,6 +81,11 @@ pub async fn execute(
         None,
         dry_run,
     ).await?;
+
+    if result["ok"].as_bool() == Some(false) {
+        let err = result["error"].as_str().unwrap_or("unknown error");
+        anyhow::bail!("repay transaction failed: {}", err);
+    }
 
     let tx_hash = onchainos::extract_tx_hash(&result);
 
