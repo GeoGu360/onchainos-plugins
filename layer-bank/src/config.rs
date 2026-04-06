@@ -56,10 +56,29 @@ pub const MARKETS: &[Market] = &[
 /// Scroll Mainnet RPC
 pub const RPC_URL: &str = "https://rpc.scroll.io";
 
-/// Scale a human-readable amount to raw integer units
+/// Scale a human-readable amount to raw integer units.
+/// Converts via string representation to avoid floating-point precision loss
+/// (e.g., 0.1 ETH → 100000000000000000 wei without rounding artifacts).
 pub fn to_raw(amount: f64, decimals: u8) -> u128 {
-    let factor = 10f64.powi(decimals as i32);
-    (amount * factor).round() as u128
+    // Format with enough decimal places to cover the token's precision,
+    // then split on the decimal point and reconstruct integer units.
+    let s = format!("{:.prec$}", amount, prec = decimals as usize);
+    let (integer_part, frac_part) = if let Some(dot) = s.find('.') {
+        let int = &s[..dot];
+        let frac = &s[dot + 1..];
+        (int.to_string(), frac.to_string())
+    } else {
+        (s.clone(), String::new())
+    };
+    // Pad or truncate fractional part to exactly `decimals` digits
+    let frac_padded = format!("{:0<width$}", frac_part, width = decimals as usize);
+    let frac_truncated = &frac_padded[..decimals as usize];
+    let combined = format!("{}{}", integer_part, frac_truncated);
+    combined.parse::<u128>().unwrap_or_else(|_| {
+        // Fallback to f64 arithmetic if string parsing fails
+        let factor = 10f64.powi(decimals as i32);
+        (amount * factor).round() as u128
+    })
 }
 
 /// Find a market by asset symbol (case-insensitive)

@@ -74,7 +74,7 @@ pub async fn run(
         let result = wallet_contract_call(
             chain_id, CORE, &repay_calldata, Some(&wallet), Some(raw_amount), false,
         ).await?;
-        let tx_hash = extract_tx_hash(&result);
+        let tx_hash = extract_tx_hash(&result)?;
 
         return Ok(json!({
             "ok": true,
@@ -123,7 +123,7 @@ pub async fn run(
 
     // Step 1: ERC-20 approve
     let approve_result = erc20_approve(chain_id, underlying, CORE, raw_amount, Some(&wallet), false).await?;
-    let approve_hash = extract_tx_hash(&approve_result);
+    let approve_hash = extract_tx_hash(&approve_result)?;
     eprintln!("[repay] approve txHash: {}", approve_hash);
 
     sleep(Duration::from_secs(3)).await;
@@ -132,7 +132,7 @@ pub async fn run(
     let repay_result = wallet_contract_call(
         chain_id, CORE, &repay_calldata, Some(&wallet), None, false,
     ).await?;
-    let repay_hash = extract_tx_hash(&repay_result);
+    let repay_hash = extract_tx_hash(&repay_result)?;
 
     Ok(json!({
         "ok": true,

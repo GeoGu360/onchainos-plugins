@@ -76,7 +76,7 @@ pub async fn run(
         let result = wallet_contract_call(
             chain_id, CORE, &calldata, Some(&wallet), Some(raw_amount), false,
         ).await?;
-        let tx_hash = extract_tx_hash(&result);
+        let tx_hash = extract_tx_hash(&result)?;
 
         let new_ltoken_bal = ltoken_balance_of(market.ltoken, &wallet, RPC_URL).await.unwrap_or(0);
         let new_ltoken_human = (new_ltoken_bal as f64) / 1e18;
@@ -130,7 +130,7 @@ pub async fn run(
 
     // Step 1: ERC-20 approve Core to spend underlying
     let approve_result = erc20_approve(chain_id, underlying, CORE, raw_amount, Some(&wallet), false).await?;
-    let approve_hash = extract_tx_hash(&approve_result);
+    let approve_hash = extract_tx_hash(&approve_result)?;
     eprintln!("[supply] approve txHash: {}", approve_hash);
 
     // Wait for nonce safety before submitting the supply tx
@@ -140,7 +140,7 @@ pub async fn run(
     let supply_result = wallet_contract_call(
         chain_id, CORE, &supply_calldata, Some(&wallet), None, false,
     ).await?;
-    let supply_hash = extract_tx_hash(&supply_result);
+    let supply_hash = extract_tx_hash(&supply_result)?;
 
     let new_ltoken_bal = ltoken_balance_of(market.ltoken, &wallet, RPC_URL).await.unwrap_or(0);
     let new_ltoken_human = (new_ltoken_bal as f64) / 1e18;

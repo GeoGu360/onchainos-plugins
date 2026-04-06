@@ -2,7 +2,7 @@
 name: layer-bank
 display_name: LayerBank
 version: "0.1.0"
-description: "LayerBank omni-chain lending protocol: supply assets to earn interest, borrow against collateral, view positions and health factor. Deployed on Scroll."
+description: "LayerBank omni-chain lending protocol: supply assets to earn interest, borrow against collateral, view positions and health factor. Deployed on Scroll (chain 534352). Do NOT use for: Aave, Compound, Morpho, or other lending protocols. Do NOT use for token swaps — use a DEX skill instead. Do NOT use for any chain other than Scroll (534352)."
 author: GeoGu360
 category: defi-protocol
 tags:
@@ -17,6 +17,13 @@ tags:
 # LayerBank Lending Protocol
 
 LayerBank is an omni-chain over-collateralized lending protocol. Users supply assets to earn yield (receiving lTokens) and can borrow against their collateral. This plugin targets the **Scroll** deployment (chain 534352).
+
+## Do NOT use for
+
+- Aave, Compound, Morpho, Euler, or any other lending protocol — each has its own plugin
+- Token swaps or trading — use a DEX plugin instead
+- Any chain other than Scroll (chain 534352) — LayerBank is NOT deployed on Base, Ethereum mainnet, or other EVM chains via this plugin
+- Leveraged yield strategies or flash loans
 
 ## Supported Commands
 
