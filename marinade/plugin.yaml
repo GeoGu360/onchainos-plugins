@@ -21,7 +21,7 @@ build:
   lang: rust
   binary_name: marinade
   source_repo: skylavis-sky/onchainos-plugins
-  source_commit: "0000000000000000000000000000000000000000"
+  source_commit: "e42891f77aeb185fa6af1a65b24ff80e3b78fb9f"
   source_dir: marinade
 
 api_calls:
