@@ -1,6 +1,6 @@
 ---
 name: kamino-liquidity
-description: "Kamino Liquidity KVault earn vaults on Solana. Deposit tokens to earn yield, withdraw shares, and track positions. Trigger phrases: Kamino vault, Kamino liquidity, deposit to Kamino, Kamino earn, KVault, Kamino yield vault. Chinese: Kamino流动性, Kamino保险库, 存入Kamino, Kamino赚取收益"
+description: "Kamino Liquidity KVault earn vaults on Solana. Deposit tokens to earn yield, withdraw shares, and track positions. Trigger phrases: Kamino vault, Kamino liquidity, deposit to Kamino, Kamino earn, KVault, Kamino yield vault, Kamino liudongxing, Kamino baoxianku, cun ru Kamino, Kamino zhancheng shouyi"
 license: MIT
 metadata:
   author: GeoGu360
@@ -10,6 +10,13 @@ metadata:
 ## Overview
 
 Kamino Liquidity provides auto-compounding KVault earn vaults on Solana. Users deposit a single token (SOL, USDC, etc.) and receive shares representing their proportional stake. The vault automatically allocates liquidity to generate yield.
+
+## Do NOT use for
+
+- Swapping or trading tokens (use a DEX skill instead)
+- Kamino Lend / borrow positions (this skill covers KVault earn only)
+- Any chain other than Solana (chain 501)
+- Concentrated-liquidity range management
 
 ## Architecture
 

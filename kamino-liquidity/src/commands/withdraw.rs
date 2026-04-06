@@ -67,7 +67,7 @@ pub async fn run(args: WithdrawArgs) -> anyhow::Result<()> {
     // Solana blockhash expires ~60s — must submit immediately
     let result = onchainos::wallet_contract_call_solana(KVAULT_PROGRAM_ID, &tx_b64, false).await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
     let output = serde_json::json!({
         "ok": true,
         "vault": args.vault,
