@@ -56,7 +56,7 @@ pub async fn run(
             dry_run,
         )
         .await?;
-        approve_hashes.push(onchainos::extract_tx_hash(&approve_result).to_string());
+        approve_hashes.push(onchainos::extract_tx_hash(&approve_result)?);
     }
 
     // Submit main buy-PT transaction
@@ -71,7 +71,7 @@ pub async fn run(
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result).to_string();
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
 
     Ok(serde_json::json!({
         "ok": true,

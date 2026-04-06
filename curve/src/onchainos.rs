@@ -58,24 +58,30 @@ pub async fn wallet_contract_call(
 
     let output = Command::new("onchainos").args(&args).output()?;
     let stdout = String::from_utf8_lossy(&output.stdout);
-    Ok(serde_json::from_str(&stdout)?)
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    if !output.status.success() {
+        let err = if !stderr.is_empty() { stderr.trim().to_string() } else { stdout.trim().to_string() };
+        anyhow::bail!("onchainos failed (exit {}): {}", output.status, err);
+    }
+    let result: Value = serde_json::from_str(&stdout)
+        .map_err(|e| anyhow::anyhow!("Failed to parse onchainos output: {}", e))?;
+    if result["ok"].as_bool() != Some(true) {
+        let err_msg = result["error"].as_str().unwrap_or("unknown onchainos error");
+        anyhow::bail!("onchainos execution failed: {}", err_msg);
+    }
+    Ok(result)
 }
 
 /// Extract txHash from wallet contract-call response.
-/// Returns an error if onchainos returned ok:false.
+/// Returns an error if the hash is missing, empty, or "pending".
 pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
-    // Check for explicit error from onchainos
-    if result["ok"].as_bool() == Some(false) {
-        let err_msg = result["error"]
-            .as_str()
-            .unwrap_or("onchainos returned ok:false");
-        anyhow::bail!("onchainos error: {}", err_msg);
+    let hash = result["data"]["swapTxHash"].as_str()
+        .or_else(|| result["data"]["txHash"].as_str())
+        .or_else(|| result["txHash"].as_str());
+    match hash {
+        Some(h) if !h.is_empty() && h != "pending" => Ok(h.to_string()),
+        _ => anyhow::bail!("txHash not found in onchainos output; raw: {}", result),
     }
-    let hash = result["data"]["txHash"]
-        .as_str()
-        .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending");
-    Ok(hash.to_string())
 }
 
 /// ERC-20 approve via wallet contract-call

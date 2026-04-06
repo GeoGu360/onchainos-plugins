@@ -33,11 +33,13 @@ pub fn resolve_wallet_solana() -> anyhow::Result<String> {
 
 /// Extract txHash from onchainos response.
 /// Priority: data.swapTxHash → data.txHash → txHash (root)
-pub fn extract_tx_hash(result: &Value) -> String {
-    result["data"]["swapTxHash"]
-        .as_str()
+/// Returns an error if the hash is missing, empty, or "pending".
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    let hash = result["data"]["swapTxHash"].as_str()
         .or_else(|| result["data"]["txHash"].as_str())
-        .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-        .to_string()
+        .or_else(|| result["txHash"].as_str());
+    match hash {
+        Some(h) if !h.is_empty() && h != "pending" => Ok(h.to_string()),
+        _ => anyhow::bail!("txHash not found in onchainos output; raw: {}", result),
+    }
 }

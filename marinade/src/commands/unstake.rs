@@ -22,11 +22,7 @@ pub async fn execute(amount: &str, slippage: f64, dry_run: bool) -> anyhow::Resu
 
     let slippage_str = format!("{:.1}", slippage);
     let result = onchainos::swap_execute(MSOL_MINT, SOL_NATIVE, amount, &slippage_str, false).await?;
-    if result["ok"].as_bool() != Some(true) {
-        let err_msg = result["error"].as_str().unwrap_or("unknown onchainos error");
-        anyhow::bail!("onchainos execution failed: {}", err_msg);
-    }
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
 
     let output = serde_json::json!({
         "ok": true,

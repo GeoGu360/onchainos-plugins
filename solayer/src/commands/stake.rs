@@ -49,14 +49,20 @@ pub async fn execute(amount: f64, dry_run: bool) -> anyhow::Result<Value> {
         .output()?;
 
     let stdout = String::from_utf8_lossy(&output.stdout);
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    if !output.status.success() {
+        let err = if !stderr.is_empty() { stderr.trim().to_string() } else { stdout.trim().to_string() };
+        anyhow::bail!("onchainos failed (exit {}): {}", output.status, err);
+    }
     let result: Value = serde_json::from_str(&stdout)
         .map_err(|e| anyhow::anyhow!("Failed to parse onchainos response: {}\nOutput: {}", e, stdout))?;
 
     if result["ok"].as_bool() != Some(true) {
-        anyhow::bail!("Stake failed: {}", result);
+        let err_msg = result["error"].as_str().unwrap_or("unknown onchainos error");
+        anyhow::bail!("onchainos execution failed: {}", err_msg);
     }
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
     let to_amount = result["data"]["toAmount"]
         .as_str()
         .unwrap_or("0");
