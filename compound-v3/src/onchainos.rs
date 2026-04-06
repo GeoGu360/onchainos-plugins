@@ -4,12 +4,12 @@ use serde_json::Value;
 
 /// Query the currently logged-in wallet address for the given chain.
 ///
-/// Calls `onchainos wallet addresses --output json` which returns:
+/// Calls `onchainos wallet addresses` which returns:
 /// { "data": { "evm": [ { "chainIndex": "8453", "address": "0x..." }, ... ] } }
 /// Returns the EVM address whose chainIndex matches chain_id.
 pub fn resolve_wallet(chain_id: u64) -> anyhow::Result<String> {
     let output = Command::new("onchainos")
-        .args(["wallet", "addresses", "--output", "json"])
+        .args(["wallet", "addresses"])
         .output()?;
     let json: Value = serde_json::from_str(&String::from_utf8_lossy(&output.stdout))?;
     let chain_index = chain_id.to_string();
