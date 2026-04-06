@@ -120,7 +120,7 @@ pub async fn run(args: RequestUnstakeArgs) -> anyhow::Result<()> {
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
     println!("Cooldown request tx: {}", tx_hash);
     println!();
     println!("Cooldown initiated for {}.", amount_display);

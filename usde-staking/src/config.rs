@@ -13,9 +13,6 @@ pub const RPC_URL: &str = "https://ethereum.publicnode.com";
 /// Ethena yield API endpoint
 pub const YIELD_API_URL: &str = "https://app.ethena.fi/api/yields/protocol-and-staking-yield";
 
-/// Token decimals (both USDe and sUSDe use 18 decimals)
-pub const TOKEN_DECIMALS: u32 = 18;
-
 // Function selectors (verified with cast sig)
 
 /// approve(address,uint256) = 0x095ea7b3
@@ -43,14 +40,8 @@ pub const SEL_BALANCE_OF: &str = "70a08231";
 /// convertToAssets(uint256) = 0x07a2d13a
 pub const SEL_CONVERT_TO_ASSETS: &str = "07a2d13a";
 
-/// convertToShares(uint256) = 0xc6e6f592
-pub const SEL_CONVERT_TO_SHARES: &str = "c6e6f592";
-
 /// previewDeposit(uint256) = 0xef8b30f7
 pub const SEL_PREVIEW_DEPOSIT: &str = "ef8b30f7";
-
-/// previewRedeem(uint256) = 0x4cdad506
-pub const SEL_PREVIEW_REDEEM: &str = "4cdad506";
 
 /// cooldowns(address) = 0x01320fe2 (verified with cast sig)
 pub const SEL_COOLDOWNS: &str = "01320fe2";

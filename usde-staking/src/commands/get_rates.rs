@@ -1,25 +1,5 @@
 use crate::{config, onchainos, rpc};
-use serde::Deserialize;
 use serde_json::Value;
-
-#[derive(Deserialize, Debug)]
-struct YieldEntry {
-    #[serde(rename = "lastUpdated")]
-    last_updated: Option<String>,
-    value: Option<f64>,
-}
-
-#[derive(Deserialize, Debug)]
-struct YieldResponse {
-    #[serde(rename = "stakingYield")]
-    staking_yield: Option<YieldEntry>,
-    #[serde(rename = "avg30dSusdeYield")]
-    avg30d_susde_yield: Option<YieldEntry>,
-    #[serde(rename = "avg90dSusdeYield")]
-    avg90d_susde_yield: Option<YieldEntry>,
-    #[serde(rename = "protocolYield")]
-    protocol_yield: Option<YieldEntry>,
-}
 
 pub async fn run() -> anyhow::Result<()> {
     // Fetch yield data from Ethena API

@@ -96,7 +96,7 @@ pub async fn run(args: StakeArgs) -> anyhow::Result<()> {
         false,
     )
     .await?;
-    let approve_hash = onchainos::extract_tx_hash(&approve_result);
+    let approve_hash = onchainos::extract_tx_hash(&approve_result)?;
     println!("Approve tx: {}", approve_hash);
 
     // Wait for approve to propagate before deposit (2-tx flow mitigation)
@@ -114,7 +114,7 @@ pub async fn run(args: StakeArgs) -> anyhow::Result<()> {
         false,
     )
     .await?;
-    let deposit_hash = onchainos::extract_tx_hash(&deposit_result);
+    let deposit_hash = onchainos::extract_tx_hash(&deposit_result)?;
     println!("Deposit tx: {}", deposit_hash);
     println!();
     println!("Successfully staked {} USDe!", args.amount);

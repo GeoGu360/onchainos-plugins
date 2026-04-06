@@ -23,7 +23,7 @@ build:
   lang: rust
   binary_name: usde-staking
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "0000000000000000000000000000000000000000"
+  source_commit: "9204514fdf7b5179e5f3f3483d06b431ed7bafe7"
   source_dir: usde-staking
 
 api_calls:

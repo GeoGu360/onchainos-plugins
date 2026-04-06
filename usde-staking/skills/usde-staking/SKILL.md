@@ -1,6 +1,13 @@
 ---
 name: usde-staking
-description: Stake USDe to earn yield via Ethena sUSDe ERC-4626 vault on Ethereum mainnet. Supports staking, unstaking with cooldown, claiming, rate queries, and position tracking.
+description: >-
+  Use for staking USDe to earn yield via Ethena sUSDe ERC-4626 vault on Ethereum mainnet.
+  Triggers: 'stake USDe', 'unstake sUSDe', 'Ethena staking', 'sUSDe yield', 'USDe staking APY',
+  'get sUSDe rates', 'check sUSDe position', 'request unstake', 'claim unstake',
+  'usde-staking', 'stake on Ethena', 'Ethena sUSDe', 'ERC-4626 staking'.
+  Covers: get-rates, get-positions, stake (approve+deposit), request-unstake (cooldown), claim-unstake.
+  Do NOT use for: swapping USDe for other tokens (use dex-swap), bridging USDe across chains,
+  staking tokens other than USDe, or any non-Ethereum chain operations.
 ---
 
 # USDe Staking Plugin (Ethena sUSDe)

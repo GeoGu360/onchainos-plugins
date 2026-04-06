@@ -96,7 +96,7 @@ pub async fn run(args: ClaimUnstakeArgs) -> anyhow::Result<()> {
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
     println!("Claim tx: {}", tx_hash);
     println!();
     println!("Successfully claimed USDe!");
