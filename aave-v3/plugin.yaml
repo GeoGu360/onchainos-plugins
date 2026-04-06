@@ -24,7 +24,7 @@ build:
   lang: rust
   binary_name: aave-v3
   source_repo: skylavis-sky/onchainos-plugins
-  source_commit: "4204362159cd2aa0a6c132ad467b82e1fcd55dcf"
+  source_commit: "0a5eb1835e442d3306573fd55fd4db00b577e5f3"
   source_dir: aave-v3
 
 api_calls:
