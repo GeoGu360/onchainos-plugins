@@ -1,4 +1,4 @@
-/// ABI encoding / decoding helpers — hand-rolled to avoid heavy alloy dependency
+// ABI encoding / decoding helpers — hand-rolled to avoid heavy alloy dependency.
 
 /// Pad a hex address (with or without 0x) to a 32-byte (64 hex char) left-zero-padded word.
 pub fn encode_address(addr: &str) -> String {

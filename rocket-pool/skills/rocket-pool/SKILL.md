@@ -1,6 +1,13 @@
 ---
 name: rocket-pool
-description: Interact with Rocket Pool, the decentralised Ethereum liquid staking protocol. Stake ETH to receive rETH (a non-rebasing liquid staking token that appreciates in value), check exchange rates, view protocol stats, manage positions, and burn rETH to redeem ETH. Supports Ethereum mainnet only.
+description: >-
+  Use for Rocket Pool ETH liquid staking on Ethereum mainnet. Triggers: stake ETH,
+  get rETH, rocket pool stake, rETH APY, rETH exchange rate, rocket pool positions,
+  unstake rETH, burn rETH, redeem rETH, rocket pool stats, liquid stake ETH,
+  rocket pool deposit, check rETH balance, rocket pool rate.
+  Do NOT use for: SOL staking (use jito skill), Lido stETH staking (use lido skill),
+  DEX swaps (use uniswap/curve skill), wallet balance queries (use onchainos wallet balance),
+  staking on chains other than Ethereum mainnet.
 ---
 
 # Rocket Pool Plugin
