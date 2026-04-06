@@ -1,11 +1,13 @@
 ---
 name: frax-ether
-description: "Frax Ether liquid staking protocol. Stake ETH to receive frxETH, then stake frxETH to earn yield as sfrxETH (ERC-4626 vault). Query rates, APR, and positions. Trigger phrases: stake ETH frax, stake frxETH, unstake sfrxETH, frax ether APR, frxETH yield, sfrxETH position, frax liquid staking. Chinese: 质押ETH到Frax, frxETH质押, sfrxETH收益, Frax以太坊质押"
+description: "Frax Ether liquid staking protocol. Stake ETH to receive frxETH, then stake frxETH to earn yield as sfrxETH (ERC-4626 vault). Query rates, APR, and positions. Trigger phrases: stake ETH frax, stake frxETH, unstake sfrxETH, frax ether APR, frxETH yield, sfrxETH position, frax liquid staking, zhi ya ETH dao Frax, frxETH zhi ya, sfrxETH shou yi"
 license: MIT
 metadata:
   author: GeoGu360
   version: "0.1.0"
 ---
+
+> Do NOT use for: swapping ETH to other tokens (use swap execute), general ERC-20 transfers, bridging, non-Ethereum chains, or any protocol other than Frax Ether liquid staking.
 
 ## Architecture
 

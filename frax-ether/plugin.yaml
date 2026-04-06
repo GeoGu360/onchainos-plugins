@@ -21,7 +21,7 @@ components:
 build:
   lang: rust
   binary_name: frax-ether
-  source_repo: GeoGu360/onchainos-plugins
+  source_repo: okx/onchainos-plugins
   source_commit: "9ba57ef738e7271ad6c1d0eb38ffe78e8ec506e2"
   source_dir: frax-ether
 

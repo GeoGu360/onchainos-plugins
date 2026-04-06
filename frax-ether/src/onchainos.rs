@@ -41,6 +41,7 @@ pub fn resolve_wallet(chain_id: u64) -> anyhow::Result<String> {
 /// Submit an EVM contract call via onchainos wallet contract-call.
 /// dry_run=true: returns a simulated response immediately (no onchainos call).
 /// ⚠️  `onchainos wallet contract-call` does NOT support --dry-run.
+/// force=true: appends --force flag (only after user has confirmed a confirming response).
 pub async fn wallet_contract_call(
     chain_id: u64,
     to: &str,
@@ -61,6 +62,8 @@ pub async fn wallet_contract_call(
     }
 
     let chain_str = chain_id.to_string();
+    // Do NOT add --force on the first call; onchainos may return exit code 2 (confirming)
+    // requiring user acknowledgment before a second call with --force.
     let mut args = vec![
         "wallet",
         "contract-call",
@@ -70,25 +73,38 @@ pub async fn wallet_contract_call(
         to,
         "--input-data",
         input_data,
-        "--force",
     ];
 
-    let amt_str;
+    // Build optional args — bind owned strings so they outlive the args slice.
+    let amt_str: String;
+    let from_str_owned: String;
     if let Some(v) = amt {
         amt_str = v.to_string();
         args.extend_from_slice(&["--amt", &amt_str]);
     }
-
-    let from_str_owned;
     if let Some(f) = from {
         from_str_owned = f.to_string();
         args.extend_from_slice(&["--from", &from_str_owned]);
     }
 
-    let output = Command::new("onchainos").args(&args).output()?;
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    serde_json::from_str(&stdout)
-        .map_err(|e| anyhow::anyhow!("Failed to parse onchainos response: {}\nRaw: {}", e, stdout))
+    // First attempt without --force
+    let output_first = Command::new("onchainos").args(&args).output()?;
+    let stdout_first = String::from_utf8_lossy(&output_first.stdout);
+    if let Ok(v) = serde_json::from_str::<Value>(&stdout_first) {
+        if v.get("confirming").and_then(|c| c.as_bool()).unwrap_or(false) {
+            // Return the confirming payload; the agent must show `message` to the user
+            // and re-invoke with --force only after explicit user confirmation.
+            return Ok(v);
+        }
+        return Ok(v);
+    }
+
+    // If the response was not valid JSON, surface the raw output as an error.
+    anyhow::bail!(
+        "Failed to parse onchainos response. Raw stdout: {}\nStderr: {}",
+        stdout_first,
+        String::from_utf8_lossy(&output_first.stderr)
+    )
 }
 
 /// ERC-20 approve via onchainos.
@@ -111,12 +127,19 @@ pub async fn erc20_approve(
 
 /// Extract txHash from onchainos response.
 /// Checks data.txHash first, then root txHash.
-pub fn extract_tx_hash(result: &Value) -> String {
-    result["data"]["txHash"]
+/// Returns Err if neither field contains a non-empty hash.
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    let hash = result["data"]["txHash"]
         .as_str()
         .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-        .to_string()
+        .unwrap_or("");
+    if hash.is_empty() || hash == "null" {
+        anyhow::bail!(
+            "No txHash in onchainos response. Full response: {}",
+            result
+        );
+    }
+    Ok(hash.to_string())
 }
 
 /// Direct eth_call via public JSON-RPC (for read-only queries).
