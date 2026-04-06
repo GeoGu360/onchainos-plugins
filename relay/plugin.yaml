@@ -22,7 +22,7 @@ build:
   lang: rust
   binary_name: relay
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "53c16d5abcd6b329136aa2826e9dd5c917567003"
+  source_commit: "c5a14116b221f2520abfccb8b5c5fef539e6f81f"
   source_dir: relay
 
 api_calls:
