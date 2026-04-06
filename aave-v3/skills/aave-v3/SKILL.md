@@ -326,7 +326,15 @@ aave-v3 --chain 1 positions --from 0xSomeAddress
 aave-v3 --chain 1 --dry-run set-collateral --asset 0x514910771AF9Ca656af840dff83E8264EcF986CA --enable false
 # Execute after confirmation
 aave-v3 --chain 1 set-collateral --asset 0x514910771AF9Ca656af840dff83E8264EcF986CA --enable false
+# Shorthand: --disable is equivalent to --enable false
+aave-v3 --chain 1 set-collateral --asset 0x514910771AF9Ca656af840dff83E8264EcF986CA --disable
+# Enable collateral
+aave-v3 --chain 1 set-collateral --asset 0x514910771AF9Ca656af840dff83E8264EcF986CA --enable true
 ```
+
+**Notes:**
+- `--enable` accepts an explicit boolean value: `--enable true` or `--enable false`
+- `--disable` is a convenience alias for `--enable false`
 
 ---
 
