@@ -22,7 +22,7 @@ pub async fn run(
     let mp = api::build_market_params(&market)?;
 
     let collateral_token = mp.collateral_token.clone();
-    let decimals = rpc::erc20_decimals(&collateral_token, cfg.rpc_url).await.unwrap_or(18);
+    let decimals = rpc::erc20_decimals(&collateral_token, cfg.rpc_url).await?;
     let symbol = rpc::erc20_symbol(&collateral_token, cfg.rpc_url)
         .await
         .unwrap_or_else(|_| "TOKEN".to_string());
@@ -36,7 +36,7 @@ pub async fn run(
         eprintln!("[morpho] [dry-run] Would approve: onchainos wallet contract-call --chain {} --to {} --input-data {}", chain_id, collateral_token, approve_calldata);
     }
     let approve_result = onchainos::wallet_contract_call(chain_id, &collateral_token, &approve_calldata, from, None, dry_run).await?;
-    let approve_tx = onchainos::extract_tx_hash(&approve_result);
+    let approve_tx = onchainos::extract_tx_hash(&approve_result)?;
 
     // Step 2: supplyCollateral(marketParams, assets, onBehalf, data)
     let supply_calldata = calldata::encode_supply_collateral(&mp, raw_amount, supplier);
@@ -54,7 +54,7 @@ pub async fn run(
         None,
         dry_run,
     ).await?;
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
 
     let output = serde_json::json!({
         "ok": true,

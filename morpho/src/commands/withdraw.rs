@@ -23,7 +23,7 @@ pub async fn run(
 
     // Resolve asset address and decimals for display
     let asset_addr = resolve_asset_address(asset, chain_id)?;
-    let decimals = rpc::erc20_decimals(&asset_addr, cfg.rpc_url).await.unwrap_or(18);
+    let decimals = rpc::erc20_decimals(&asset_addr, cfg.rpc_url).await?;
     let symbol = rpc::erc20_symbol(&asset_addr, cfg.rpc_url).await.unwrap_or_else(|_| "TOKEN".to_string());
 
     let calldata_hex;
@@ -50,7 +50,7 @@ pub async fn run(
 
     // Ask user to confirm before executing on-chain
     let result = onchainos::wallet_contract_call(chain_id, vault, &calldata_hex, from, None, dry_run).await?;
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
 
     let output = serde_json::json!({
         "ok": true,

@@ -22,7 +22,7 @@ pub async fn run(
     let mp = api::build_market_params(&market)?;
 
     let loan_token = mp.loan_token.clone();
-    let decimals = rpc::erc20_decimals(&loan_token, cfg.rpc_url).await.unwrap_or(18);
+    let decimals = rpc::erc20_decimals(&loan_token, cfg.rpc_url).await?;
     let symbol = rpc::erc20_symbol(&loan_token, cfg.rpc_url).await.unwrap_or_else(|_| "TOKEN".to_string());
 
     let raw_amount = calldata::parse_amount(amount, decimals)?;
@@ -44,7 +44,7 @@ pub async fn run(
         None,
         dry_run,
     ).await?;
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
 
     let output = serde_json::json!({
         "ok": true,

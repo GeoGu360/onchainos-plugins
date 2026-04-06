@@ -1,6 +1,6 @@
 ---
 name: morpho
-description: "Supply, borrow and earn yield on Morpho — a permissionless lending protocol with $5B+ TVL. Trigger phrases: supply to morpho, deposit to morpho vault, borrow from morpho, repay morpho loan, morpho health factor, my morpho positions, morpho interest rates, claim morpho rewards, morpho markets, metamorpho vaults. Chinese: 在Morpho存款, Morpho借款, 还Morpho款, Morpho健康因子, 我的Morpho仓位, Morpho利率, 领取Morpho奖励"
+description: "Supply, borrow and earn yield on Morpho - a permissionless lending protocol with $5B+ TVL. Trigger phrases: supply to morpho, deposit to morpho vault, borrow from morpho, repay morpho loan, morpho health factor, my morpho positions, morpho interest rates, claim morpho rewards, morpho markets, metamorpho vaults. Chinese: 在Morpho存款, Morpho借款, 还Morpho款, Morpho健康因子, 我的Morpho仓位, Morpho利率, 领取Morpho奖励. Do NOT use for: Aave, Compound, Uniswap, non-Morpho lending protocols, or generic token swaps."
 license: MIT
 metadata:
   author: skylavis-sky
@@ -264,7 +264,7 @@ morpho --chain 1 repay --market-id 0xb323... --all
 **Usage:**
 ```bash
 morpho --chain 1 positions
-morpho --chain 1 positions --from 0xYourAddress
+morpho --chain 1 --from 0xYourAddress positions
 morpho --chain 8453 positions
 ```
 

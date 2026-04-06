@@ -18,7 +18,7 @@ pub async fn run(
 
     // Resolve vault asset address and decimals
     let asset_addr = resolve_asset_address(asset, chain_id)?;
-    let decimals = rpc::erc20_decimals(&asset_addr, cfg.rpc_url).await.unwrap_or(18);
+    let decimals = rpc::erc20_decimals(&asset_addr, cfg.rpc_url).await?;
     let symbol = rpc::erc20_symbol(&asset_addr, cfg.rpc_url).await.unwrap_or_else(|_| "TOKEN".to_string());
 
     let raw_amount = calldata::parse_amount(amount, decimals)
@@ -34,7 +34,7 @@ pub async fn run(
         eprintln!("[morpho] [dry-run] Would approve: onchainos wallet contract-call --chain {} --to {} --input-data {}", chain_id, asset_addr, approve_calldata);
     }
     let approve_result = onchainos::wallet_contract_call(chain_id, &asset_addr, &approve_calldata, from, None, dry_run).await?;
-    let approve_tx = onchainos::extract_tx_hash(&approve_result);
+    let approve_tx = onchainos::extract_tx_hash(&approve_result)?;
 
     // Wait for approve tx to be picked up before sending deposit, to avoid nonce conflicts.
     if !dry_run {
@@ -48,7 +48,7 @@ pub async fn run(
         eprintln!("[morpho] [dry-run] Would deposit: onchainos wallet contract-call --chain {} --to {} --input-data {}", chain_id, vault, deposit_calldata);
     }
     let deposit_result = onchainos::wallet_contract_call(chain_id, vault, &deposit_calldata, from, None, dry_run).await?;
-    let deposit_tx = onchainos::extract_tx_hash(&deposit_result);
+    let deposit_tx = onchainos::extract_tx_hash(&deposit_result)?;
 
     let output = serde_json::json!({
         "ok": true,

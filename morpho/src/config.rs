@@ -9,7 +9,7 @@ pub struct ChainConfig {
 
 pub const CHAIN_ETHEREUM: ChainConfig = ChainConfig {
     chain_id: 1,
-    rpc_url: "https://eth.llamarpc.com",
+    rpc_url: "https://ethereum.publicnode.com",
     morpho_blue: "0xBBBBBbbBBb9cC5e90e3b3Af64bdAF62C37EEFFCb",
     merkl_distributor: "0x3Ef3D8bA38EBe18DB133cEc108f4D14CE00Dd9Ae",
 };

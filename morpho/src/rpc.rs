@@ -53,15 +53,19 @@ pub async fn erc20_balance_of(
 }
 
 /// Read ERC-20 decimals.
+/// Returns an error if the RPC call fails or returns empty data, so that callers
+/// never silently use a wrong default (e.g. 18 instead of 6 for USDC).
 pub async fn erc20_decimals(token: &str, rpc_url: &str) -> anyhow::Result<u8> {
     // decimals() selector = 0x313ce567
-    let hex = eth_call(token, "0x313ce567", rpc_url).await?;
+    let hex = eth_call(token, "0x313ce567", rpc_url).await
+        .map_err(|e| anyhow::anyhow!("Failed to fetch decimals for token {}: {}", token, e))?;
     let hex_clean = hex.trim_start_matches("0x");
     if hex_clean.is_empty() {
-        return Ok(18);
+        anyhow::bail!("Empty response for decimals() on token {}. Token may not be an ERC-20 or RPC may be unavailable.", token);
     }
     let padded = format!("{:0>64}", hex_clean);
-    let val = u8::from_str_radix(&padded[padded.len() - 2..], 16).unwrap_or(18);
+    let val = u8::from_str_radix(&padded[padded.len() - 2..], 16)
+        .map_err(|e| anyhow::anyhow!("Could not parse decimals for token {}: {}", token, e))?;
     Ok(val)
 }
 

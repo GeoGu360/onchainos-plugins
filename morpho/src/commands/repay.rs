@@ -25,7 +25,7 @@ pub async fn run(
     let mp = api::build_market_params(&market)?;
 
     let loan_token = mp.loan_token.clone();
-    let decimals = rpc::erc20_decimals(&loan_token, cfg.rpc_url).await.unwrap_or(18);
+    let decimals = rpc::erc20_decimals(&loan_token, cfg.rpc_url).await?;
     let symbol = rpc::erc20_symbol(&loan_token, cfg.rpc_url).await.unwrap_or_else(|_| "TOKEN".to_string());
 
     let repay_assets: u128;
@@ -70,7 +70,7 @@ pub async fn run(
         eprintln!("[morpho] [dry-run] Would approve: onchainos wallet contract-call --chain {} --to {} --input-data {}", chain_id, loan_token, approve_calldata);
     }
     let approve_result = onchainos::wallet_contract_call(chain_id, &loan_token, &approve_calldata, from, None, dry_run).await?;
-    let approve_tx = onchainos::extract_tx_hash(&approve_result);
+    let approve_tx = onchainos::extract_tx_hash(&approve_result)?;
 
     // Step 2: repay(marketParams, assets, shares, onBehalf, data)
     let repay_calldata = calldata::encode_repay(&mp, repay_assets, repay_shares, borrower);
@@ -89,7 +89,7 @@ pub async fn run(
         None,
         dry_run,
     ).await?;
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
 
     let output = serde_json::json!({
         "ok": true,

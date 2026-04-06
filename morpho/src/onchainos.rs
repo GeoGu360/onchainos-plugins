@@ -48,17 +48,49 @@ pub async fn wallet_contract_call(
         .args(&args)
         .output()
         .await?;
+
+    // Check process exit code first
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        anyhow::bail!(
+            "onchainos wallet contract-call failed (exit {}): {}{}",
+            output.status.code().unwrap_or(-1),
+            stderr.trim(),
+            if stdout.trim().is_empty() { String::new() } else { format!(" stdout={}", stdout.trim()) }
+        );
+    }
+
     let stdout = String::from_utf8_lossy(&output.stdout);
-    Ok(serde_json::from_str(&stdout)?)
+    let v: Value = serde_json::from_str(&stdout)
+        .map_err(|e| anyhow::anyhow!("Failed to parse onchainos response as JSON: {} (raw: {})", e, stdout.trim()))?;
+
+    // Check the ok field in the JSON response
+    if v["ok"].as_bool() == Some(false) {
+        let err_msg = v["error"].as_str().unwrap_or("unknown error");
+        anyhow::bail!("onchainos wallet contract-call returned ok=false: {}", err_msg);
+    }
+
+    Ok(v)
 }
 
 /// Extract txHash from wallet contract-call response.
 /// Response format: {"ok":true,"data":{"txHash":"0x..."}}
-pub fn extract_tx_hash(result: &Value) -> &str {
-    result["data"]["txHash"]
+/// Returns an error if txHash is missing or looks like a pending placeholder.
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    let hash = result["data"]["txHash"]
         .as_str()
-        .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
+        .or_else(|| result["txHash"].as_str());
+
+    match hash {
+        None => anyhow::bail!("txHash missing from onchainos response: {}", result),
+        Some(h) if h == "pending" => anyhow::bail!("Transaction is still pending — no confirmed txHash available"),
+        Some(h) if h == "0x0000000000000000000000000000000000000000000000000000000000000000" => {
+            // Dry-run zero hash — acceptable in dry-run context
+            Ok(h.to_string())
+        }
+        Some(h) => Ok(h.to_string()),
+    }
 }
 
 /// Encode and submit an ERC-20 approve call.
