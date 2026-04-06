@@ -79,9 +79,17 @@ pub async fn wallet_contract_call(
 }
 
 /// Extract txHash from wallet contract-call response.
-pub fn extract_tx_hash(result: &Value) -> &str {
-    result["data"]["txHash"]
+/// Returns an error if the response indicates failure or txHash is missing.
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    if result["ok"].as_bool() == Some(false) {
+        let msg = result["error"]
+            .as_str()
+            .unwrap_or("unknown error from onchainos wallet contract-call");
+        anyhow::bail!("wallet contract-call failed: {}", msg);
+    }
+    let hash = result["data"]["txHash"]
         .as_str()
         .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
+        .ok_or_else(|| anyhow::anyhow!("txHash missing in wallet contract-call response"))?;
+    Ok(hash.to_string())
 }

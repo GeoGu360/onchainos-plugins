@@ -11,7 +11,7 @@ metadata:
 ---
 # dolomite Skill
 
-Interact with **Dolomite** isolated lending markets — supply assets to earn yield, view positions, and simulate borrowing/repayment.
+Interact with **Dolomite** isolated lending markets -- supply assets to earn yield, view positions, and simulate borrowing/repayment.
 
 Dolomite uses a central `DolomiteMargin` vault contract. All operations are routed through `operate()` with typed actions (Deposit/Withdraw).
 
@@ -25,8 +25,8 @@ dolomite [--chain <id>] markets [--asset <SYMBOL>]
 ```
 
 **Examples:**
-- `dolomite --chain 42161 markets` — list all Arbitrum markets
-- `dolomite --chain 42161 markets --asset USDC` — filter for USDC market
+- `dolomite --chain 42161 markets` -- list all Arbitrum markets
+- `dolomite --chain 42161 markets --asset USDC` -- filter for USDC market
 
 ---
 
@@ -81,7 +81,7 @@ dolomite [--chain <id>] [--dry-run] withdraw --asset <ASSET> [--amount <N>] [--a
 ### borrow
 Simulate borrowing tokens from Dolomite (**dry-run only**).
 
-> Borrowing is **always dry-run only** — liquidation risk requires careful collateral management.
+> Borrowing is **always dry-run only** -- liquidation risk requires careful collateral management.
 > Ensure you have sufficient collateral supplied in other markets.
 
 ```
@@ -129,6 +129,6 @@ dolomite --dry-run [--chain <id>] repay --asset <ASSET> [--amount <N>] [--all]
 ## Notes
 
 - `borrow` and `repay` are always dry-run only.
-- Deposit requires ERC-20 approve + operate() — two separate transactions.
+- Deposit requires ERC-20 approve + operate() -- two separate transactions.
 - Use `markets` to discover available assets on each chain.
 - Default chain is Arbitrum (42161).
