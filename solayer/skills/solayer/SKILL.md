@@ -1,10 +1,10 @@
 ---
 name: solayer
-description: "Solayer liquid restaking on Solana. Stake SOL to receive sSOL and earn restaking rewards. Trigger phrases: stake SOL Solayer, get sSOL, Solayer staking, Solayer rates, check sSOL balance, Solayer positions, restake SOL, sSOL APY"
+description: "Solayer liquid restaking on Solana. Stake SOL to receive sSOL and earn restaking rewards. Trigger phrases: stake SOL Solayer, get sSOL, Solayer staking, Solayer rates, check sSOL balance, Solayer positions, restake SOL, sSOL APY, liquid staking Solana, sSOL yield. Do NOT use for: Jito staking, Marinade staking, general Solana DeFi not involving Solayer, non-Solana chains."
 license: MIT
 metadata:
   author: skylavis-sky
-  version: "0.1.0"
+  version: "0.1.1"
 ---
 
 ## Architecture
@@ -20,7 +20,7 @@ metadata:
 **Trigger:** "show Solayer rates", "what's the sSOL APY", "Solayer staking yield"
 
 ```
-solayer rates [--chain 501]
+solayer rates
 ```
 
 **Output:**
@@ -47,7 +47,7 @@ solayer rates [--chain 501]
 **Trigger:** "show my Solayer positions", "how much sSOL do I have", "check sSOL balance"
 
 ```
-solayer positions [--chain 501]
+solayer positions
 ```
 
 **Output:**
@@ -75,7 +75,7 @@ solayer positions [--chain 501]
 3. Execute: `solayer stake --amount <amount>` → routes SOL → sSOL via `onchainos swap execute` (Jupiter DEX routing)
 
 ```
-solayer stake --amount <sol_amount> [--chain 501] [--dry-run]
+solayer stake --amount <sol_amount> [--dry-run]
 ```
 
 **Parameters:**
@@ -106,7 +106,7 @@ solayer stake --amount <sol_amount> [--chain 501] [--dry-run]
 3. Returns guidance to use Solayer app (REST API not available for unstaking)
 
 ```
-solayer unstake --amount <ssol_amount> [--chain 501] [--dry-run]
+solayer unstake --amount <ssol_amount> [--dry-run]
 ```
 
 **Parameters:**

@@ -30,12 +30,18 @@ enum Commands {
         /// Amount of SOL to stake (UI units, e.g. 0.001)
         #[arg(long)]
         amount: f64,
+        /// Simulate without broadcasting on-chain
+        #[arg(long)]
+        dry_run: bool,
     },
-    /// Unstake sSOL to receive SOL
+    /// Unstake sSOL to receive SOL (returns UI guidance)
     Unstake {
         /// Amount of sSOL to unstake (UI units)
         #[arg(long)]
         amount: f64,
+        /// Simulate without broadcasting on-chain
+        #[arg(long)]
+        dry_run: bool,
     },
 }
 
@@ -46,11 +52,11 @@ async fn main() {
     let result = match cli.command {
         Commands::Rates => commands::rates::execute().await,
         Commands::Positions => commands::positions::execute().await,
-        Commands::Stake { amount } => {
-            commands::stake::execute(amount, cli.dry_run).await
+        Commands::Stake { amount, dry_run } => {
+            commands::stake::execute(amount, dry_run || cli.dry_run).await
         }
-        Commands::Unstake { amount } => {
-            commands::unstake::execute(amount, cli.dry_run).await
+        Commands::Unstake { amount, dry_run } => {
+            commands::unstake::execute(amount, dry_run || cli.dry_run).await
         }
     };
 
