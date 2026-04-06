@@ -237,6 +237,8 @@ pub fn dex_approve(
 }
 
 /// Get wallet balance for the active wallet.
+/// Note: `onchainos wallet balance` does not support `--output json` on all chains,
+/// so we call it without that flag and parse the plain-text output as a JSON string.
 #[allow(dead_code)]
 pub fn wallet_balance(chain_id: u64) -> anyhow::Result<Value> {
     let mut cmd = base_cmd();
@@ -245,10 +247,23 @@ pub fn wallet_balance(chain_id: u64) -> anyhow::Result<Value> {
         "balance",
         "--chain",
         &chain_id.to_string(),
-        "--output",
-        "json",
     ]);
-    run_cmd(cmd)
+    let output = cmd.output().context("Failed to spawn onchainos process")?;
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        anyhow::bail!(
+            "onchainos wallet balance failed: stderr={} stdout={}",
+            stderr.trim(),
+            stdout.trim()
+        );
+    }
+    let stdout = String::from_utf8_lossy(&output.stdout).to_string();
+    // Try JSON parse first; fall back to wrapping plain text in a JSON object
+    serde_json::from_str(stdout.trim()).unwrap_or_else(|_| {
+        serde_json::json!({ "raw": stdout.trim() })
+    });
+    Ok(serde_json::json!({ "raw": stdout.trim() }))
 }
 
 /// Get the currently active wallet address.

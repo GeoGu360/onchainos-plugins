@@ -86,9 +86,12 @@ enum Commands {
         /// Asset ERC-20 address
         #[arg(long)]
         asset: String,
-        /// true to enable as collateral, false to disable
-        #[arg(long)]
-        enable: bool,
+        /// true to enable as collateral, false to disable (e.g. --enable true / --enable false)
+        #[arg(long, value_parser = clap::value_parser!(bool))]
+        enable: Option<bool>,
+        /// Shorthand for --enable false: disable the asset as collateral
+        #[arg(long, conflicts_with = "enable")]
+        disable: bool,
     },
     /// Set efficiency mode (E-Mode) category
     SetEmode {
@@ -144,11 +147,17 @@ async fn main() {
         Commands::Reserves { asset } => {
             commands::reserves::run(cli.chain, asset.as_deref()).await
         }
-        Commands::SetCollateral { asset, enable } => {
+        Commands::SetCollateral { asset, enable, disable } => {
+            // Resolve enable flag: --disable is sugar for --enable false
+            let enable_val = if disable {
+                false
+            } else {
+                enable.unwrap_or(true)
+            };
             commands::set_collateral::run(
                 cli.chain,
                 &asset,
-                enable,
+                enable_val,
                 cli.from.as_deref(),
                 cli.dry_run,
             )

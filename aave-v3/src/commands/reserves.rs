@@ -2,6 +2,7 @@ use anyhow::Context;
 use serde_json::{json, Value};
 
 use crate::config::get_chain_config;
+use crate::onchainos;
 use crate::rpc;
 
 /// List Aave V3 reserve data.
@@ -31,6 +32,30 @@ pub async fn run(
 ) -> anyhow::Result<Value> {
     let cfg = get_chain_config(chain_id)?;
 
+    // Resolve the filter to an address when the user passes a symbol (e.g. "USDC").
+    // If the filter already looks like a 0x address, use it as-is.
+    // If symbol resolution fails, fall back to case-insensitive symbol matching
+    // against the reserve's own symbol field (applied later during iteration).
+    let resolved_address_filter: Option<String> = match asset_filter {
+        None => None,
+        Some(f) if f.starts_with("0x") => Some(f.to_lowercase()),
+        Some(symbol) => {
+            // Try to resolve symbol → address via onchainos token search
+            match onchainos::resolve_token(symbol, chain_id) {
+                Ok((addr, _)) => Some(addr.to_lowercase()),
+                Err(_) => {
+                    // Resolution failed; keep the original symbol for name-based fallback
+                    None
+                }
+            }
+        }
+    };
+    // When address resolution failed for a symbol, keep the raw symbol for fallback matching
+    let symbol_fallback: Option<&str> = match asset_filter {
+        Some(f) if !f.starts_with("0x") && resolved_address_filter.is_none() => Some(f),
+        _ => None,
+    };
+
     // Resolve Pool address at runtime
     let pool_addr = rpc::get_pool(cfg.pool_addresses_provider, cfg.rpc_url)
         .await
@@ -58,9 +83,9 @@ pub async fn run(
     let mut reserves: Vec<Value> = Vec::new();
 
     for addr in &reserve_addresses {
-        // Apply address filter if specified
-        if let Some(filter) = asset_filter {
-            if filter.starts_with("0x") && !addr.eq_ignore_ascii_case(filter) {
+        // Apply address filter if a resolved address is available
+        if let Some(ref filter_addr) = resolved_address_filter {
+            if !addr.eq_ignore_ascii_case(filter_addr) {
                 continue;
             }
         }
@@ -69,6 +94,15 @@ pub async fn run(
         // Returns DataTypes.ReserveData packed struct; APY rates at slots 2 and 4.
         match get_reserve_data_from_pool(&pool_addr, addr, cfg.rpc_url).await {
             Ok(reserve_data) => {
+                // Apply case-insensitive symbol fallback filter when address resolution failed
+                if let Some(sym) = symbol_fallback {
+                    let reserve_symbol = reserve_data["symbol"]
+                        .as_str()
+                        .unwrap_or("");
+                    if !reserve_symbol.eq_ignore_ascii_case(sym) {
+                        continue;
+                    }
+                }
                 reserves.push(reserve_data);
             }
             Err(e) => {
@@ -115,8 +149,12 @@ async fn get_reserve_data_from_pool(
     // Slot 4: currentVariableBorrowRate (variable borrow APY, ray = 1e27)
     let variable_borrow_rate = decode_ray_to_apy_pct(raw, 4)?;
 
+    // Fetch the token symbol for display and symbol-based filtering
+    let symbol = rpc::get_erc20_symbol(asset_addr, rpc_url).await.unwrap_or_default();
+
     Ok(json!({
         "underlyingAsset": asset_addr,
+        "symbol": symbol,
         "supplyApy": format!("{:.4}%", liquidity_rate),
         "variableBorrowApy": format!("{:.4}%", variable_borrow_rate)
     }))

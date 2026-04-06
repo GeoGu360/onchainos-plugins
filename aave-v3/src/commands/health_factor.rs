@@ -28,8 +28,15 @@ pub async fn run(chain_id: u64, from: Option<&str>) -> anyhow::Result<Value> {
         .await
         .context("Failed to fetch user account data")?;
 
-    let hf = data.health_factor_f64();
+    let no_debt = data.is_infinite_health_factor();
     let status = data.health_factor_status();
+
+    // Represent infinite health factor (no debt) as "∞" instead of a huge number
+    let hf_display = if no_debt {
+        "\u{221e}".to_string() // ∞
+    } else {
+        format!("{:.2}", data.health_factor_f64())
+    };
 
     // Liquidation threshold as percentage
     let liq_threshold_pct = data.current_liquidation_threshold as f64 / 100.0;
@@ -41,7 +48,8 @@ pub async fn run(chain_id: u64, from: Option<&str>) -> anyhow::Result<Value> {
         "chainId": chain_id,
         "userAddress": user_addr,
         "poolAddress": pool_addr,
-        "healthFactor": format!("{:.2}", hf),
+        "healthFactor": hf_display,
+        "no_debt": no_debt,
         "healthFactorStatus": status,
         "totalCollateralUSD": format!("{:.2}", data.total_collateral_usd()),
         "totalDebtUSD": format!("{:.2}", data.total_debt_usd()),

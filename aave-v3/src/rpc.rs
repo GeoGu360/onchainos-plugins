@@ -127,13 +127,30 @@ pub struct UserAccountData {
 }
 
 impl UserAccountData {
-    /// Returns health factor as a human-readable f64
+    /// Returns true when the user has no debt (Aave returns uint256::MAX for health factor).
+    /// The raw value is truncated to u128::MAX on decode; we detect "no debt" by checking
+    /// whether health_factor equals u128::MAX (exact sentinel) or produces a value > 1e20
+    /// after dividing by 1e18 (handles any near-max value).
+    pub fn is_infinite_health_factor(&self) -> bool {
+        self.health_factor == u128::MAX
+            || (self.health_factor as f64 / 1e18) > 1e20
+    }
+
+    /// Returns health factor as a human-readable f64.
+    /// Returns f64::INFINITY when there is no debt.
     pub fn health_factor_f64(&self) -> f64 {
-        self.health_factor as f64 / 1e18
+        if self.is_infinite_health_factor() {
+            f64::INFINITY
+        } else {
+            self.health_factor as f64 / 1e18
+        }
     }
 
     /// Returns health factor status string
     pub fn health_factor_status(&self) -> &'static str {
+        if self.is_infinite_health_factor() {
+            return "safe";
+        }
         let hf = self.health_factor_f64();
         if hf >= 1.1 {
             "safe"
@@ -216,6 +233,28 @@ pub async fn get_erc20_balance(
         anyhow::bail!("balanceOf: short response");
     }
     decode_u128_at(raw, 0)
+}
+
+/// Get ERC-20 token symbol: token.symbol()
+/// Function selector: symbol() -> 0x95d89b41
+/// Returns the symbol string, or an empty string on failure.
+pub async fn get_erc20_symbol(token_addr: &str, rpc_url: &str) -> anyhow::Result<String> {
+    let data_hex = "0x95d89b41";
+    let hex_result = eth_call(rpc_url, token_addr, data_hex).await?;
+    let raw = strip_0x(&hex_result);
+    // ABI-encoded string: offset (32 bytes) + length (32 bytes) + data (padded to 32 bytes)
+    if raw.len() < 128 {
+        return Ok(String::new());
+    }
+    // Length of string in bytes
+    let len_hex = &raw[64..128];
+    let len = usize::from_str_radix(len_hex.trim_start_matches('0'), 16).unwrap_or(0);
+    if len == 0 || raw.len() < 128 + len * 2 {
+        return Ok(String::new());
+    }
+    let str_hex = &raw[128..128 + len * 2];
+    let bytes = hex::decode(str_hex).unwrap_or_default();
+    Ok(String::from_utf8_lossy(&bytes).to_string())
 }
 
 /// Check ERC-20 allowance: token.allowance(owner, spender)

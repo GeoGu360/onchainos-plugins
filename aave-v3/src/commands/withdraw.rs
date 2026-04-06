@@ -10,10 +10,16 @@ use crate::rpc;
 ///
 /// Flow:
 /// 1. Resolve token contract address
-/// 2. Resolve Pool address via PoolAddressesProvider
-/// 3. Call Pool.withdraw(asset, amount, to)
+/// 2. Fetch the user's current aToken balance
+/// 3. Resolve Pool address via PoolAddressesProvider
+/// 4. Call Pool.withdraw(asset, amount, to)
 ///    - For --all: amount = type(uint256).max
-///    - For --amount X: amount = X in minimal units
+///    - For --amount X: amount = X in minimal units, but if X is within 0.01% of
+///      the full aToken balance we use type(uint256).max instead. This is necessary
+///      because aTokens accrue interest continuously; by the time the tx is mined
+///      the balance may be slightly higher than the encoded amount, causing Aave to
+///      revert. Passing uint256.max tells Aave to redeem the full balance, avoiding
+///      the race condition.
 pub async fn run(
     chain_id: u64,
     asset: &str,
@@ -39,7 +45,24 @@ pub async fn run(
     } else {
         let amt = amount.unwrap();
         let minimal = super::supply::human_to_minimal(amt, decimals as u64);
-        (minimal, amt.to_string())
+
+        // aTokens accrue interest every block.  If the requested amount is within
+        // 0.01% of the current aToken balance, use uint256::MAX so the tx does not
+        // revert when the balance has grown by a few wei between encoding and mining.
+        let use_max = match rpc::get_erc20_balance(&token_addr, &from_addr, cfg.rpc_url).await {
+            Ok(atoken_balance) if atoken_balance > 0 => {
+                // threshold = 0.01% of balance (1 part in 10_000)
+                let threshold = atoken_balance / 10_000;
+                minimal >= atoken_balance.saturating_sub(threshold)
+            }
+            _ => false,
+        };
+
+        if use_max {
+            (u128::MAX, amt.to_string())
+        } else {
+            (minimal, amt.to_string())
+        }
     };
 
     // Resolve Pool address at runtime
@@ -75,7 +98,13 @@ pub async fn run(
         Some(&from_addr),
         false,
     )
-    .context("Pool.withdraw() failed")?;
+    .with_context(|| {
+        format!(
+            "Pool.withdraw() failed (asset={}, amount={}, pool={}). \
+             Check the RPC revert reason above for details.",
+            asset, amount_display, pool_addr
+        )
+    })?;
 
     let tx_hash = result["data"]["txHash"]
         .as_str()
