@@ -24,7 +24,7 @@ build:
   lang: rust
   binary_name: aerodrome-amm
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "ced5984b3425be5fccfe9b57ea513ae51ef886ba"
+  source_commit: "c1c70ca04d9d7cfdc5a98ba124a27e38deef30a1"
   source_dir: aerodrome-amm
 
 api_calls:
