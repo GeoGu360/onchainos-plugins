@@ -166,3 +166,66 @@ Rocket Pool plugin is **production-ready** with no P0 blockers. The core impleme
 - Dry-run mode works correctly
 
 The two P1 issues (SKILL.md routing) have been fixed and pushed. The plugin correctly routes users to other skills (jito, lido, uniswap) for out-of-scope operations.
+
+---
+
+## Re-audit — Live Write Verification
+
+**Re-audit date**: 2026-04-06
+**Reason**: Initial audit was dry-run only (min deposit 0.01 ETH exceeded prior fund limit). Wallet now has 0.1747 ETH.
+**Test amount**: 0.01 ETH (Rocket Pool protocol minimum)
+
+### Pre-condition Check
+
+| Item | Value |
+|------|-------|
+| Wallet rETH balance (before) | 0 rETH |
+| Deposit pool liquidity | 28.9320 ETH (sufficient) |
+| rETH exchange rate | 1 rETH = 1.160867 ETH |
+| Expected rETH out | ~0.008614 rETH |
+
+### Live Stake Execution
+
+```
+Command: rocket-pool stake --amount 0.01
+```
+
+| Field | Value |
+|-------|-------|
+| ETH staked | 0.01 ETH (10000000000000000 wei) |
+| Tx Hash | `0xc8dd82bfed7b965f335d2ae039d648299a128d6e9440be4eafdab98852754dbb` |
+| Chain | Ethereum Mainnet (chain ID: 1) |
+| On-chain status | ✅ status=1 |
+| Block confirmed | 24820288 |
+| Gas used | 177,986 |
+
+### On-Chain Verification
+
+```
+eth_getTransactionReceipt → status: 1 | block: 24820288 | gasUsed: 177986
+RPC: https://ethereum-rpc.publicnode.com
+```
+
+### Post-Stake State
+
+| Item | Value |
+|------|-------|
+| Wallet rETH balance (after) | 0.008610 rETH |
+| ETH equivalent | 0.009995 ETH (at 1.160867 ETH/rETH) |
+| State change | 0 rETH → 0.008610 rETH ✅ |
+
+### Re-audit Summary
+
+| Item | Result |
+|------|--------|
+| Compilation | ✅ (already compiled, 0.13s incremental) |
+| `rocket-pool rate` | ✅ 1 rETH = 1.160867 ETH |
+| `rocket-pool apy` | ✅ 2.01% |
+| `rocket-pool stats` | ✅ TVL 394,164 ETH, 4115 nodes |
+| `rocket-pool positions` (pre-stake) | ✅ 0 rETH |
+| `rocket-pool stake --amount 0.01` | ✅ LIVE — tx confirmed block 24820288 |
+| `rocket-pool positions` (post-stake) | ✅ 0.008610 rETH |
+| P0 issues | 0 |
+| New issues found | 0 |
+
+**Verdict**: Write path fully verified live on Ethereum Mainnet. Plugin is production-ready.
