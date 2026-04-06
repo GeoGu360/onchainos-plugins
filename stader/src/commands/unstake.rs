@@ -73,7 +73,7 @@ pub async fn execute(args: &UnstakeArgs, rpc_url: &str, chain_id: u64, dry_run: 
             None,
             false,
         )?;
-        let approve_hash = onchainos::extract_tx_hash(&approve_result);
+        let approve_hash = onchainos::extract_tx_hash(&approve_result)?;
         approve_tx = Some(approve_hash);
 
         // Small delay to allow approve to propagate
@@ -96,7 +96,7 @@ pub async fn execute(args: &UnstakeArgs, rpc_url: &str, chain_id: u64, dry_run: 
         false,
     )?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
 
     let mut output_data = json!({
         "action": "unstake",

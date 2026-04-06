@@ -17,7 +17,7 @@ use crate::onchainos;
 pub struct StakeArgs {
     /// ETH amount in wei to stake (min: 100000000000000 = 0.0001 ETH)
     #[arg(long)]
-    pub amount: u64,
+    pub amount: u128,
 
     /// Receiver address for ETHx (defaults to logged-in wallet)
     #[arg(long)]
@@ -26,7 +26,7 @@ pub struct StakeArgs {
 
 pub async fn execute(args: &StakeArgs, rpc_url: &str, chain_id: u64, dry_run: bool) -> Result<()> {
     // Validate minimum deposit
-    if args.amount < config::MIN_DEPOSIT_WEI {
+    if args.amount < config::MIN_DEPOSIT_WEI as u128 {
         anyhow::bail!(
             "Amount {} wei is below minimum deposit ({} wei = 0.0001 ETH)",
             args.amount,
@@ -49,7 +49,7 @@ pub async fn execute(args: &StakeArgs, rpc_url: &str, chain_id: u64, dry_run: bo
             "calldata_selector": "0xf340fa01",
             "description": "deposit(address) — stake ETH to receive ETHx",
             "eth_amount_wei": args.amount.to_string(),
-            "eth_amount": rpc::format_eth(args.amount as u128)
+            "eth_amount": rpc::format_eth(args.amount)
         });
         println!("{}", serde_json::to_string_pretty(&output)?);
         return Ok(());
@@ -62,7 +62,7 @@ pub async fn execute(args: &StakeArgs, rpc_url: &str, chain_id: u64, dry_run: bo
     };
 
     // Preview expected ETHx
-    let ethx_preview = rpc::preview_deposit(rpc_url, config::STADER_MANAGER, args.amount as u128).await.unwrap_or(0);
+    let ethx_preview = rpc::preview_deposit(rpc_url, config::STADER_MANAGER, args.amount).await.unwrap_or(0);
 
     // Build calldata: deposit(address _receiver)
     // selector 0xf340fa01 + 32-byte padded receiver address
@@ -79,7 +79,7 @@ pub async fn execute(args: &StakeArgs, rpc_url: &str, chain_id: u64, dry_run: bo
         false,
     )?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
 
     let output = json!({
         "ok": true,
@@ -87,7 +87,7 @@ pub async fn execute(args: &StakeArgs, rpc_url: &str, chain_id: u64, dry_run: bo
             "txHash": tx_hash,
             "action": "stake",
             "eth_staked_wei": args.amount.to_string(),
-            "eth_staked": rpc::format_eth(args.amount as u128),
+            "eth_staked": rpc::format_eth(args.amount),
             "ethx_expected_wei": ethx_preview.to_string(),
             "ethx_expected": rpc::format_eth(ethx_preview),
             "receiver": receiver,

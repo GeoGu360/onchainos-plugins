@@ -40,7 +40,7 @@ pub fn wallet_contract_call(
     chain_id: u64,
     to: &str,
     input_data: &str,
-    amt: Option<u64>,
+    amt: Option<u128>,
     dry_run: bool,
 ) -> anyhow::Result<Value> {
     if dry_run {
@@ -72,10 +72,30 @@ pub fn wallet_contract_call(
     }
 
     let output = Command::new("onchainos").args(&args).output()?;
+
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        anyhow::bail!(
+            "onchainos contract-call exited with {}: stderr={} stdout={}",
+            output.status,
+            stderr.trim(),
+            stdout.trim()
+        );
+    }
+
     let stdout = String::from_utf8_lossy(&output.stdout);
-    serde_json::from_str(&stdout).map_err(|e| {
+    let json: Value = serde_json::from_str(&stdout).map_err(|e| {
         anyhow::anyhow!("Failed to parse onchainos output: {}\nOutput: {}", e, stdout)
-    })
+    })?;
+
+    // Check the ok field — reject if ok=false
+    if json.get("ok").and_then(|v| v.as_bool()) == Some(false) {
+        let err_msg = json["error"].as_str().unwrap_or("unknown error");
+        anyhow::bail!("onchainos contract-call failed: {}", err_msg);
+    }
+
+    Ok(json)
 }
 
 /// ERC-20 approve calldata: approve(address spender, uint256 amount)
@@ -89,10 +109,23 @@ pub fn erc20_approve_calldata(spender: &str, amount: u128) -> String {
 
 /// Extract txHash from onchainos response.
 /// Checks data.txHash first, then root txHash.
-pub fn extract_tx_hash(result: &Value) -> String {
-    result["data"]["txHash"]
+/// Returns Err if no valid hash is found or if hash is the zero/pending placeholder.
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    let hash = result["data"]["txHash"]
         .as_str()
         .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-        .to_string()
+        .unwrap_or("")
+        .to_string();
+
+    if hash.is_empty() {
+        anyhow::bail!("onchainos did not return a txHash in response: {}", result);
+    }
+    if hash == "pending" {
+        anyhow::bail!("onchainos returned 'pending' for txHash — transaction may not have been broadcast");
+    }
+    // Reject zero hash (dry-run placeholder should not reach here)
+    if hash == "0x0000000000000000000000000000000000000000000000000000000000000000" {
+        anyhow::bail!("onchainos returned zero txHash — transaction was not broadcast");
+    }
+    Ok(hash)
 }

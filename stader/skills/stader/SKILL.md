@@ -1,6 +1,6 @@
 ---
 name: stader
-description: "Stake ETH with Stader liquid staking protocol to receive ETHx on Ethereum. Trigger phrases: stake ETH Stader, ETHx staking, stake with Stader, Stader liquid staking, unstake ETHx, claim Stader withdrawal, Stader exchange rate, Stader position, ETHx balance. Chinese: 质押ETH到Stader, Stader流动质押, 查看Stader仓位, 领取Stader提款"
+description: "Stake ETH with Stader liquid staking protocol to receive ETHx on Ethereum. Trigger phrases: stake ETH Stader, ETHx staking, stake with Stader, Stader liquid staking, unstake ETHx, claim Stader withdrawal, Stader exchange rate, Stader position, ETHx balance, zhi ya ETH dao Stader, Stader liu dong zhi ya, cha kan Stader cang wei, ling qu Stader ti kuan. Do NOT use for: staking on Base, Arbitrum, Optimism or other L2s; staking with Lido, Rocket Pool, or other protocols; swapping ETHx on DEXes; bridging ETHx cross-chain."
 license: MIT
 metadata:
   author: GeoGu360

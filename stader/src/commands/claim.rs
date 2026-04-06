@@ -69,7 +69,7 @@ pub async fn execute(args: &ClaimArgs, rpc_url: &str, chain_id: u64, dry_run: bo
         false,
     )?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
 
     let output = json!({
         "ok": true,
