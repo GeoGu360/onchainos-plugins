@@ -29,7 +29,11 @@ pub fn resolve_token_address(symbol: &str, _chain_id: u64) -> String {
         "USDC" => USDC,
         "WBTC" => WBTC,
         "ARB" => ARB,
-        _ => symbol, // assume already a hex address
+        _ => {
+            // Assume already a 0x address; if not, eth_call will return a
+            // clean RPC error. Supported symbols: WETH, USDT, USDC, WBTC, ARB.
+            symbol
+        }
     }
     .to_string()
 }

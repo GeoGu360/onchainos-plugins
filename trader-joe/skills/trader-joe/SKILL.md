@@ -1,6 +1,6 @@
 ---
 name: trader-joe
-description: "Trader Joe Liquidity Book DEX on Arbitrum. Swap tokens, get quotes, and explore liquidity pools using Trader Joe's bin-based LB protocol (V2.1/V2.2). Trigger phrases: swap tokens on Trader Joe, get Trader Joe quote, list Trader Joe pools, Trader Joe USDT to WETH, swap on LB DEX. Chinese: 在Trader Joe上兑换代币, 查询Trader Joe报价, 查看Trader Joe流动池."
+description: "Trader Joe Liquidity Book DEX on Arbitrum. Swap tokens, get quotes, and explore liquidity pools using Trader Joe's bin-based LB protocol (V2.1/V2.2). Trigger phrases: swap tokens on Trader Joe, get Trader Joe quote, list Trader Joe pools, Trader Joe USDT to WETH, swap on LB DEX, Trader Joe swap, zai Trader Joe shang duihuan daib."
 license: MIT
 metadata:
   author: GeoGu360

@@ -66,15 +66,24 @@ pub async fn wallet_contract_call(
     }
     let output = Command::new("onchainos").args(&args).output()?;
     let stdout = String::from_utf8_lossy(&output.stdout);
-    Ok(serde_json::from_str(&stdout)?)
+    let val: Value = serde_json::from_str(&stdout)
+        .map_err(|e| anyhow::anyhow!("Failed to parse onchainos response: {e}\nraw: {stdout}"))?;
+    if val["ok"] != true {
+        let err_msg = val["error"]
+            .as_str()
+            .or_else(|| val["message"].as_str())
+            .unwrap_or("unknown error");
+        anyhow::bail!("onchainos contract-call failed: {err_msg}");
+    }
+    Ok(val)
 }
 
 /// Extract txHash from onchainos response.
-/// Checks: data.txHash → txHash (root)
-pub fn extract_tx_hash(result: &Value) -> String {
+/// Checks: data.txHash → txHash (root) → returns error if missing.
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
     result["data"]["txHash"]
         .as_str()
         .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-        .to_string()
+        .map(|s| s.to_string())
+        .ok_or_else(|| anyhow::anyhow!("txHash missing from onchainos response: {result}"))
 }

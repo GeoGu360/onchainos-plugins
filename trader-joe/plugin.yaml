@@ -22,7 +22,7 @@ build:
   lang: rust
   binary_name: trader-joe
   source_repo: GeoGu360/onchainos-plugins
-  source_commit: "0000000000000000000000000000000000000000"
+  source_commit: "8dd08f9ffb16704f40fee7bb96bc390db429c6eb"
   source_dir: trader-joe
 
 api_calls:

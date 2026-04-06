@@ -253,7 +253,7 @@ pub async fn run(
                     chain_id, &addr_in, &approve_calldata, None, None, false,
                 )
                 .await?;
-                eprintln!("  approve txHash: {}", extract_tx_hash(&approve_result));
+                eprintln!("  approve txHash: {}", extract_tx_hash(&approve_result)?);
                 sleep(Duration::from_secs(3)).await;
             }
         }
@@ -288,7 +288,7 @@ fn print_result(
     amount_out_min: u128,
     dry_run: bool,
 ) -> anyhow::Result<()> {
-    let tx_hash = extract_tx_hash(result);
+    let tx_hash = extract_tx_hash(result)?;
     let out = serde_json::json!({
         "ok": true,
         "dry_run": dry_run,
