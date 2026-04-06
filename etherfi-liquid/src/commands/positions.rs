@@ -18,12 +18,14 @@ pub async fn execute(wallet: &str, rpc_url: &str) -> Result<()> {
             .await
             .unwrap_or(0);
 
-        let decimals = v.deposit_token_decimals as u32;
+        let decimals = v.deposit_token_decimals as i32;
         let shares_display = shares as f64 / 1e18; // shares always 18 dec
 
-        // value = shares * rate / 10^18 (rate is 18 dec); then scale for deposit token decimals
+        // rate is in quote token units (scaled by token decimals, NOT 18)
+        // e.g. USDC rate = 1151993 means 1.151993 USDC per share (1e6 scaling)
+        // value = (shares / 1e18) * (rate / 10^token_decimals)
         let value_in_token = if rate > 0 {
-            (shares as f64 * rate as f64 / 1e18) / 10f64.powi(decimals as i32)
+            (shares as f64 / 1e18) * (rate as f64 / 10f64.powi(decimals))
         } else {
             0.0
         };

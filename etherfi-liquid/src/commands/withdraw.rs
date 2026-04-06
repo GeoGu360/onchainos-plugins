@@ -102,8 +102,10 @@ pub async fn execute(
         .await
         .unwrap_or(0);
     let decimals = vault.deposit_token_decimals as i32;
+    // rate is in quote token units (scaled by token decimals, NOT 18)
+    // expected_out = (shares / 1e18) * (rate / 10^token_decimals)
     let expected_out = if rate > 0 {
-        (shares_to_withdraw as f64 * rate as f64 / 1e18) / 10f64.powi(decimals)
+        (shares_to_withdraw as f64 / 1e18) * (rate as f64 / 10f64.powi(decimals))
     } else {
         0.0
     };
@@ -128,7 +130,7 @@ pub async fn execute(
         false,
     )
     .await?;
-    let tx_hash = extract_tx_hash(&result);
+    let tx_hash = extract_tx_hash(&result)?;
 
     let output = json!({
         "ok": true,

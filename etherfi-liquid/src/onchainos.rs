@@ -86,14 +86,22 @@ pub async fn wallet_contract_call(
     Ok(result)
 }
 
-/// Extract txHash from onchainos response
-pub fn extract_tx_hash(result: &Value) -> String {
+/// Extract txHash from onchainos response; returns Err if not present or response not ok
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    // Check ok field first
+    if result["ok"].as_bool() == Some(false) {
+        let err_msg = result["error"]
+            .as_str()
+            .or_else(|| result["msg"].as_str())
+            .unwrap_or("unknown error from onchainos");
+        anyhow::bail!("onchainos contract-call failed: {}", err_msg);
+    }
     result["data"]["swapTxHash"]
         .as_str()
         .or_else(|| result["data"]["txHash"].as_str())
         .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-        .to_string()
+        .map(|s| s.to_string())
+        .ok_or_else(|| anyhow::anyhow!("No txHash in onchainos response: {}", result))
 }
 
 /// ERC-20 approve calldata builder

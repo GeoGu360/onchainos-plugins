@@ -11,7 +11,7 @@
 use anyhow::Result;
 use serde_json::json;
 
-use crate::config::{ETH_VAULT_TELLER, WEETH_ADDR, VAULTS};
+use crate::config::{WEETH_ADDR, VAULTS};
 use crate::onchainos::{
     build_approve_calldata, build_deposit_calldata, erc20_approve, extract_tx_hash,
     resolve_wallet, wallet_contract_call,
@@ -103,7 +103,7 @@ pub async fn execute(
             false,
         )
         .await?;
-        approve_tx_hash = extract_tx_hash(&approve_result);
+        approve_tx_hash = extract_tx_hash(&approve_result)?;
         eprintln!("[info] Approve txHash: {}", approve_tx_hash);
     } else {
         eprintln!("[info] Allowance sufficient, skipping approve");
@@ -121,7 +121,7 @@ pub async fn execute(
         false,
     )
     .await?;
-    let deposit_tx_hash = extract_tx_hash(&deposit_result);
+    let deposit_tx_hash = extract_tx_hash(&deposit_result)?;
 
     let output = json!({
         "ok": true,

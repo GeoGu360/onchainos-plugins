@@ -1,11 +1,19 @@
 ---
 name: etherfi-liquid
-description: "ether.fi Liquid multi-strategy yield vaults — deposit weETH/WETH/USDC/WBTC into automated DeFi yield strategies. Commands: vaults, positions, deposit, withdraw, rates. Trigger phrases: ether.fi liquid, etherfi liquid vault, liquid eth vault, deposit weETH ether.fi, withdraw liquid, LIQUIDETH, LIQUIDUSD, LIQUIDBTC. Chinese: 以太坊ether.fi流动性金库,存款weETH,提取流动性"
+description: "ether.fi Liquid multi-strategy yield vaults -- deposit weETH/WETH/USDC/WBTC into automated DeFi yield strategies. Commands: vaults, positions, deposit, withdraw, rates. Trigger phrases: ether.fi liquid, etherfi liquid vault, liquid eth vault, deposit weETH ether.fi, withdraw liquid, LIQUIDETH, LIQUIDUSD, LIQUIDBTC. Chinese: etherfi liudong jinku, cunkuan weETH, tiqu liudong"
 license: MIT
 metadata:
   author: GeoGu360
   version: "0.1.0"
 ---
+
+## Do NOT use for
+
+- General ETH staking or liquid staking queries (use etherfi-stake or lido skill instead)
+- EigenLayer / restaking (use eigenlayer skill)
+- Aave/Compound lending (use aave or compound skill)
+- Token swaps (use swap skill)
+- Any chain other than Ethereum mainnet (chain ID 1)
 
 ## Overview
 
@@ -147,4 +155,4 @@ etherfi-liquid withdraw \
 - **No fees** on deposit/withdraw (platform fees are within vault yield calculation)
 - **Share price appreciates** over time as DeFi strategies generate yield
 - **BoringVault architecture:** NOT standard ERC-4626; Teller is the entry point, not the vault itself
-- **⚠️ Vault deposits require authorization:** The Teller uses `requiresAuth` (Veda RolesAuthority). Direct EOA contract calls from arbitrary wallets will revert. Deposits go through ether.fi's app infrastructure (ERC-4337 smart accounts). The plugin correctly builds calldata but on-chain execution requires an authorized caller. Ask user to confirm before proceeding.
+- **[WARN] Vault deposits require authorization:** The Teller uses `requiresAuth` (Veda RolesAuthority). Direct EOA contract calls from arbitrary wallets will revert. Deposits go through ether.fi's app infrastructure (ERC-4337 smart accounts). The plugin correctly builds calldata but on-chain execution requires an authorized caller. Ask user to confirm before proceeding.
