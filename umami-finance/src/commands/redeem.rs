@@ -84,8 +84,11 @@ pub async fn execute(
         None,
         false,
     ).await?;
+    if redeem_result["ok"].as_bool() != Some(true) {
+        anyhow::bail!("Redeem failed: {}", redeem_result);
+    }
 
-    let tx_hash = onchainos::extract_tx_hash(&redeem_result);
+    let tx_hash = onchainos::extract_tx_hash(&redeem_result)?;
 
     println!(
         "{}",

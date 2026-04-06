@@ -1,6 +1,5 @@
 /// Chain and contract configuration for Umami Finance GM Vaults on Arbitrum
 
-pub const ARBITRUM_CHAIN_ID: u64 = 42161;
 pub const ARBITRUM_RPC: &str = "https://arb1.arbitrum.io/rpc";
 
 /// GM Vault addresses on Arbitrum

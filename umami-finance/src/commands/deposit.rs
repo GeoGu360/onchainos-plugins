@@ -75,7 +75,10 @@ pub async fn execute(
             None,
             false,
         ).await?;
-        approve_tx = Some(onchainos::extract_tx_hash(&approve_result));
+        if approve_result["ok"].as_bool() != Some(true) {
+            anyhow::bail!("Approve failed: {}", approve_result);
+        }
+        approve_tx = Some(onchainos::extract_tx_hash(&approve_result)?);
     }
 
     // Step 2: deposit into vault
@@ -88,8 +91,11 @@ pub async fn execute(
         None,
         false,
     ).await?;
+    if deposit_result["ok"].as_bool() != Some(true) {
+        anyhow::bail!("Deposit failed: {}", deposit_result);
+    }
 
-    let deposit_tx = onchainos::extract_tx_hash(&deposit_result);
+    let deposit_tx = onchainos::extract_tx_hash(&deposit_result)?;
 
     println!(
         "{}",

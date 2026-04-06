@@ -12,10 +12,6 @@ struct Cli {
     #[arg(long, default_value = "42161")]
     chain: u64,
 
-    /// Dry-run mode: build calldata but don't broadcast
-    #[arg(long)]
-    dry_run: bool,
-
     #[command(subcommand)]
     command: Commands,
 }
@@ -50,6 +46,9 @@ enum Commands {
         /// Sender wallet address (optional)
         #[arg(long)]
         from: Option<String>,
+        /// Preview calldata and shares without broadcasting
+        #[arg(long)]
+        dry_run: bool,
     },
 
     /// Redeem shares from a Umami GM vault
@@ -63,6 +62,9 @@ enum Commands {
         /// Wallet address (optional)
         #[arg(long)]
         from: Option<String>,
+        /// Preview calldata without broadcasting
+        #[arg(long)]
+        dry_run: bool,
     },
 }
 
@@ -76,11 +78,11 @@ async fn main() {
         Commands::Positions { from } => {
             commands::positions::execute(cli.chain, from.as_deref()).await
         }
-        Commands::Deposit { vault, amount, from } => {
-            commands::deposit::execute(vault, *amount, cli.chain, from.as_deref(), cli.dry_run).await
+        Commands::Deposit { vault, amount, from, dry_run } => {
+            commands::deposit::execute(vault, *amount, cli.chain, from.as_deref(), *dry_run).await
         }
-        Commands::Redeem { vault, shares, from } => {
-            commands::redeem::execute(vault, *shares, cli.chain, from.as_deref(), cli.dry_run).await
+        Commands::Redeem { vault, shares, from, dry_run } => {
+            commands::redeem::execute(vault, *shares, cli.chain, from.as_deref(), *dry_run).await
         }
     };
 

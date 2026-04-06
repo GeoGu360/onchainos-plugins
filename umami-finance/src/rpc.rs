@@ -29,15 +29,6 @@ pub fn decode_u128(hex: &str) -> u128 {
     u128::from_str_radix(&trimmed[trimmed.len().saturating_sub(32)..], 16).unwrap_or(0)
 }
 
-/// Decode a 32-byte hex result as address (last 20 bytes)
-pub fn decode_address(hex: &str) -> String {
-    let trimmed = hex.trim_start_matches("0x");
-    if trimmed.len() < 40 {
-        return "0x".to_string();
-    }
-    format!("0x{}", &trimmed[trimmed.len() - 40..])
-}
-
 /// ERC-4626: totalAssets() → 0x01e1d114
 pub async fn total_assets(rpc: &str, vault: &str) -> Result<u128> {
     let result = eth_call(rpc, vault, "0x01e1d114").await?;
@@ -68,14 +59,6 @@ pub async fn preview_deposit(rpc: &str, vault: &str, assets: u128) -> Result<u12
 /// ERC-4626: previewRedeem(uint256 shares) → 0x4cdad506
 pub async fn preview_redeem(rpc: &str, vault: &str, shares: u128) -> Result<u128> {
     let data = format!("0x4cdad506{:064x}", shares);
-    let result = eth_call(rpc, vault, &data).await?;
-    Ok(decode_u128(&result))
-}
-
-/// ERC-4626: maxDeposit(address) → 0x402d267d
-pub async fn max_deposit(rpc: &str, vault: &str, user: &str) -> Result<u128> {
-    let addr = user.trim_start_matches("0x");
-    let data = format!("0x402d267d{:0>64}", addr);
     let result = eth_call(rpc, vault, &data).await?;
     Ok(decode_u128(&result))
 }
