@@ -117,7 +117,7 @@ pub async fn execute(
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&deposit_result);
+    let tx_hash = onchainos::extract_tx_hash(&deposit_result)?;
 
     let explorer_url = match chain_id {
         8453 => format!("https://basescan.org/tx/{}", tx_hash),

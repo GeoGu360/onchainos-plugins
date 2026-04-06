@@ -49,12 +49,26 @@ pub async fn execute(
     };
 
     // Determine shares to redeem
-    // shares are passed as raw mooToken units (same decimal scale as underlying asset)
-    // For USDC vaults: 10000 = 0.01 USDC worth of mooTokens
+    // shares are passed as human-readable mooToken amount (e.g. "0.5" for 0.5 mooTokens)
+    // mooToken decimals match the underlying asset decimals (e.g. 6 for USDC vaults)
     let shares_raw: u128 = if let Some(s) = shares_str {
-        // Parse as raw mooToken integer (e.g. "9927" for a USDC vault balance)
-        s.parse::<u128>()
-            .map_err(|_| anyhow::anyhow!("Invalid shares: expected raw integer (e.g. 9927), got: {}", s))?
+        // Parse as human-readable float (e.g. "0.5" = 0.5 mooTokens)
+        let shares_f: f64 = s.parse()
+            .map_err(|_| anyhow::anyhow!("Invalid shares: expected decimal (e.g. 0.5), got: {}", s))?;
+        // Get mooToken decimals (same as underlying token decimals)
+        let decimals = if let Some(d) = vault.token_decimals {
+            d
+        } else if let Some(ta) = vault.token_address.as_deref() {
+            rpc::get_decimals(chain_id, ta).await.unwrap_or(18)
+        } else {
+            18u32
+        };
+        let denom = 10u128.pow(decimals);
+        let raw = (shares_f * denom as f64) as u128;
+        if raw == 0 {
+            anyhow::bail!("Shares amount too small: {}", s);
+        }
+        raw
     } else {
         // Redeem full balance
         if dry_run {
@@ -84,7 +98,7 @@ pub async fn execute(
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
     let explorer_url = match chain_id {
         8453 => format!("https://basescan.org/tx/{}", tx_hash),
         56 => format!("https://bscscan.com/tx/{}", tx_hash),

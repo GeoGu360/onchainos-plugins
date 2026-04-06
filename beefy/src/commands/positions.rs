@@ -23,8 +23,8 @@ pub async fn execute(chain_id: u64, wallet: Option<&str>) -> Result<Value> {
     let mut positions = Vec::new();
 
     // Check mooToken balance for each active vault
-    // To avoid rate limits, batch calls but cap at 50 vaults
-    let cap = active_vaults.len().min(50);
+    // Cap at 300 vaults to avoid excessive RPC calls while covering all vaults
+    let cap = active_vaults.len().min(300);
     for v in &active_vaults[..cap] {
         let earn_addr = match v.earn_contract_address.as_deref() {
             Some(a) => a,

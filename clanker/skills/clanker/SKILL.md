@@ -1,16 +1,23 @@
 ---
 name: clanker
-description: "Deploy and manage Clanker ERC-20 tokens on Base and Arbitrum. Trigger phrases: deploy token, launch token on Clanker, create token on Base, search Clanker tokens, list latest tokens, claim LP rewards, claim Clanker fees. Chinese: 部署代币, 在Base上发代币, 创建Clanker代币, 搜索代币, 认领LP奖励"
+description: "Deploy and manage Clanker ERC-20 tokens on Base and Arbitrum. Trigger phrases: deploy token, launch token on Clanker, create token on Base, search Clanker tokens, list latest tokens, claim LP rewards, claim Clanker fees. Chinese: bu shu dai bi, zai Base shang fa dai bi, chuang jian Clanker dai bi, sou suo dai bi, ling qu LP jiang li"
 license: MIT
 metadata:
   author: skylavis-sky
   version: "0.1.0"
 ---
 
+## Do NOT use for
+
+- General ERC-20 token swaps or trading (use the swap skill instead)
+- Querying token prices on chains other than Base or Arbitrum One
+- Deploying tokens without a valid Clanker partner API key
+- Staking, lending, or yield farming operations
+
 ## Architecture
 
-- Read ops (`list-tokens`, `search-tokens`, `token-info`) → Clanker REST API or `onchainos token info`; no confirmation needed
-- Write ops (`deploy-token`, `claim-rewards`) → after user confirmation, submits via `onchainos wallet contract-call` or Clanker REST API
+- Read ops (`list-tokens`, `search-tokens`, `token-info`) -> Clanker REST API or `onchainos token info`; no confirmation needed
+- Write ops (`deploy-token`, `claim-rewards`) -> after user confirmation, submits via `onchainos wallet contract-call` or Clanker REST API
 
 ## Supported Chains
 
@@ -33,7 +40,7 @@ metadata:
 
 ## Commands
 
-### list-tokens — List recently deployed tokens
+### list-tokens - List recently deployed tokens
 
 **Trigger phrases:** "show latest Clanker tokens", "list tokens on Clanker", "what's new on Clanker", "recent Clanker launches"
 
@@ -77,7 +84,7 @@ clanker --chain 8453 list-tokens --limit 10 --sort desc
 
 ---
 
-### search-tokens — Search by creator address or Farcaster username
+### search-tokens - Search by creator address or Farcaster username
 
 **Trigger phrases:** "show tokens by 0xabc...", "what tokens did username dwr launch", "find Clanker tokens by creator"
 
@@ -103,7 +110,7 @@ clanker search-tokens --query dwr --trusted-only
 
 ---
 
-### token-info — Get on-chain token metadata and price
+### token-info - Get on-chain token metadata and price
 
 **Trigger phrases:** "get info for Clanker token", "what is the price of token 0x...", "show token details"
 
@@ -125,7 +132,7 @@ clanker --chain 8453 token-info --address 0xTokenAddress
 
 ---
 
-### deploy-token — Deploy a new ERC-20 token via Clanker
+### deploy-token - Deploy a new ERC-20 token via Clanker
 
 **Trigger phrases:** "deploy a new token on Clanker", "launch token on Base called X", "create ERC-20 via Clanker", "token launch on Base"
 
@@ -133,7 +140,7 @@ clanker --chain 8453 token-info --address 0xTokenAddress
 
 **Execution flow:**
 1. Run with `--dry-run` to preview deployment parameters
-2. **Ask user to confirm** — show token name, symbol, chain, wallet address, vault settings
+2. **Ask user to confirm** - show token name, symbol, chain, wallet address, vault settings
 3. Execute: calls Clanker REST API `POST /api/tokens/deploy`, which enqueues the on-chain transaction server-side
 4. Report the expected contract address and confirm deployment
 
@@ -160,7 +167,7 @@ clanker [--chain 8453] [--dry-run] deploy-token \
 | `--from` | wallet login | Token admin / reward recipient wallet address |
 | `--image-url` | none | Token logo URL (IPFS or HTTPS) |
 | `--description` | none | Token description |
-| `--vault-percentage` | none | % of supply to lock in vault (0–90) |
+| `--vault-percentage` | none | % of supply to lock in vault (0-90) |
 | `--vault-lockup-days` | none | Vault lockup duration in days (min 7) |
 | `--dry-run` | false | Preview without deploying |
 
@@ -190,20 +197,20 @@ clanker deploy-token --name "SkyDog" --symbol "SKYDOG" --api-key mykey123 \
 ```
 
 **Important notes:**
-- Deployment is handled server-side by Clanker's deployer wallet — no on-chain tx from user wallet
+- Deployment is handled server-side by Clanker's deployer wallet - no on-chain tx from user wallet
 - The API key is issued by the Clanker team for partners
 - Token admin rights are transferred to the user wallet after deployment
 - Wait ~30 seconds then use `token-info` to confirm deployment
 
 ---
 
-### claim-rewards — Claim LP fee rewards for a Clanker token
+### claim-rewards - Claim LP fee rewards for a Clanker token
 
-**Trigger phrases:** "claim my Clanker rewards", "collect LP fees for my token", "claim creator fees on Clanker", "认领LP奖励"
+**Trigger phrases:** "claim my Clanker rewards", "collect LP fees for my token", "claim creator fees on Clanker", "ling qu LP jiang li"
 
 **Execution flow:**
 1. Run with `--dry-run` to preview the `collectFees` calldata
-2. **Ask user to confirm** — show fee locker address, token address, and wallet that will receive rewards
+2. **Ask user to confirm** - show fee locker address, token address, and wallet that will receive rewards
 3. Execute only after explicit user approval: calls `onchainos wallet contract-call` on the ClankerFeeLocker contract
 4. Report transaction hash
 
@@ -266,9 +273,9 @@ clanker claim-rewards --token-address 0xTokenAddress --from 0xYourWallet
 |-------|-------|-----|
 | `Clanker API key is required` | `--api-key` missing for deploy | Pass `--api-key` or set `CLANKER_API_KEY` env var |
 | `Cannot determine wallet address` | Not logged in to onchainos | Run `onchainos wallet login` first, or pass `--from <addr>` |
-| `Security scan failed` | Token scan returned error | Do not proceed — token may be malicious |
+| `Security scan failed` | Token scan returned error | Do not proceed - token may be malicious |
 | `Token flagged as HIGH RISK` | Token is a honeypot | Do not proceed |
-| `No claimable rewards` | No fees accrued yet | Normal state — try again later |
+| `No claimable rewards` | No fees accrued yet | Normal state - try again later |
 | Deploy: `success: false` | API key invalid or request malformed | Verify API key and token params |
 | Claim: `tx_hash: pending` | Contract call did not broadcast | Check onchainos connection; retry |
 
@@ -277,7 +284,7 @@ clanker claim-rewards --token-address 0xTokenAddress --from 0xYourWallet
 ## Security Notes
 
 - Always run security scan before `claim-rewards` on any token address (done automatically)
-- Always confirm deployment parameters before deploying — token deployment is irreversible
+- Always confirm deployment parameters before deploying - token deployment is irreversible
 - The `requestKey` is auto-generated as a UUID per call to prevent accidental double-deployment
-- Never share your Clanker API key — it authorizes token deployments from your partner account
+- Never share your Clanker API key - it authorizes token deployments from your partner account
 - Fee locker address is resolved dynamically at runtime to handle contract upgrades

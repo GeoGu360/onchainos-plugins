@@ -71,11 +71,28 @@ pub async fn wallet_contract_call(
 
 /// Extract txHash from `wallet contract-call` response.
 /// Response shape: {"ok":true,"data":{"txHash":"0x..."}}
-pub fn extract_tx_hash(result: &Value) -> &str {
-    result["data"]["txHash"]
+/// Returns Err if the response signals failure or the tx hash is missing/empty.
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    let ok = result["ok"].as_bool().unwrap_or(false);
+    if !ok {
+        let err_msg = result["error"]
+            .as_str()
+            .or_else(|| result["message"].as_str())
+            .unwrap_or("contract-call returned ok=false");
+        anyhow::bail!("contract-call failed: {}", err_msg);
+    }
+    let hash = result["data"]["txHash"]
         .as_str()
         .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
+        .unwrap_or("");
+    if hash.is_empty() || hash == "pending" {
+        anyhow::bail!(
+            "contract-call did not return a valid tx hash (got: {:?}). \
+             Check onchainos connection and retry.",
+            hash
+        );
+    }
+    Ok(hash.to_string())
 }
 
 /// Run `onchainos security token-scan` and return the parsed JSON result.

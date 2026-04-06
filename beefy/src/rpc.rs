@@ -82,6 +82,7 @@ pub async fn get_allowance(chain_id: u64, token_addr: &str, owner: &str, spender
 
 /// Get vault total supply (mooTokens)
 /// totalSupply() selector: 0x18160ddd
+#[allow(dead_code)]
 pub async fn get_total_supply(chain_id: u64, vault_addr: &str) -> Result<u128> {
     let rpc = rpc_url(chain_id);
     let result = eth_call(rpc, vault_addr, "0x18160ddd").await?;
@@ -93,6 +94,7 @@ pub async fn get_total_supply(chain_id: u64, vault_addr: &str) -> Result<u128> {
 
 /// Get vault balance (total underlying assets in vault)
 /// balance() selector: 0xb69ef8a8
+#[allow(dead_code)]
 pub async fn get_vault_balance(chain_id: u64, vault_addr: &str) -> Result<u128> {
     let rpc = rpc_url(chain_id);
     let result = eth_call(rpc, vault_addr, "0xb69ef8a8").await?;

@@ -38,6 +38,7 @@ pub fn resolve_wallet(chain_id: u64) -> anyhow::Result<String> {
 
 /// Submit an EVM transaction via onchainos wallet contract-call
 /// dry_run=true: returns simulation response without calling onchainos
+#[allow(dead_code)]
 pub async fn wallet_contract_call(
     chain_id: u64,
     to: &str,
@@ -154,11 +155,11 @@ pub async fn erc20_approve(
 }
 
 /// Extract txHash from onchainos response
-pub fn extract_tx_hash(result: &Value) -> String {
-    result["data"]["swapTxHash"]
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    let hash = result["data"]["swapTxHash"]
         .as_str()
         .or_else(|| result["data"]["txHash"].as_str())
         .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-        .to_string()
+        .ok_or_else(|| anyhow::anyhow!("txHash not found in response: {}", result))?;
+    Ok(hash.to_string())
 }

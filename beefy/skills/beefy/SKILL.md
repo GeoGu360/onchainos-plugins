@@ -63,6 +63,8 @@ beefy deposit --vault aerodrome-weth-usdc --amount 0.01 --chain 8453
 #### `withdraw`
 Redeem mooTokens to get your underlying tokens back.
 
+`--shares` is the number of mooTokens to redeem in human-readable form (e.g. "0.5" for 0.5 mooTokens). Omit to redeem the full balance.
+
 ```
 beefy withdraw --vault morpho-base-gauntlet-prime-usdc --chain 8453
 beefy withdraw --vault morpho-base-gauntlet-prime-usdc --shares 0.5 --chain 8453 --dry-run
@@ -76,3 +78,10 @@ beefy withdraw --vault morpho-base-gauntlet-prime-usdc --shares 0.5 --chain 8453
 - Use `vaults` command to find the vault ID you need
 - Status `eol` means the vault is retired - no new deposits accepted
 - USDC on Base: `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`
+
+## Do NOT use for
+
+- Native ETH or SOL staking (use dedicated staking skills)
+- Token swaps or trading (use swap skill)
+- Limit orders or DCA strategies
+- Chains not listed under "Supported chains" above
