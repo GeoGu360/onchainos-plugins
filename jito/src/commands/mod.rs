@@ -59,47 +59,14 @@ fn create_program_address_hash(seeds: &[&[u8]], program_id: &[u8]) -> [u8; 32] {
 
 /// Check if 32 bytes are a valid point on the Ed25519 curve.
 ///
-/// Ed25519 equation: -x^2 + y^2 = 1 + d*x^2*y^2 (mod p)
-/// A point is on-curve iff x^2 = (y^2 - 1) / (d*y^2 + 1) has a solution.
-/// This holds iff the Legendre symbol of the numerator/denominator expression is 0 or 1.
-///
-/// p = 2^255 - 19
-/// d = -121665 * modular_inverse(121666) mod p
-///
-/// Delegates to Python3 for 256-bit modular arithmetic.
-/// Called at most 256 times per PDA derivation (nonce search), acceptable performance.
+/// Uses `curve25519-dalek`: deserialize as a `CompressedEdwardsY` and call
+/// `.decompress().is_some()` — returns `true` if the point lies on the curve.
+/// This replaces the previous Python3 subprocess approach which silently returned
+/// `false` (off-curve) when Python3 was absent, causing `find_program_address` to
+/// return a wrong PDA.
 fn is_on_ed25519_curve(bytes: &[u8; 32]) -> bool {
-    use std::process::Command;
-
-    let hex: String = bytes.iter().map(|b| format!("{:02x}", b)).collect();
-
-    // Python script: returns exit code 1 if on-curve, 0 if off-curve
-    let script = r#"
-import sys
-p = 2**255 - 19
-d = -121665 * pow(121666, p-2, p) % p
-h = bytes.fromhex(sys.argv[1])
-b = bytearray(h)
-b[31] &= 0x7f
-y = int.from_bytes(bytes(b), 'little')
-if y >= p:
-    sys.exit(0)
-y2 = y * y % p
-denom = (d * y2 + 1) % p
-if denom == 0:
-    sys.exit(1)
-numer = (y2 - 1) % p
-x2 = numer * pow(denom, p - 2, p) % p
-if x2 == 0:
-    sys.exit(1)
-leg = pow(x2, (p - 1) // 2, p)
-sys.exit(1 if leg == 1 else 0)
-"#;
-
-    match Command::new("python3").args(["-c", script, &hex]).output() {
-        Ok(o) => o.status.code().unwrap_or(0) == 1,
-        Err(_) => false, // treat as off-curve if Python unavailable
-    }
+    use curve25519_dalek::edwards::CompressedEdwardsY;
+    CompressedEdwardsY(*bytes).decompress().is_some()
 }
 
 /// Encode a Solana transaction to base64 for submission via onchainos.

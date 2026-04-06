@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use serde_json::Value;
 use std::process::Command;
 
@@ -77,11 +77,14 @@ pub async fn wallet_contract_call_solana(
 
 /// Extract txHash from onchainos response.
 /// Checks: data.swapTxHash → data.txHash → txHash (root)
-pub fn extract_tx_hash(result: &Value) -> String {
+/// Returns Err if no txHash is present, so callers can decide whether to retry.
+pub fn extract_tx_hash(result: &Value) -> Result<String> {
+    let raw = result.to_string();
     result["data"]["swapTxHash"]
         .as_str()
         .or_else(|| result["data"]["txHash"].as_str())
         .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
-        .to_string()
+        .filter(|s| !s.is_empty())
+        .map(|s| s.to_string())
+        .ok_or_else(|| anyhow!("tx hash not found in onchainos output; raw output: {}", raw))
 }

@@ -150,7 +150,7 @@ pub async fn run(args: StakeArgs) -> Result<Value> {
         pool_info.manager_fee_account.clone(),           // 4: manager_fee_account (writable)
         bs58::decode(config::JITOSOL_MINT)
             .into_vec()
-            .unwrap(),                                   // 5: pool_mint (writable)
+            .map_err(|e| anyhow::anyhow!("Invalid JITOSOL_MINT: {}", e))?,  // 5: pool_mint (writable)
         withdraw_authority_bytes.clone(),                // 6: withdraw_authority (readonly)
         system_program_bytes,                            // 7: system_program (readonly)
         token_program_bytes,                             // 8: token_program (readonly)
@@ -205,7 +205,7 @@ pub async fn run(args: StakeArgs) -> Result<Value> {
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
 
     Ok(serde_json::json!({
         "ok": true,

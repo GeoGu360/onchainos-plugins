@@ -50,12 +50,21 @@ pub async fn run(args: UnstakeArgs) -> Result<Value> {
     // Pool token amount in raw units (lamport-equivalent)
     let pool_tokens_raw = (args.amount * config::LAMPORTS_PER_SOL as f64) as u64;
 
-    // Derive user's JitoSOL ATA
-    let user_ata_bytes = derive_ata(&wallet, config::JITOSOL_MINT)?;
-    let user_ata = bs58::encode(&user_ata_bytes).into_string();
+    // Resolve the user's JitoSOL token account and balance.
+    // Use get_token_accounts_by_owner to find the account with the highest balance
+    // (handles non-ATA token accounts); fall back to the canonical ATA if none found.
+    let (user_token_account, jitosol_balance) =
+        match rpc::get_token_accounts_by_owner(&wallet, config::JITOSOL_MINT).await {
+            Ok((ui, _raw, addr)) if !addr.is_empty() => (addr, ui),
+            _ => {
+                // Fall back to canonical ATA
+                let ata_bytes = derive_ata(&wallet, config::JITOSOL_MINT)?;
+                let ata_addr = bs58::encode(&ata_bytes).into_string();
+                let (ui, _) = rpc::get_token_balance(&ata_addr).await.unwrap_or((0.0, 0));
+                (ata_addr, ui)
+            }
+        };
 
-    // Check user balance
-    let (jitosol_balance, _) = rpc::get_token_balance(&user_ata).await.unwrap_or((0.0, 0));
     if jitosol_balance < args.amount && !args.dry_run {
         anyhow::bail!(
             "Insufficient JitoSOL balance: have {:.9}, need {:.9}",
@@ -71,7 +80,7 @@ pub async fn run(args: UnstakeArgs) -> Result<Value> {
         "jitosol_raw": pool_tokens_raw.to_string(),
         "expected_sol": format!("{:.9}", expected_sol),
         "sol_per_jitosol_rate": format!("{:.8}", sol_per_jitosol),
-        "user_jitosol_ata": user_ata,
+        "user_jitosol_ata": user_token_account,
         "current_jitosol_balance": format!("{:.9}", jitosol_balance),
         "stake_pool": config::JITO_STAKE_POOL,
         "delay_note": "Unstaking creates a stake account that unlocks after the current epoch (~2-3 days). You will need to manually deactivate and withdraw the stake account after the epoch ends.",
