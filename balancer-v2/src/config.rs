@@ -53,6 +53,28 @@ pub fn known_pools(chain_id: u64) -> Vec<(&'static str, &'static str)> {
                 "0x36bf227d6bac96e2ab1ebb5492ecec69c691943f",
             ),
         ],
+        1 => vec![
+            // USDC/WETH 50/50 Weighted pool — $180K TVL
+            (
+                "0x96646936b91d6b9d7d0c47c496afbf3d6ec7b6f8000200000000000000000019",
+                "0x96646936b91d6b9d7d0c47c496afbf3d6ec7b6f8",
+            ),
+            // BAL/WETH 80/20 Weighted pool — $5.3M TVL
+            (
+                "0x5c6ee304399dbdb9c8ef030ab642b10820db8f56000200000000000000000014",
+                "0x5c6ee304399dbdb9c8ef030ab642b10820db8f56",
+            ),
+            // WBTC/WETH 50/50 Weighted pool — $1.6M TVL
+            (
+                "0xa6f548df93de924d73be7d25dc02554c6bd66db500020000000000000000000e",
+                "0xa6f548df93de924d73be7d25dc02554c6bd66db5",
+            ),
+            // GHO/USDT/USDC ComposableStable pool — $120K TVL
+            (
+                "0x8353157092ed8be69a9df8f95af097bbf33cb2af0000000000000000000005d9",
+                "0x8353157092ed8be69a9df8f95af097bbf33cb2af",
+            ),
+        ],
         _ => vec![],
     }
 }
