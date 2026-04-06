@@ -70,6 +70,23 @@ pub fn extract_tx_hash(result: &Value) -> &str {
         .unwrap_or("pending")
 }
 
+/// Extract txHash or return an error if missing/pending.
+/// Use this for write operations where a missing hash indicates a submission failure.
+pub fn extract_tx_hash_or_err(result: &Value) -> anyhow::Result<String> {
+    let hash = result["data"]["txHash"]
+        .as_str()
+        .or_else(|| result["txHash"].as_str());
+    match hash {
+        Some(h) if !h.is_empty() && h != "pending" => Ok(h.to_string()),
+        _ => {
+            let err_msg = result["error"]
+                .as_str()
+                .unwrap_or("transaction submission failed: no txHash returned");
+            anyhow::bail!("{}", err_msg)
+        }
+    }
+}
+
 /// ERC-20 approve — manually encode approve(address,uint256) calldata
 /// selector: 0x095ea7b3
 pub async fn erc20_approve(
@@ -89,7 +106,7 @@ pub async fn erc20_approve(
 
 /// Query ERC-20 allowance via eth_call
 pub async fn erc20_allowance(
-    chain_id: u64,
+    _chain_id: u64,
     token_addr: &str,
     owner: &str,
     spender: &str,
@@ -110,11 +127,3 @@ pub async fn erc20_allowance(
     Ok(u128::from_str_radix(&hex[hex.len().saturating_sub(32)..], 16).unwrap_or(0))
 }
 
-/// wallet balance
-pub fn wallet_balance(chain_id: u64) -> anyhow::Result<Value> {
-    let chain_str = chain_id.to_string();
-    let output = Command::new("onchainos")
-        .args(["wallet", "balance", "--chain", &chain_str])
-        .output()?;
-    Ok(serde_json::from_str(&String::from_utf8_lossy(&output.stdout))?)
-}

@@ -1,25 +1,5 @@
 // src/api.rs — Lido REST API queries
 use anyhow::Context;
-use serde::Deserialize;
-
-#[derive(Debug, Deserialize)]
-pub struct AprSmaResponse {
-    pub data: AprSmaData,
-}
-
-#[derive(Debug, Deserialize)]
-#[allow(non_snake_case)]
-pub struct AprSmaData {
-    pub smaApr: Option<String>,
-    pub apr: Option<Vec<AprEntry>>,
-}
-
-#[derive(Debug, Deserialize)]
-#[allow(non_snake_case)]
-pub struct AprEntry {
-    pub apr: Option<f64>,
-    pub timeUnix: Option<u64>,
-}
 
 /// Fetch the 7-day SMA APR from Lido's API.
 pub async fn get_apr_sma() -> anyhow::Result<f64> {

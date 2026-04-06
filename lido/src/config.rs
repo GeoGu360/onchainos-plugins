@@ -22,7 +22,7 @@ pub const RPC_OPTIMISM: &str = "https://mainnet.optimism.io";
 
 // Lido REST API
 pub const LIDO_APR_SMA_URL: &str = "https://eth-api.lido.fi/v1/protocol/steth/apr/sma";
-pub const LIDO_APR_LAST_URL: &str = "https://eth-api.lido.fi/v1/protocol/steth/apr/last";
+pub const _LIDO_APR_LAST_URL: &str = "https://eth-api.lido.fi/v1/protocol/steth/apr/last";
 pub const LIDO_WQ_API_URL: &str = "https://wq-api.lido.fi/v2/request-time";
 
 // Max/min withdrawal amounts

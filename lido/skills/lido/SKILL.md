@@ -59,7 +59,7 @@ No confirmation needed (read-only).
 
 **Parameters:**
 - `--from` — wallet address (auto-resolved from onchainos if omitted)
-- `--chain` — chain ID to filter wstETH query (0 = all chains, default: 1)
+- `--chain` — chain ID to filter wstETH query (0 = all chains, default: 1; pass after `get-position`)
 
 ---
 
@@ -91,7 +91,7 @@ lido stake --amount <wei> [--from <wallet>] [--dry-run]
 **Parameters:**
 - `--amount` — ETH amount in wei (e.g. `1000000000000000000` = 1 ETH)
 - `--from` — wallet address
-- `--dry-run` — preview calldata without broadcasting
+- `--dry-run` — preview calldata without broadcasting (pass as subcommand flag after `stake`)
 
 **Pre-checks:**
 1. Verify staking is not paused (`getCurrentStakeLimit() > 0`)
@@ -117,7 +117,7 @@ lido wrap --amount <stETH_wei> [--from <wallet>] [--dry-run]
 **Parameters:**
 - `--amount` — stETH amount in wei to wrap
 - `--from` — wallet address
-- `--dry-run` — preview without broadcasting
+- `--dry-run` — preview without broadcasting (pass as subcommand flag after `wrap`)
 
 **Steps:**
 1. Check stETH balance ≥ amount
@@ -140,8 +140,8 @@ lido unwrap --amount <wstETH_wei> [--from <wallet>] [--chain <chain_id>] [--dry-
 **Parameters:**
 - `--amount` — wstETH amount in wei to unwrap
 - `--from` — wallet address
-- `--chain` — chain ID (default: 1)
-- `--dry-run` — preview without broadcasting
+- `--chain` — chain ID (default: 1; pass after `unwrap`)
+- `--dry-run` — preview without broadcasting (pass after `unwrap`)
 
 **Steps:**
 1. Check wstETH balance ≥ amount on the target chain
@@ -163,7 +163,7 @@ lido request-withdrawal --amount <stETH_wei> [--from <wallet>] [--dry-run]
 **Parameters:**
 - `--amount` — stETH amount in wei to withdraw
 - `--from` — wallet address
-- `--dry-run` — preview without broadcasting
+- `--dry-run` — preview without broadcasting (pass after `request-withdrawal`)
 
 **Steps:**
 1. Verify stETH balance ≥ amount
@@ -191,7 +191,7 @@ lido claim-withdrawal --request-ids <id1>,<id2> [--from <wallet>] [--dry-run]
 **Parameters:**
 - `--request-ids` — comma-separated withdrawal NFT request IDs to claim
 - `--from` — wallet address
-- `--dry-run` — preview without broadcasting
+- `--dry-run` — preview without broadcasting (pass after `claim-withdrawal`)
 
 **Steps:**
 1. Query `getLastCheckpointIndex()` from WithdrawalQueue

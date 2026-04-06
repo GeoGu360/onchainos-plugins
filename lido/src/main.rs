@@ -10,14 +10,6 @@ use clap::{Parser, Subcommand};
 #[derive(Parser)]
 #[command(name = "lido", about = "Lido liquid staking plugin for OnchainOS")]
 struct Cli {
-    /// Chain ID (1=Ethereum, 42161=Arbitrum, 8453=Base, 10=Optimism)
-    #[arg(long, default_value = "1")]
-    chain: u64,
-
-    /// Simulate without broadcasting (preview calldata only)
-    #[arg(long)]
-    dry_run: bool,
-
     #[command(subcommand)]
     command: Commands,
 }
@@ -32,12 +24,18 @@ enum Commands {
         /// Wallet address (auto-resolved from onchainos if omitted)
         #[arg(long)]
         from: Option<String>,
+        /// Simulate without broadcasting (preview calldata only)
+        #[arg(long)]
+        dry_run: bool,
     },
     /// Query stETH/wstETH position and current APR
     GetPosition {
         /// Wallet address to query (auto-resolved from onchainos if omitted)
         #[arg(long)]
         from: Option<String>,
+        /// Chain ID to filter wstETH query (0 = all chains, default: 1)
+        #[arg(long, default_value = "1")]
+        chain: u64,
     },
     /// Query current stETH staking APR
     GetApr,
@@ -49,6 +47,9 @@ enum Commands {
         /// Wallet address
         #[arg(long)]
         from: Option<String>,
+        /// Simulate without broadcasting (preview calldata only)
+        #[arg(long)]
+        dry_run: bool,
     },
     /// Unwrap wstETH to stETH (Ethereum + L2s)
     Unwrap {
@@ -58,6 +59,12 @@ enum Commands {
         /// Wallet address
         #[arg(long)]
         from: Option<String>,
+        /// Chain ID (1=Ethereum, 42161=Arbitrum, 8453=Base, 10=Optimism; default: 1)
+        #[arg(long, default_value = "1")]
+        chain: u64,
+        /// Simulate without broadcasting (preview calldata only)
+        #[arg(long)]
+        dry_run: bool,
     },
     /// Request withdrawal of stETH to ETH (Ethereum only)
     RequestWithdrawal {
@@ -67,6 +74,9 @@ enum Commands {
         /// Wallet address
         #[arg(long)]
         from: Option<String>,
+        /// Simulate without broadcasting (preview calldata only)
+        #[arg(long)]
+        dry_run: bool,
     },
     /// Query withdrawal request status
     GetWithdrawalStatus {
@@ -82,36 +92,37 @@ enum Commands {
         /// Wallet address
         #[arg(long)]
         from: Option<String>,
+        /// Simulate without broadcasting (preview calldata only)
+        #[arg(long)]
+        dry_run: bool,
     },
 }
 
 #[tokio::main]
 async fn main() {
     let cli = Cli::parse();
-    let chain_id = cli.chain;
-    let dry_run = cli.dry_run;
 
     let result = match cli.command {
-        Commands::Stake { amount, from } => {
+        Commands::Stake { amount, from, dry_run } => {
             commands::stake::run(amount, from, dry_run).await
         }
-        Commands::GetPosition { from } => {
-            commands::get_position::run(from, chain_id).await
+        Commands::GetPosition { from, chain } => {
+            commands::get_position::run(from, chain).await
         }
         Commands::GetApr => commands::get_apr::run().await,
-        Commands::Wrap { amount, from } => {
+        Commands::Wrap { amount, from, dry_run } => {
             commands::wrap::run(amount, from, dry_run).await
         }
-        Commands::Unwrap { amount, from } => {
-            commands::unwrap::run(amount, from, chain_id, dry_run).await
+        Commands::Unwrap { amount, from, chain, dry_run } => {
+            commands::unwrap::run(amount, from, chain, dry_run).await
         }
-        Commands::RequestWithdrawal { amount, from } => {
+        Commands::RequestWithdrawal { amount, from, dry_run } => {
             commands::request_withdrawal::run(amount, from, dry_run).await
         }
         Commands::GetWithdrawalStatus { request_ids } => {
             commands::get_withdrawal_status::run(request_ids).await
         }
-        Commands::ClaimWithdrawal { request_ids, from } => {
+        Commands::ClaimWithdrawal { request_ids, from, dry_run } => {
             commands::claim_withdrawal::run(request_ids, from, dry_run).await
         }
     };

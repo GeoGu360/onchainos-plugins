@@ -52,8 +52,8 @@ pub async fn run(
         remaining -= chunk;
     }
 
-    // Get estimated wait time
-    let wait_time_info = crate::api::get_request_time(&[]).await.unwrap_or(json!({}));
+    // Get estimated wait time (only available after request IDs are known; show placeholder here)
+    let wait_time_info = json!({"note": "Use get-withdrawal-status --request-ids <id> for exact wait time after submission"});
 
     // Check allowance for WithdrawalQueue
     let allowance = onchainos::erc20_allowance(
@@ -101,7 +101,8 @@ pub async fn run(
             false,
         )
         .await?;
-        let approve_tx = onchainos::extract_tx_hash(&approve_result);
+        let approve_tx = onchainos::extract_tx_hash_or_err(&approve_result)
+            .map_err(|e| anyhow::anyhow!("Approve tx failed: {}", e))?;
         eprintln!("Approve txHash: {}", approve_tx);
     }
 
@@ -116,7 +117,8 @@ pub async fn run(
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash_or_err(&result)
+        .map_err(|e| anyhow::anyhow!("requestWithdrawals tx failed: {}", e))?;
     println!(
         "{}",
         json!({
