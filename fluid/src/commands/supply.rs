@@ -51,7 +51,7 @@ pub async fn run(
     let approve_result = onchainos::wallet_contract_call(
         chain_id, &underlying_addr, &approve_calldata, from, None, dry_run
     ).await?;
-    let approve_tx = onchainos::extract_tx_hash(&approve_result).to_string();
+    let approve_tx = onchainos::extract_tx_hash(&approve_result)?;
 
     // Wait for approve tx to land before deposit
     if !dry_run {
@@ -67,7 +67,7 @@ pub async fn run(
     let deposit_result = onchainos::wallet_contract_call(
         chain_id, &ftoken_addr, &deposit_calldata, from, None, dry_run
     ).await?;
-    let deposit_tx = onchainos::extract_tx_hash(&deposit_result).to_string();
+    let deposit_tx = onchainos::extract_tx_hash(&deposit_result)?;
 
     let output = serde_json::json!({
         "ok": true,

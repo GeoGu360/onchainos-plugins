@@ -1,6 +1,6 @@
 ---
 name: fluid
-description: "Fluid Protocol — DEX + Lending by Instadapp. Supply/earn yield via ERC-4626 fTokens (fUSDC, fWETH), swap via Fluid AMM DEX, view positions. Trigger phrases: supply to fluid, deposit fUSDC, earn yield on fluid, fluid fToken, swap on fluid dex, fluid positions, fluid markets, fluid supply rates, fluid withdraw, withdraw from fluid, fluid protocol, instadapp fluid, 在Fluid存款, Fluid借贷, Fluid兑换, Fluid收益, Fluid仓位, Fluid流动性"
+description: "Fluid Protocol -- DEX + Lending by Instadapp. Supply/earn yield via ERC-4626 fTokens (fUSDC, fWETH), swap via Fluid AMM DEX, view positions. Trigger phrases: supply to fluid, deposit fUSDC, earn yield on fluid, fluid fToken, swap on fluid dex, fluid positions, fluid markets, fluid supply rates, fluid withdraw, withdraw from fluid, fluid protocol, instadapp fluid"
 license: MIT
 metadata:
   author: GeoGu360
@@ -9,13 +9,15 @@ metadata:
 
 # Fluid Protocol Skill
 
+> **Do NOT use for** Aave, Compound, Euler, or other lending protocols. This skill is specific to Fluid Protocol (Instadapp) fToken lending and Fluid DEX. For other lending/DEX protocols, use the corresponding skill.
+
 ## Overview
 
 Fluid is a combined DEX + Lending protocol by Instadapp with two main systems:
 
-- **Fluid Lending** — ERC-4626 fToken contracts (fUSDC, fWETH, fGHO, fEURC). Users deposit assets and earn yield. No collateral required for lending.
-- **Fluid DEX** — Novel concentrated AMM. Swap between paired tokens (EURC/USDC, wstETH/ETH, weETH/ETH, etc.)
-- **Fluid Vault** — Collateral-based borrowing system (dry-run only due to liquidation risk)
+- **Fluid Lending** -- ERC-4626 fToken contracts (fUSDC, fWETH, fGHO, fEURC). Users deposit assets and earn yield. No collateral required for lending.
+- **Fluid DEX** -- Novel concentrated AMM. Swap between paired tokens (EURC/USDC, wstETH/ETH, weETH/ETH, etc.)
+- **Fluid Vault** -- Collateral-based borrowing system (dry-run only due to liquidation risk)
 
 **Supported chains:**
 
@@ -26,9 +28,9 @@ Fluid is a combined DEX + Lending protocol by Instadapp with two main systems:
 | Arbitrum | 42161 |
 
 **Architecture:**
-- Write operations (supply, withdraw, swap) → **ask user to confirm** before submitting via `onchainos wallet contract-call`
-- Read operations (markets, positions, quote) → direct on-chain eth_call to resolver contracts; no confirmation needed
-- Borrow/repay → dry-run only due to liquidation risk
+- Write operations (supply, withdraw, swap) -> **ask user to confirm** before submitting via `onchainos wallet contract-call`
+- Read operations (markets, positions, quote) -> direct on-chain eth_call to resolver contracts; no confirmation needed
+- Borrow/repay -> dry-run only due to liquidation risk
 
 ---
 
@@ -36,8 +38,8 @@ Fluid is a combined DEX + Lending protocol by Instadapp with two main systems:
 
 Before executing any command, verify:
 
-1. **Binary installed**: `fluid --version` — if not found, instruct user to install the plugin
-2. **Wallet connected**: `onchainos wallet status` — confirm logged in and active address is set
+1. **Binary installed**: `fluid --version` -- if not found, instruct user to install the plugin
+2. **Wallet connected**: `onchainos wallet status` -- confirm logged in and active address is set
 
 If wallet not connected:
 ```
@@ -62,9 +64,9 @@ Please connect your wallet first: run `onchainos wallet login`
 | Repay (dry-run only) | `fluid --dry-run repay --vault <addr> --amount <n>` |
 
 **Global flags:**
-- `--chain <CHAIN_ID>` — 8453 (Base, default), 1 (Ethereum), 42161 (Arbitrum)
-- `--from <ADDRESS>` — wallet address (defaults to active onchainos wallet)
-- `--dry-run` — simulate without broadcasting
+- `--chain <CHAIN_ID>` -- 8453 (Base, default), 1 (Ethereum), 42161 (Arbitrum)
+- `--from <ADDRESS>` -- wallet address (defaults to active onchainos wallet)
+- `--dry-run` -- simulate without broadcasting
 
 ---
 
@@ -81,7 +83,7 @@ For all write operations (supply, withdraw, swap):
 
 ## Commands
 
-### markets — List Fluid fToken lending markets
+### markets -- List Fluid fToken lending markets
 
 **Trigger phrases:** "fluid markets", "fluid supply rates", "fluid fTokens", "fluid yield", "Fluid利率", "Fluid市场"
 
@@ -98,7 +100,7 @@ fluid --chain 1 markets --asset WETH
 **What it does:**
 - Calls `LendingResolver.getFTokensEntireData()` on-chain
 - Returns fToken address, underlying asset, supply rate
-- Read-only — no confirmation needed
+- Read-only -- no confirmation needed
 
 **Expected output:**
 ```json
@@ -121,21 +123,21 @@ fluid --chain 1 markets --asset WETH
 
 ---
 
-### positions — View your lending positions
+### positions -- View your lending positions
 
 **Trigger phrases:** "my fluid positions", "fluid portfolio", "fluid balance", "我的Fluid仓位", "Fluid持仓"
 
 **Usage:**
 ```bash
 fluid --chain 8453 positions
-fluid --chain 8453 positions --from 0xYourAddress
+fluid --chain 8453 --from 0xYourAddress positions
 fluid --chain 1 positions
 ```
 
 **What it does:**
 - Calls `LendingResolver.getUserPositions(user)` and checks `balanceOf` + `convertToAssets` per fToken
 - Returns fToken shares and underlying asset value per position
-- Read-only — no confirmation needed
+- Read-only -- no confirmation needed
 
 **Expected output:**
 ```json
@@ -157,7 +159,7 @@ fluid --chain 1 positions
 
 ---
 
-### supply — Supply to Fluid fToken (ERC-4626 deposit)
+### supply -- Supply to Fluid fToken (ERC-4626 deposit)
 
 **Trigger phrases:** "supply to fluid", "deposit to fUSDC", "earn yield on fluid", "fluid deposit", "在Fluid存款", "Fluid存入"
 
@@ -176,13 +178,13 @@ fluid --chain 8453 supply --ftoken fWETH --amount 0.001
 ```
 
 **Key parameters:**
-- `--ftoken` — fToken symbol (fUSDC, fWETH, fGHO, fEURC) or fToken contract address
-- `--amount` — human-readable amount of **underlying** asset (e.g. 10 for 10 USDC)
+- `--ftoken` -- fToken symbol (fUSDC, fWETH, fGHO, fEURC) or fToken contract address
+- `--amount` -- human-readable amount of **underlying** asset (e.g. 10 for 10 USDC)
 
 **What it does:**
 1. Resolves fToken address and underlying decimals
-2. Step 1: Approves fToken to spend underlying asset — after user confirmation, submits via `onchainos wallet contract-call`
-3. Step 2: Calls `deposit(assets, receiver)` (ERC-4626) — after user confirmation, submits via `onchainos wallet contract-call`
+2. Step 1: Approves fToken to spend underlying asset -- after user confirmation, submits via `onchainos wallet contract-call`
+3. Step 2: Calls `deposit(assets, receiver)` (ERC-4626) -- after user confirmation, submits via `onchainos wallet contract-call`
 
 **Expected output:**
 ```json
@@ -199,7 +201,7 @@ fluid --chain 8453 supply --ftoken fWETH --amount 0.001
 
 ---
 
-### withdraw — Withdraw from Fluid fToken
+### withdraw -- Withdraw from Fluid fToken
 
 **Trigger phrases:** "withdraw from fluid", "redeem fUSDC", "take out from fluid", "从Fluid提款", "Fluid提现"
 
@@ -207,20 +209,20 @@ fluid --chain 8453 supply --ftoken fWETH --amount 0.001
 
 **Usage:**
 ```bash
-# Partial withdrawal — dry-run first
+# Partial withdrawal -- dry-run first
 fluid --chain 8453 --dry-run withdraw --ftoken fUSDC --amount 5
 
 # After user confirmation:
 fluid --chain 8453 withdraw --ftoken fUSDC --amount 5
 
-# Full withdrawal — redeem all shares
+# Full withdrawal -- redeem all shares
 fluid --chain 8453 withdraw --ftoken fUSDC --all
 ```
 
 **Key parameters:**
-- `--ftoken` — fToken symbol or address
-- `--amount` — partial withdrawal amount in underlying token units (mutually exclusive with `--all`)
-- `--all` — redeem entire fToken share balance
+- `--ftoken` -- fToken symbol or address
+- `--amount` -- partial withdrawal amount in underlying token units (mutually exclusive with `--all`)
+- `--all` -- redeem entire fToken share balance
 
 **Notes:**
 - Partial withdrawal calls `withdraw(assets, receiver, owner)` (ERC-4626 selector `0xb460af94`)
@@ -240,7 +242,7 @@ fluid --chain 8453 withdraw --ftoken fUSDC --all
 
 ---
 
-### swap — Swap via Fluid DEX
+### swap -- Swap via Fluid DEX
 
 **Trigger phrases:** "swap on fluid", "fluid dex swap", "swap EURC to USDC fluid", "fluid amm swap", "Fluid兑换", "在Fluid上兑换"
 
@@ -259,10 +261,10 @@ fluid --chain 8453 swap --token-in WSTETH --token-out WETH --amount-in 0.001
 ```
 
 **Key parameters:**
-- `--token-in` — input token symbol (EURC, USDC, WETH, WSTETH, WEETH, FLUID, USDE)
-- `--token-out` — output token symbol
-- `--amount-in` — human-readable input amount
-- `--slippage-bps` — slippage tolerance in basis points (default: 50 = 0.5%)
+- `--token-in` -- input token symbol (EURC, USDC, WETH, WSTETH, WEETH, FLUID, USDE)
+- `--token-out` -- output token symbol
+- `--amount-in` -- human-readable input amount
+- `--slippage-bps` -- slippage tolerance in basis points (default: 50 = 0.5%)
 
 **Available pools on Base:**
 | Pool | Token0 | Token1 | Pool Address |
@@ -294,7 +296,7 @@ fluid --chain 8453 swap --token-in WSTETH --token-out WETH --amount-in 0.001
 
 ---
 
-### quote — Get DEX swap quote
+### quote -- Get DEX swap quote
 
 **Trigger phrases:** "fluid quote", "fluid swap estimate", "how much USDC for EURC fluid", "fluid price", "Fluid报价"
 
@@ -307,7 +309,7 @@ fluid --chain 8453 quote --token-in WSTETH --token-out WETH --amount-in 1
 **What it does:**
 - Simulates `swapIn` via eth_call on the Fluid DEX pool
 - Returns estimated output amount
-- Read-only — no confirmation needed
+- Read-only -- no confirmation needed
 
 **Expected output:**
 ```json
@@ -324,7 +326,7 @@ fluid --chain 8453 quote --token-in WSTETH --token-out WETH --amount-in 1
 
 ---
 
-### borrow — Borrow from Fluid Vault (dry-run only)
+### borrow -- Borrow from Fluid Vault (dry-run only)
 
 **IMPORTANT:** Borrow is **dry-run only** due to liquidation risk. Always use `--dry-run`.
 
@@ -340,7 +342,7 @@ fluid --chain 8453 --dry-run borrow --vault <vault_address> --amount 100
 
 ---
 
-### repay — Repay Fluid Vault debt (dry-run only)
+### repay -- Repay Fluid Vault debt (dry-run only)
 
 **IMPORTANT:** Repay is **dry-run only**. Always use `--dry-run`.
 
@@ -412,7 +414,7 @@ fluid --chain 8453 --dry-run repay --vault <vault_address> --all
 
 1. **Dry-run first**: Always simulate with `--dry-run` before any on-chain write
 2. **Ask user to confirm**: Show what will happen and wait for explicit confirmation before executing
-3. **Borrow/repay dry-run only**: Vault operations carry liquidation risk — never execute live
+3. **Borrow/repay dry-run only**: Vault operations carry liquidation risk -- never execute live
 4. **Approval before deposit**: ERC-20 tokens require prior approval; plugin handles this automatically in two steps
 5. **3-second delay**: Plugin waits 3 seconds after approve before deposit to avoid nonce conflicts
 

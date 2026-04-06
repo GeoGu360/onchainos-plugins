@@ -47,7 +47,7 @@ pub async fn run(
         let approve_result = onchainos::wallet_contract_call(
             chain_id, in_token_addr, &approve_calldata, from, None, dry_run
         ).await?;
-        approve_tx = onchainos::extract_tx_hash(&approve_result).to_string();
+        approve_tx = onchainos::extract_tx_hash(&approve_result)?;
 
         if !dry_run {
             tokio::time::sleep(std::time::Duration::from_secs(3)).await;
@@ -70,7 +70,7 @@ pub async fn run(
     let swap_result = onchainos::wallet_contract_call(
         chain_id, pool.address, &swap_calldata, from, eth_value, dry_run
     ).await?;
-    let swap_tx = onchainos::extract_tx_hash(&swap_result).to_string();
+    let swap_tx = onchainos::extract_tx_hash(&swap_result)?;
 
     let output = serde_json::json!({
         "ok": true,

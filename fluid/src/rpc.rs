@@ -62,12 +62,13 @@ pub async fn erc20_symbol(token: &str, rpc_url: &str) -> anyhow::Result<String> 
     if hex_clean.len() < 128 {
         return Ok("UNKNOWN".to_string());
     }
-    let len_hex = &hex_clean[64..96];
+    // ABI-encoded string: offset (32 bytes) + length (32 bytes) + data
+    let len_hex = &hex_clean[64..128]; // full 32-byte length word
     let len = usize::from_str_radix(len_hex, 16).unwrap_or(0);
     if len == 0 || hex_clean.len() < 128 + len * 2 {
         return Ok("UNKNOWN".to_string());
     }
-    let data_hex = &hex_clean[96..96 + len * 2];
+    let data_hex = &hex_clean[128..128 + len * 2];
     let bytes = hex::decode(data_hex).unwrap_or_default();
     Ok(String::from_utf8_lossy(&bytes).to_string())
 }

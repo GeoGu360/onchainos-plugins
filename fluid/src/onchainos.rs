@@ -84,11 +84,20 @@ pub async fn wallet_contract_call(
 }
 
 /// Extract txHash from wallet contract-call response.
-pub fn extract_tx_hash(result: &Value) -> &str {
-    result["data"]["txHash"]
+/// Returns an error if the response has ok=false or txHash is missing.
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    if result["ok"].as_bool() == Some(false) {
+        let err = result["error"]
+            .as_str()
+            .unwrap_or("contract-call failed with ok=false");
+        anyhow::bail!("{}", err);
+    }
+    let hash = result["data"]["txHash"]
         .as_str()
         .or_else(|| result["txHash"].as_str())
         .unwrap_or("pending")
+        .to_string();
+    Ok(hash)
 }
 
 /// Encode and submit an ERC-20 approve call.
