@@ -178,3 +178,77 @@ No on-chain transactions executed (wallet ETH = 0, below threshold).
 | P0 blockers | ✅ None |
 | P1 issues | ✅ All 3 fixed |
 | Overall | ⭐⭐⭐⭐ (pending write-op verification with funded wallet) |
+
+---
+
+## Re-Audit — Live Write Verification
+
+**Re-audit Date**: 2026-04-06
+**Wallet Assets at Re-audit**: ETH: 0.001494 (~$3.22), OP: 37.52 (~$4.27)
+**Compilation**: `cargo build --release` → `Finished` (0.13s, no changes needed)
+
+### Test Plan
+
+The wallet holds OP on Optimism — used `OP → WETH` swap via the volatile pool (OP/WETH is the highest-liquidity OP pair on Velodrome V2). Amount: 1 OP (1000000000000000000 raw, ~$0.11).
+
+### Pre-swap State
+
+- Wallet OP balance: 37.52 OP
+- Wallet WETH balance: 0
+- Pool: `0xd25711edfbf747efce181442cc1d8f5f8fc8a0d3` (OP/WETH volatile)
+- Pre-swap quote (1 OP → WETH): `amountOut = 52839886422249` (~0.0000528 WETH)
+
+### Write Operations Executed
+
+| # | Operation | Status | Tx Hash | Block | Chain Confirm |
+|---|-----------|--------|---------|-------|---------------|
+| 1 | ERC-20 approve OP → Router | ✅ | `0xdfa9041fff959409112b3537d42fbc662862d6fe9933022a50354a5122f099a4` | 149937382 | ✅ status=1 |
+| 2 | `swap --token-in OP --token-out WETH --amount-in 1000000000000000000 --slippage 1.0` | ✅ | `0x04d22ff15c9cdf9f910a6727ab8dfdb9535dbef3b5fcb63836ee49a815884000` | 149937384 | ✅ status=1 |
+
+**Command used:**
+```
+velodrome-v2 swap --token-in OP --token-out WETH --amount-in 1000000000000000000 --slippage 1.0
+```
+
+**Output:**
+```json
+{"ok":true,"txHash":"0x04d22ff15c9cdf9f910a6727ab8dfdb9535dbef3b5fcb63836ee49a815884000","tokenIn":"0x4200000000000000000000000000000000000042","tokenOut":"0x4200000000000000000000000000000000000006","amountIn":1000000000000000000,"stable":false,"amountOutMin":52311487558026}
+```
+
+### On-chain Verification (Optimism RPC)
+
+```
+APPROVE - status: 1 | block: 149937382
+SWAP    - status: 1 | block: 149937384
+```
+
+Both `eth_getTransactionReceipt` calls returned `status=1` and a non-null `blockNumber`. Confirmed on Optimism mainnet.
+
+### Post-swap State
+
+- Positions query: empty (no LP tokens, expected — swap only)
+- Post-swap quote (1 OP → WETH): `amountOut = 52839653267777` (pool state updated, marginal change consistent with small trade against large liquidity pool)
+
+### Re-audit Summary
+
+| Category | Result |
+|----------|--------|
+| Compilation (re-check) | ✅ Clean |
+| ERC-20 approve flow | ✅ Verified live on-chain |
+| Swap (OP → WETH, volatile pool) | ✅ Verified live on-chain |
+| Auto-approve before swap | ✅ Working correctly |
+| 3-second delay between approve and swap | ✅ Implemented, confirmed nonce separation (blocks 382 → 384) |
+| Output JSON valid | ✅ Single JSON line, no contamination |
+| New bugs found | 0 |
+
+### Updated Final Verdict
+
+| Category | Score |
+|----------|-------|
+| ABI correctness | ✅ 16/16 selectors correct |
+| Compilation | ✅ Clean |
+| Read-only functionality | ✅ 4/4 commands working |
+| Write functionality | ✅ Verified live — swap confirmed on-chain |
+| P0 blockers | ✅ None |
+| P1 issues | ✅ All 3 fixed |
+| Overall | ⭐⭐⭐⭐⭐ Full live verification complete |
