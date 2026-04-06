@@ -11,7 +11,9 @@ pub async fn run(
     let rpc = config::get_rpc_url(chain_id, rpc_url.as_deref())?;
 
     if dry_run {
-        let calldata = build_collect_calldata(token_id, "0x0000000000000000000000000000000000000000");
+        // Use provided --recipient if available, otherwise show placeholder
+        let preview_recipient = recipient.as_deref().unwrap_or("0x0000000000000000000000000000000000000000");
+        let calldata = build_collect_calldata(token_id, preview_recipient);
         println!(
             "{}",
             serde_json::to_string_pretty(&serde_json::json!({
@@ -20,6 +22,7 @@ pub async fn run(
                 "chain_id": chain_id,
                 "token_id": token_id,
                 "to": cfg.nonfungible_position_manager,
+                "recipient": preview_recipient,
                 "calldata": calldata,
                 "description": "collect((tokenId, recipient, uint128Max, uint128Max)) — collects all accrued swap fees from an unstaked position"
             }))?

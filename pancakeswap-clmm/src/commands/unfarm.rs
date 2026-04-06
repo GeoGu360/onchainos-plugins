@@ -11,7 +11,9 @@ pub async fn run(
     let rpc = config::get_rpc_url(chain_id, rpc_url.as_deref())?;
 
     if dry_run {
-        let calldata = build_withdraw_calldata(token_id, "0x0000000000000000000000000000000000000000");
+        // Use provided --to if available, otherwise show placeholder
+        let preview_to = to.as_deref().unwrap_or("0x0000000000000000000000000000000000000000");
+        let calldata = build_withdraw_calldata(token_id, preview_to);
         println!(
             "{}",
             serde_json::to_string_pretty(&serde_json::json!({
@@ -20,6 +22,7 @@ pub async fn run(
                 "chain_id": chain_id,
                 "token_id": token_id,
                 "to": cfg.masterchef_v3,
+                "recipient": preview_to,
                 "calldata": calldata,
                 "description": "withdraw(tokenId, to) — withdraws NFT from MasterChefV3 and harvests pending CAKE"
             }))?

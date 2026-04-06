@@ -38,7 +38,7 @@ Stakes a V3 LP NFT into MasterChefV3 to start earning CAKE rewards.
 
 ```
 pancakeswap-clmm --chain 56 farm --token-id 12345
-pancakeswap-clmm --chain 56 farm --token-id 12345 --dry-run
+pancakeswap-clmm --chain 56 --dry-run farm --token-id 12345
 ```
 
 **Execution flow:**
@@ -60,7 +60,7 @@ Withdraws a staked LP NFT from MasterChefV3 and automatically harvests all pendi
 
 ```
 pancakeswap-clmm --chain 56 unfarm --token-id 12345
-pancakeswap-clmm --chain 56 unfarm --token-id 12345 --dry-run
+pancakeswap-clmm --chain 56 --dry-run unfarm --token-id 12345
 ```
 
 **Execution flow:**
@@ -82,7 +82,7 @@ Claims pending CAKE rewards for a staked position without withdrawing the NFT.
 
 ```
 pancakeswap-clmm --chain 56 harvest --token-id 12345
-pancakeswap-clmm --chain 56 harvest --token-id 12345 --dry-run
+pancakeswap-clmm --chain 56 --dry-run harvest --token-id 12345
 ```
 
 **Execution flow:**
@@ -106,7 +106,7 @@ Collects all accumulated swap fees from an **unstaked** V3 LP position.
 
 ```
 pancakeswap-clmm --chain 56 collect-fees --token-id 11111
-pancakeswap-clmm --chain 56 collect-fees --token-id 11111 --dry-run
+pancakeswap-clmm --chain 56 --dry-run collect-fees --token-id 11111
 ```
 
 **Execution flow:**
