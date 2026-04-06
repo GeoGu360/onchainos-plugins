@@ -219,7 +219,25 @@ pub fn wallet_contract_call(
     }
     let mut cmd = base_cmd();
     cmd.args(&args);
-    run_cmd(cmd)
+    let result = run_cmd(cmd)?;
+    if result["ok"].as_bool() != Some(true) {
+        let err_msg = result["error"].as_str().unwrap_or("unknown onchainos error");
+        anyhow::bail!("onchainos execution failed: {}", err_msg);
+    }
+    Ok(result)
+}
+
+/// Extract a transaction hash from an onchainos JSON result.
+/// Tries data.swapTxHash, data.txHash, then txHash (top-level).
+/// Returns an error if no non-empty, non-"pending" hash is found.
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    let hash = result["data"]["swapTxHash"].as_str()
+        .or_else(|| result["data"]["txHash"].as_str())
+        .or_else(|| result["txHash"].as_str());
+    match hash {
+        Some(h) if !h.is_empty() && h != "pending" => Ok(h.to_string()),
+        _ => anyhow::bail!("txHash not found in onchainos output; raw: {}", result),
+    }
 }
 
 /// Approve an ERC-20 token spend via wallet contract-call (approve(spender, uint256.max)).

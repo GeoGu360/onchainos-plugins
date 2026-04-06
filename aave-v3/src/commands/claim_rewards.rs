@@ -68,10 +68,7 @@ pub async fn run(
         }
     };
 
-    let tx_hash = result["data"]["txHash"]
-        .as_str()
-        .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending");
+    let tx_hash = crate::onchainos::extract_tx_hash(&result)?;
 
     Ok(json!({
         "ok": true,
