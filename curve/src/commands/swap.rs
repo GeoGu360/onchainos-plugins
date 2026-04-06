@@ -5,6 +5,9 @@ use tokio::time::{sleep, Duration};
 
 /// Determine whether a pool uses uint256 or int128 indices.
 /// Factory v2 (CryptoSwap, tricrypto) pools use uint256; classic StableSwap pools use int128.
+/// NOTE: Some old-style CryptoSwap pools are registered in the main registry with numeric IDs
+/// (e.g. id="38"). We therefore try uint256 first and fall back to int128 when the
+/// uint256 call returns empty data.
 fn uses_uint256_indices(pool: &api::PoolData) -> bool {
     let id = pool.id.to_lowercase();
     id.contains("factory-crypto") || id.contains("tricrypto") || id.contains("crypto")
@@ -58,17 +61,26 @@ pub async fn run(
     let pool = matching_pools[0];
     let in_idx = api::coin_index(pool, &token_in_addr).unwrap_or(0);
     let out_idx = api::coin_index(pool, &token_out_addr).unwrap_or(1);
-    let use_uint256 = uses_uint256_indices(pool);
+    let hint_uint256 = uses_uint256_indices(pool);
 
-    // Get a quote to determine expected output
-    let get_dy_calldata = if use_uint256 {
-        curve_abi::encode_get_dy_uint256(in_idx as u64, out_idx as u64, amount_in)
-    } else {
-        curve_abi::encode_get_dy(in_idx as i64, out_idx as i64, amount_in)
+    // Get a quote to determine expected output.
+    // Try uint256 selector first; if it returns 0 (unknown selector) fall back to int128.
+    // This handles old-style CryptoSwap pools registered with numeric IDs in main registry.
+    let (amount_out, use_uint256) = {
+        let cd = curve_abi::encode_get_dy_uint256(in_idx as u64, out_idx as u64, amount_in);
+        let hex = rpc::eth_call(&pool.address, &cd, rpc_url).await.unwrap_or_default();
+        let val = rpc::decode_uint128(&hex);
+        if val > 0 {
+            (val, true)
+        } else if hint_uint256 {
+            // Pool is classified as crypto but uint256 also returned 0 — might be low liquidity
+            (val, true)
+        } else {
+            let cd_i128 = curve_abi::encode_get_dy(in_idx as i64, out_idx as i64, amount_in);
+            let hex_i128 = rpc::eth_call(&pool.address, &cd_i128, rpc_url).await?;
+            (rpc::decode_uint128(&hex_i128), false)
+        }
     };
-
-    let result_hex = rpc::eth_call(&pool.address, &get_dy_calldata, rpc_url).await?;
-    let amount_out = rpc::decode_uint128(&result_hex);
 
     if amount_out == 0 {
         anyhow::bail!("Quote returned 0 — pool may have insufficient liquidity");
@@ -78,7 +90,7 @@ pub async fn run(
 
     // Build exchange calldata
     // Selector: 0x3df02124 = exchange(int128,int128,uint256,uint256) for StableSwap pools
-    // Selector: 0x40d12098 = exchange(uint256,uint256,uint256,uint256) for CryptoSwap/factory-v2 pools
+    // Selector: 0x5b41b908 = exchange(uint256,uint256,uint256,uint256) for CryptoSwap/factory-v2 pools
     let calldata = if use_uint256 {
         curve_abi::encode_exchange_uint256(in_idx as u64, out_idx as u64, amount_in, min_expected)
     } else {
@@ -120,7 +132,7 @@ pub async fn run(
                 false,
             )
             .await?;
-            let approve_hash = onchainos::extract_tx_hash(&approve_result);
+            let approve_hash = onchainos::extract_tx_hash(&approve_result)?;
             eprintln!("Approve tx: {}", approve_hash);
             sleep(Duration::from_secs(3)).await;
         }
@@ -139,8 +151,8 @@ pub async fn run(
     )
     .await?;
 
-    let tx_hash = onchainos::extract_tx_hash(&result);
-    let explorer = config::explorer_url(chain_id, tx_hash);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
+    let explorer = config::explorer_url(chain_id, &tx_hash);
 
     println!(
         "{}",

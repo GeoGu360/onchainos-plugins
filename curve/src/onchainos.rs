@@ -61,12 +61,21 @@ pub async fn wallet_contract_call(
     Ok(serde_json::from_str(&stdout)?)
 }
 
-/// Extract txHash from wallet contract-call response
-pub fn extract_tx_hash(result: &Value) -> &str {
-    result["data"]["txHash"]
+/// Extract txHash from wallet contract-call response.
+/// Returns an error if onchainos returned ok:false.
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    // Check for explicit error from onchainos
+    if result["ok"].as_bool() == Some(false) {
+        let err_msg = result["error"]
+            .as_str()
+            .unwrap_or("onchainos returned ok:false");
+        anyhow::bail!("onchainos error: {}", err_msg);
+    }
+    let hash = result["data"]["txHash"]
         .as_str()
         .or_else(|| result["txHash"].as_str())
-        .unwrap_or("pending")
+        .unwrap_or("pending");
+    Ok(hash.to_string())
 }
 
 /// ERC-20 approve via wallet contract-call

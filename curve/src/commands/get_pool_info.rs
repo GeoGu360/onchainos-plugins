@@ -13,7 +13,7 @@ pub async fn run(chain_id: u64, pool_address: String) -> Result<()> {
     // Also fetch on-chain data
     let virtual_price_hex = rpc::eth_call(
         &pool_address,
-        "0xbb7b8b80", // virtual_price()
+        "0xbb7b8b80", // get_virtual_price()
         rpc_url,
     )
     .await
