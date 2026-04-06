@@ -59,6 +59,20 @@ pub async fn wallet_contract_call(
         args.push("--force");
     }
     let output = Command::new("onchainos").args(&args).output()?;
+    // Check exit code first: onchainos exits 1 on error and writes JSON to stderr
+    if !output.status.success() {
+        let err_str = String::from_utf8_lossy(&output.stderr);
+        let stdout_str = String::from_utf8_lossy(&output.stdout);
+        // Try to parse stderr as JSON for a clean error message
+        let msg = if let Ok(v) = serde_json::from_str::<Value>(&err_str) {
+            v["error"].as_str().unwrap_or(&err_str).to_string()
+        } else if let Ok(v) = serde_json::from_str::<Value>(&stdout_str) {
+            v["error"].as_str().unwrap_or(&stdout_str).to_string()
+        } else {
+            format!("{}{}", stdout_str, err_str)
+        };
+        anyhow::bail!("onchainos contract-call failed: {}", msg.trim());
+    }
     Ok(serde_json::from_str(&String::from_utf8_lossy(&output.stdout))?)
 }
 
@@ -95,6 +109,18 @@ pub async fn wallet_contract_call_with_value(
         "--force",
     ];
     let output = Command::new("onchainos").args(&args).output()?;
+    if !output.status.success() {
+        let err_str = String::from_utf8_lossy(&output.stderr);
+        let stdout_str = String::from_utf8_lossy(&output.stdout);
+        let msg = if let Ok(v) = serde_json::from_str::<Value>(&err_str) {
+            v["error"].as_str().unwrap_or(&err_str).to_string()
+        } else if let Ok(v) = serde_json::from_str::<Value>(&stdout_str) {
+            v["error"].as_str().unwrap_or(&stdout_str).to_string()
+        } else {
+            format!("{}{}", stdout_str, err_str)
+        };
+        anyhow::bail!("onchainos contract-call failed: {}", msg.trim());
+    }
     Ok(serde_json::from_str(&String::from_utf8_lossy(&output.stdout))?)
 }
 

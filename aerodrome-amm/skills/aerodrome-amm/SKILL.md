@@ -36,10 +36,12 @@ The binary `aerodrome-amm` must be available in your PATH.
 
 ## Pool Types
 
-| Type | `stable` flag | Formula | Best for |
-|------|---------------|---------|----------|
-| Volatile | `false` (default) | Constant-product x×y=k | WETH/USDC, WETH/AERO |
-| Stable | `true` | Low-slippage curve | USDC/DAI, USDC/USDT |
+| Type | `--stable` flag | Formula | Best for |
+|------|----------------|---------|----------|
+| Volatile | omit `--stable` (default) | Constant-product x×y=k | WETH/USDC, WETH/AERO |
+| Stable | add `--stable` flag | Low-slippage curve | USDC/DAI, USDC/USDT |
+
+**Note:** For `quote` and `swap`, `--stable` accepts a value (`--stable true` / `--stable false`). For `add-liquidity`, `remove-liquidity`, and `claim-rewards`, `--stable` is a boolean flag: omit it for volatile pools, include it for stable pools.
 
 ---
 
@@ -190,12 +192,20 @@ aerodrome-amm positions --token-a WETH --token-b USDC --stable false
 Adds liquidity to a classic AMM pool (ERC-20 LP tokens). **Ask user to confirm** before submitting.
 
 ```bash
+# Volatile pool (default — omit --stable)
 aerodrome-amm add-liquidity \
   --token-a WETH \
   --token-b USDC \
-  --stable false \
   --amount-a-desired 50000000000000 \
   --amount-b-desired 118000
+
+# Stable pool (add --stable flag)
+aerodrome-amm add-liquidity \
+  --token-a USDC \
+  --token-b DAI \
+  --stable \
+  --amount-a-desired 10000 \
+  --amount-b-desired 0
 ```
 
 **Auto-quote token B amount:**
@@ -204,7 +214,6 @@ aerodrome-amm add-liquidity \
 aerodrome-amm add-liquidity \
   --token-a WETH \
   --token-b USDC \
-  --stable false \
   --amount-a-desired 50000000000000
 ```
 
@@ -228,18 +237,22 @@ aerodrome-amm add-liquidity \
 Burns LP tokens to withdraw the underlying token pair. **Ask user to confirm** before submitting.
 
 ```bash
-# Remove all LP tokens for WETH/USDC volatile pool
+# Remove all LP tokens for WETH/USDC volatile pool (omit --stable)
 aerodrome-amm remove-liquidity \
   --token-a WETH \
-  --token-b USDC \
-  --stable false
+  --token-b USDC
 
-# Remove specific LP amount
+# Remove specific LP amount from volatile pool
 aerodrome-amm remove-liquidity \
   --token-a WETH \
   --token-b USDC \
-  --stable false \
   --liquidity 1000000000000000
+
+# Remove from stable pool (add --stable flag)
+aerodrome-amm remove-liquidity \
+  --token-a USDC \
+  --token-b DAI \
+  --stable
 ```
 
 **Output:**
@@ -261,11 +274,16 @@ aerodrome-amm remove-liquidity \
 Claims accumulated AERO emissions from a pool gauge. **Ask user to confirm** before submitting.
 
 ```bash
-# Claim from WETH/USDC volatile pool gauge
+# Claim from WETH/USDC volatile pool gauge (omit --stable)
 aerodrome-amm claim-rewards \
   --token-a WETH \
-  --token-b USDC \
-  --stable false
+  --token-b USDC
+
+# Claim from stable pool gauge (add --stable flag)
+aerodrome-amm claim-rewards \
+  --token-a USDC \
+  --token-b DAI \
+  --stable
 
 # Claim from known gauge address
 aerodrome-amm claim-rewards --gauge 0xGaugeAddress
