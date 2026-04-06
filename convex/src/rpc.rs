@@ -49,7 +49,7 @@ pub fn decode_u256(hex: &str) -> u128 {
     if clean.len() < 64 {
         return 0;
     }
-    u128::from_str_radix(&clean[..32], 16).unwrap_or(0)
+    u128::from_str_radix(&clean[32..64], 16).unwrap_or(0)
 }
 
 /// Read ERC-20 balanceOf(address) — returns raw balance as u128

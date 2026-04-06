@@ -36,7 +36,7 @@ pub async fn run(args: ClaimRewardsArgs, chain_id: u64, dry_run: bool) -> Result
             steps.push(serde_json::json!({
                 "action": "claim-cvxcrv-rewards",
                 "contract": config::CVXCRV_STAKING,
-                "calldata": "0x7050ccd9[wallet_padded]0000000000000000000000000000000000000000000000000000000000000001"
+                "calldata": "0x7050ccd9<wallet_address_padded_to_32_bytes>0000000000000000000000000000000000000000000000000000000000000001"
             }));
         }
         if args.vlcvx {

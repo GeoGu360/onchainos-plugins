@@ -32,7 +32,7 @@ This plugin supports:
 
 ## Commands
 
-### get-pools — List Convex Curve Pools
+### get-pools - List Convex Curve Pools
 
 Lists Curve pools accessible through Convex Finance with APY data.
 
@@ -72,7 +72,7 @@ convex get-pools --limit 10
 
 ---
 
-### get-positions — Query Convex Positions
+### get-positions - Query Convex Positions
 
 Queries all Convex positions for a wallet.
 
@@ -115,7 +115,7 @@ convex get-positions --chain 1
 
 ---
 
-### stake-cvxcrv — Stake cvxCRV
+### stake-cvxcrv - Stake cvxCRV
 
 Stakes cvxCRV tokens to earn boosted CRV and CVX rewards.
 
@@ -142,7 +142,7 @@ convex stake-cvxcrv --amount 10 --chain 1
 
 ---
 
-### unstake-cvxcrv — Unstake cvxCRV
+### unstake-cvxcrv - Unstake cvxCRV
 
 Withdraws staked cvxCRV from the CvxCrvStaking contract.
 
@@ -165,7 +165,7 @@ convex unstake-cvxcrv --amount 5 --chain 1
 
 ---
 
-### lock-cvx — Lock CVX as vlCVX
+### lock-cvx - Lock CVX as vlCVX
 
 Locks CVX tokens as vote-locked CVX (vlCVX) for 16 weeks to earn rewards and participate in governance.
 
@@ -193,7 +193,7 @@ convex lock-cvx --amount 50 --chain 1
 
 ---
 
-### unlock-cvx — Unlock Expired vlCVX
+### unlock-cvx - Unlock Expired vlCVX
 
 Processes expired vlCVX locks to receive CVX back (or re-lock).
 
@@ -216,7 +216,7 @@ convex unlock-cvx --chain 1
 
 ---
 
-### claim-rewards — Claim Convex Rewards
+### claim-rewards - Claim Convex Rewards
 
 Claims pending rewards from cvxCRV staking and/or vlCVX.
 
