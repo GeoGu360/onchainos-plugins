@@ -21,8 +21,8 @@ components:
 build:
   lang: rust
   binary_name: lido
-  source_repo: skylavis-sky/onchainos-plugins
-  source_commit: "0000000000000000000000000000000000000000"
+  source_repo: GeoGu360/onchainos-plugins
+  source_commit: "d815ff9876aadd12110bb3f961f56980b1af184d"
   source_dir: lido
 
 api_calls:
