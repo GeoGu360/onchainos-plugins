@@ -14,7 +14,8 @@ pub async fn run(
     dry_run: bool,
 ) -> anyhow::Result<()> {
     let cfg = get_chain_config(chain_id)?;
-    let borrower = from.unwrap_or("0x0000000000000000000000000000000000000000");
+    let borrower_string = onchainos::resolve_wallet(from, chain_id).await?;
+    let borrower = borrower_string.as_str();
 
     // Fetch market params from GraphQL API
     let market = api::get_market(market_id, chain_id).await

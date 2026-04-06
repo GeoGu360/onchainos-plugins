@@ -89,7 +89,11 @@ enum Commands {
     },
 
     /// View user positions and health factors
-    Positions,
+    Positions {
+        /// Wallet address to query (defaults to active onchainos wallet)
+        #[arg(long)]
+        from: Option<String>,
+    },
 
     /// List Morpho Blue markets with APYs
     Markets {
@@ -140,8 +144,9 @@ async fn main() {
         Commands::Repay { market_id, amount, all } => {
             commands::repay::run(&market_id, amount.as_deref(), all, chain_id, from, dry_run).await
         }
-        Commands::Positions => {
-            commands::positions::run(chain_id, from).await
+        Commands::Positions { from: pos_from } => {
+            let effective_from = pos_from.as_deref().or(from);
+            commands::positions::run(chain_id, effective_from).await
         }
         Commands::Markets { asset } => {
             commands::markets::run(chain_id, asset.as_deref()).await

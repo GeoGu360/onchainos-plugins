@@ -178,7 +178,7 @@ pub fn encode_approve(spender: &str, amount: u128) -> String {
 }
 
 /// Merkl claim(users[], tokens[], claimable[], proofs[][])
-/// Selector: 0x2e7ba6ef
+/// Selector: 0x71ee95c0  (keccak256("claim(address[],address[],uint256[],bytes32[][])"))
 /// This is a complex ABI-encoding with dynamic arrays.
 pub fn encode_merkl_claim(
     user: &str,
@@ -189,7 +189,7 @@ pub fn encode_merkl_claim(
     // ABI encode: (address[], address[], uint256[], bytes32[][])
     // Single user, so users = [user]
     // We build the calldata manually.
-    let mut out = String::from("0x2e7ba6ef");
+    let mut out = String::from("0x71ee95c0");
 
     // All four params are dynamic arrays — head is 4 offsets (each 32 bytes = 128 bytes of head)
     // Offset for users array: 128 (0x80)

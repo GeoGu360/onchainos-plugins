@@ -10,7 +10,8 @@ pub async fn run(
     dry_run: bool,
 ) -> anyhow::Result<()> {
     let cfg = get_chain_config(chain_id)?;
-    let user = from.unwrap_or("0x0000000000000000000000000000000000000000");
+    let user_string = onchainos::resolve_wallet(from, chain_id).await?;
+    let user = user_string.as_str();
 
     // Fetch claimable rewards from Merkl API
     let merkl_data = fetch_merkl_claims(user, chain_id).await?;
