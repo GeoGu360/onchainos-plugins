@@ -78,7 +78,7 @@ pub async fn run(args: RemoveLiquidityArgs) -> anyhow::Result<()> {
 
     let decrease_result =
         wallet_contract_call(args.chain, nfpm, &decrease_calldata, None, None, true, args.dry_run).await?;
-    let decrease_tx = extract_tx_hash(&decrease_result).to_string();
+    let decrease_tx = extract_tx_hash(&decrease_result)?;
     println!("decreaseLiquidity tx: {}", decrease_tx);
 
     // Wait for decreaseLiquidity nonce to clear before collect
@@ -100,7 +100,7 @@ pub async fn run(args: RemoveLiquidityArgs) -> anyhow::Result<()> {
 
     let collect_result =
         wallet_contract_call(args.chain, nfpm, &collect_calldata, None, None, true, args.dry_run).await?;
-    let collect_tx = extract_tx_hash(&collect_result).to_string();
+    let collect_tx = extract_tx_hash(&collect_result)?;
     println!("collect tx: {}", collect_tx);
 
     // --- 5. Optional burn ---
@@ -110,7 +110,7 @@ pub async fn run(args: RemoveLiquidityArgs) -> anyhow::Result<()> {
         let burn_calldata = format!("0x42966c68{}", pad_u256(args.token_id));
         let burn_result =
             wallet_contract_call(args.chain, nfpm, &burn_calldata, None, None, true, args.dry_run).await?;
-        burn_tx = extract_tx_hash(&burn_result).to_string();
+        burn_tx = extract_tx_hash(&burn_result)?;
         println!("burn tx: {}", burn_tx);
     }
 

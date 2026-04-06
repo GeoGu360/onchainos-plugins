@@ -61,7 +61,7 @@ pub async fn run(args: CollectFeesArgs) -> anyhow::Result<()> {
     let result =
         wallet_contract_call(args.chain, nfpm, &calldata, None, None, true, args.dry_run).await?;
 
-    let tx_hash = extract_tx_hash(&result);
+    let tx_hash = extract_tx_hash(&result)?;
     println!(
         "{{\"ok\":true,\"txHash\":\"{}\",\"tokenId\":{},\"recipient\":\"{}\"}}",
         tx_hash, args.token_id, recipient

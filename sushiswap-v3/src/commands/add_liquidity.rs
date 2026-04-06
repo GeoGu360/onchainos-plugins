@@ -86,7 +86,7 @@ pub async fn run(args: AddLiquidityArgs) -> anyhow::Result<()> {
             let approve_data = build_approve_calldata(nfpm, u128::MAX);
             let res =
                 wallet_contract_call(args.chain, &token0, &approve_data, None, None, true, false).await?;
-            println!("Approve token0 tx: {}", extract_tx_hash(&res));
+            println!("Approve token0 tx: {}", extract_tx_hash(&res)?);
             sleep(Duration::from_secs(5)).await;
         }
 
@@ -97,7 +97,7 @@ pub async fn run(args: AddLiquidityArgs) -> anyhow::Result<()> {
             let approve_data = build_approve_calldata(nfpm, u128::MAX);
             let res =
                 wallet_contract_call(args.chain, &token1, &approve_data, None, None, true, false).await?;
-            println!("Approve token1 tx: {}", extract_tx_hash(&res));
+            println!("Approve token1 tx: {}", extract_tx_hash(&res)?);
             sleep(Duration::from_secs(5)).await;
         }
     }
@@ -126,7 +126,7 @@ pub async fn run(args: AddLiquidityArgs) -> anyhow::Result<()> {
     let result =
         wallet_contract_call(args.chain, nfpm, &calldata, None, None, true, args.dry_run).await?;
 
-    let tx_hash = extract_tx_hash(&result);
+    let tx_hash = extract_tx_hash(&result)?;
     println!(
         "{{\"ok\":true,\"txHash\":\"{}\",\"token0\":\"{}\",\"token1\":\"{}\",\"fee\":{},\"tickLower\":{},\"tickUpper\":{}}}",
         tx_hash, token0, token1, args.fee, args.tick_lower, args.tick_upper

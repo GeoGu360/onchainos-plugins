@@ -1,6 +1,13 @@
 ---
 name: sushiswap-v3
-description: Swap tokens and manage concentrated liquidity positions on SushiSwap V3 CLMM across 38+ EVM chains
+description: >-
+  Use for swapping tokens and managing concentrated liquidity (CLMM) positions on SushiSwap V3
+  across 38+ EVM chains (Ethereum, Base, Arbitrum, BSC, Polygon, Optimism, Avalanche).
+  Triggers: 'swap on sushiswap', 'sushiswap liquidity', 'add liquidity sushi',
+  'remove liquidity sushiswap', 'collect fees sushiswap', 'sushi v3 position',
+  'sushiswap quote', 'sushiswap pool'.
+  Do NOT use for: SushiSwap V2 (AMM/classic pools), non-SushiSwap DEXes (Uniswap, Curve),
+  token bridging, lending/borrowing, or portfolio queries.
 ---
 
 # SushiSwap V3
