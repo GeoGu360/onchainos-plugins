@@ -127,7 +127,7 @@ pub async fn execute(
         if !ok {
             anyhow::bail!("Deposit failed: {}", result);
         }
-        let tx_hash = onchainos::extract_tx_hash(&result);
+        let tx_hash = onchainos::extract_tx_hash(&result)?;
 
         println!(
             "{}",
@@ -173,7 +173,7 @@ pub async fn execute(
         if !approve_ok {
             anyhow::bail!("Approve failed: {}", approve_result);
         }
-        let approve_tx = onchainos::extract_tx_hash(&approve_result);
+        let approve_tx = onchainos::extract_tx_hash(&approve_result)?;
         eprintln!("Approve tx: {}", approve_tx);
 
         // Wait for approve to confirm
@@ -195,7 +195,7 @@ pub async fn execute(
         if !deposit_ok {
             anyhow::bail!("Deposit failed: {}", deposit_result);
         }
-        let deposit_tx = onchainos::extract_tx_hash(&deposit_result);
+        let deposit_tx = onchainos::extract_tx_hash(&deposit_result)?;
 
         println!(
             "{}",

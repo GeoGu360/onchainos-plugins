@@ -96,12 +96,15 @@ pub fn wallet_contract_call(
 }
 
 /// Extract txHash from onchainos response
-/// Checks: data.txHash (primary for EVM)
-pub fn extract_tx_hash(result: &Value) -> String {
-    result["data"]["txHash"]
+/// Checks: data.txHash (primary for EVM), then top-level txHash
+pub fn extract_tx_hash(result: &Value) -> anyhow::Result<String> {
+    let hash = result["data"]["txHash"]
         .as_str()
-        .unwrap_or("pending")
-        .to_string()
+        .or_else(|| result["txHash"].as_str());
+    match hash {
+        Some(h) if !h.is_empty() && h != "0x" => Ok(h.to_string()),
+        _ => anyhow::bail!("txHash not found in onchainos output; raw: {}", result),
+    }
 }
 
 /// Encode supplyEth(address to_) calldata for iETH v1 vault

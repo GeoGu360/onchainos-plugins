@@ -117,7 +117,7 @@ pub async fn execute(
     if !ok {
         anyhow::bail!("Withdraw failed: {}", result);
     }
-    let tx_hash = onchainos::extract_tx_hash(&result);
+    let tx_hash = onchainos::extract_tx_hash(&result)?;
 
     let underlying = if vault_info.version == "v1" { "ETH" } else { "stETH" };
 

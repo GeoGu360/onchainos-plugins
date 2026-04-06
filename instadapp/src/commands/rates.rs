@@ -26,7 +26,9 @@ pub async fn execute(chain_id: u64) -> Result<()> {
     let total_supply_f = total_supply_v1 as f64 / 1e18;
     let net_borrow_f = net_borrow as f64 / 1e18;
     let net_collateral_f = net_collateral as f64 / 1e18;
-    let leverage_ratio = if net_borrow_f > 0.0 { net_collateral_f / net_borrow_f } else { 0.0 };
+    // Only compute leverage ratio when borrow is meaningful (>= 1 ETH) to avoid absurd ratios
+    // on dust positions or essentially-delevered vaults
+    let leverage_ratio = if net_borrow_f >= 1.0 { net_collateral_f / net_borrow_f } else { 0.0 };
 
     rates_list.push(json!({
         "vault_address": v1_addr,
